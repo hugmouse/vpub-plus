@@ -45,9 +45,9 @@ func serverError(w http.ResponseWriter, err error) {
 //type ProtectedFunc func(http.ResponseWriter, *http.Request, session.User)
 
 type Handler struct {
-	//session *session.Session
-	host string
-	env  string
+	session *session.Session
+	host    string
+	env     string
 	//tpl     *template.Engine
 	mux     *mux.Router
 	storage *storage.Storage
@@ -100,13 +100,14 @@ func (h *Handler) Get(name string, args ...interface{}) string {
 
 func New(host, env, csrfKey string, data *storage.Storage, s *session.Session) (http.Handler, error) {
 	router := mux.NewRouter()
-	//h := &Handler{
-	//	session: s,
-	//	mux:     router,
-	//	host:    host,
-	//	env:     env,
-	//	storage: data,
-	//}
+	h := &Handler{
+		session: s,
+		mux:     router,
+		host:    host,
+		env:     env,
+		storage: data,
+	}
+	h.initTpl()
 	//
 	//// Static assets
 	//router.HandleFunc("/style.css", h.showStylesheet).Name("stylesheet").Methods(http.MethodGet)
@@ -159,7 +160,7 @@ func New(host, env, csrfKey string, data *storage.Storage, s *session.Session) (
 	//router.HandleFunc("/theme/update", h.protect(h.updateTheme)).Name("updateTheme").Methods(http.MethodPost)
 	//
 	//// Index
-	//router.HandleFunc("/", h.showIndexView).Name("index").Methods(http.MethodGet)
+	router.HandleFunc("/", h.showIndexView).Name("index").Methods(http.MethodGet)
 	//
 	//engine, err := template.New(env, host, h)
 	//if err != nil {
