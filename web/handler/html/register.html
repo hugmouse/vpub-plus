@@ -3,7 +3,7 @@
 {{ define "content" }}
     <h2>Register</h2>
     <form action="/register" method="post" class="auth-form">
-        {{ .csrf }}
+        {{ .csrfField }}
         <div class="field">
             <label for="name">Username</label>
             <input type="text" id="name" name="name" autocomplete="off"/>

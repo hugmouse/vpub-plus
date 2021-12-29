@@ -20,4 +20,11 @@ var TplCommonMap = map[string]string{
 </html>
 {{ end }}
 {{ define "head" }}{{ end }}`,
+	"post_form": `{{ define "post_form" }}
+    <label for="title">Title</label>
+    <input type="text" name="title" id="title" value="{{ .Title }}" autocomplete="off" required autofocus/>
+    <a href="https://portal.mozz.us/gemini/gemini.circumlunar.space/docs/cheatsheet.gmi" target="_blank">Use gemtext for formatting</a>
+    <textarea class="editor" name="content" id="content" required>{{ .Content }}</textarea>
+    <br>
+{{ end }}`,
 }

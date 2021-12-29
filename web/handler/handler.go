@@ -42,7 +42,7 @@ func serverError(w http.ResponseWriter, err error) {
 	http.Error(w, fmt.Sprintf("server error: %s", err), http.StatusInternalServerError)
 }
 
-//type ProtectedFunc func(http.ResponseWriter, *http.Request, session.User)
+type ProtectedFunc func(http.ResponseWriter, *http.Request, string)
 
 type Handler struct {
 	session *session.Session
@@ -87,16 +87,16 @@ func (h *Handler) Get(name string, args ...interface{}) string {
 	return result.String()
 }
 
-//func (h *Handler) protect(fn ProtectedFunc) http.HandlerFunc {
-//	return func(w http.ResponseWriter, r *http.Request) {
-//		user := h.session.Get(r)
-//		if !user.IsAuthenticated {
-//			forbidden(w)
-//			return
-//		}
-//		fn(w, r, user)
-//	}
-//}
+func (h *Handler) protect(fn ProtectedFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user, err := h.session.Get(r)
+		if err != nil || user == "" {
+			forbidden(w)
+			return
+		}
+		fn(w, r, user)
+	}
+}
 
 func New(host, env, csrfKey string, data *storage.Storage, s *session.Session) (http.Handler, error) {
 	router := mux.NewRouter()
@@ -130,11 +130,11 @@ func New(host, env, csrfKey string, data *storage.Storage, s *session.Session) (
 	//router.HandleFunc("/pages/{pageId}/remove", h.protect(h.removePage)).Name("removePage").Methods(http.MethodPost)
 	//router.HandleFunc("/upload", h.protect(h.upload)).Name("upload").Methods(http.MethodPost)
 	//
-	//// Posts
+	// Posts
 	//router.HandleFunc("/posts", h.showPostsView).Name("posts").Methods(http.MethodGet)
-	//router.HandleFunc("/posts/new", h.protect(h.showNewPostView)).Name("newPost").Methods(http.MethodGet)
-	//router.HandleFunc("/posts/save", h.protect(h.savePost)).Name("savePost").Methods(http.MethodPost)
-	//router.HandleFunc("/posts/{postId}", h.showPostView).Name("post").Methods(http.MethodGet)
+	router.HandleFunc("/posts/new", h.protect(h.showNewPostView)).Methods(http.MethodGet)
+	router.HandleFunc("/posts/save", h.protect(h.savePost)).Methods(http.MethodPost)
+	router.HandleFunc("/posts/{postId}", h.showPostView).Methods(http.MethodGet)
 	//router.HandleFunc("/posts/{postId}/edit", h.protect(h.showEditPostView)).Name("editPost").Methods(http.MethodGet)
 	//router.HandleFunc("/posts/{postId}/update", h.protect(h.updatePost)).Name("updatePost").Methods(http.MethodPost)
 	//router.HandleFunc("/posts/{postId}/remove", h.protect(h.handleRemovePost)).Name("removePost")

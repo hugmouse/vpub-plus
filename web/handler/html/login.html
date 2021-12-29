@@ -3,7 +3,7 @@
 {{ define "content" }}
 <h2>Login</h2>
 <form action="/login" method="post" class="auth-form">
-    {{ .csrf }}
+    {{ .csrfField }}
     <div class="field">
         <label for="name">Username</label>
         <input type="text" name="name" id="name" autocomplete="off" required/>

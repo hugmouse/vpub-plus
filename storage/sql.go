@@ -13,14 +13,13 @@ create table users
 (
     name text primary key CHECK (name <> ''),
     hash text not null CHECK (hash <> ''),
-    about TEXT not null DEFAULT '',
-    theme TEXT not null DEFAULT ''
+    about TEXT not null DEFAULT ''
 );
 
 -- create posts table
 create table posts
 (
-    id serial primary key,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     author TEXT references users(name) NOT NULL,
     title TEXT NOT NULL CHECK (title <> ''),
     content TEXT NOT NULL CHECK (content <> ''),
@@ -30,7 +29,7 @@ create table posts
 -- create replies table
 create table replies
 (
-    id serial primary key,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     author TEXT references users(name) NOT NULL,
     content TEXT NOT NULL CHECK (content <> ''),
     post_id int references posts(id) NOT NULL,
@@ -41,7 +40,7 @@ create table replies
 -- create notification table
 create table notifications
 (
-    id serial primary key,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     author text references users(name),
     reply_id int references replies(id)
 );

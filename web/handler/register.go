@@ -2,13 +2,16 @@ package handler
 
 import (
 	"errors"
+	"github.com/gorilla/csrf"
 	"net/http"
 	"pboard/model"
 	"pboard/web/handler/form"
 )
 
 func (h *Handler) showRegisterView(w http.ResponseWriter, r *http.Request) {
-	h.renderLayout(w, "register", nil, "")
+	h.renderLayout(w, "register", map[string]interface{}{
+		csrf.TemplateTag: csrf.TemplateField(r),
+	}, "")
 }
 
 func (h *Handler) register(w http.ResponseWriter, r *http.Request) {

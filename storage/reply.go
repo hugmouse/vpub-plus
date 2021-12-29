@@ -87,7 +87,7 @@ func (s *Storage) RepliesByUsername(name string, page int64) ([]model.Reply, boo
 func (s *Storage) RepliesByPostId(postId int64) ([]model.Reply, error) {
 	q := `
 		SELECT
-		   r.id, r.author, r.content, r.post_id, r.parent_id, coalesce(s.count, 0) from replies r
+		   r.id, r.author, r.content, r.post_id, r.parent_id, coalesce(count(s.id), 0) from replies r
 		LEFT JOIN replies s ON r.id = s.parent_id
 		WHERE r.post_id=$1 AND r.parent_id IS NULL
 		GROUP BY r.id
@@ -118,7 +118,7 @@ func (s *Storage) RepliesByPostId(postId int64) ([]model.Reply, error) {
 func (s *Storage) RepliesByParentId(parentId int64) ([]model.Reply, error) {
 	q := `
 		SELECT
-			r.id, r.author, r.content, r.post_id, r.parent_id, coalesce(s.count, 0) from replies r
+			r.id, r.author, r.content, r.post_id, r.parent_id, coalesce(count(s.id), 0) from replies r
 		LEFT JOIN replies s ON r.id = s.parent_id
 		WHERE r.parent_id=$1
 		GROUP BY r.id

@@ -1,0 +1,20 @@
+{{ define "title "}}Post{{ end }}
+
+{{ define "content"}}
+    <h1>{{ .post.Title }}</h1>
+    <p>
+        <a href="/~{{ .post.User }}">~{{ .post.User }}</a>
+        {{- if eq .logged .post.User }}
+            <a href="/posts/{{ .post.Id }}/edit">Edit</a>
+            <a href="/posts/{{ .post.Id }}/remove">Remove</a>
+        {{- end }}
+    </p>
+    {{ .content }}
+    <form action="/todo" method="post">
+        {{ .csrf }}
+        <div class="field">
+            <textarea name="reply"></textarea>
+        </div>
+        <input type="submit" value="Reply">
+    </form>
+{{ end }}
