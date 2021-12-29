@@ -118,7 +118,8 @@ func New(host, env, csrfKey string, data *storage.Storage, s *session.Session) (
 	//// Auth
 	//router.HandleFunc("/login", h.showLoginView).Name("login").Methods(http.MethodGet)
 	//router.HandleFunc("/check-login", h.checkLogin).Name("checkLogin").Methods(http.MethodPost)
-	//router.HandleFunc("/register", h.handleRegister).Name("register")
+	router.HandleFunc("/register", h.showRegisterView).Methods(http.MethodGet)
+	router.HandleFunc("/register", h.register).Methods(http.MethodPost)
 	//router.HandleFunc("/logout", h.logout).Name("logout").Methods(http.MethodGet)
 	//
 	//// Pages

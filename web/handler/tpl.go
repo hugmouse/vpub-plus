@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"html/template"
 	"io"
 )
@@ -27,6 +26,5 @@ func (h *Handler) renderLayout(w io.Writer, view string, params map[string]inter
 		}
 	}
 	data["logged"] = user
-	err := views[view].ExecuteTemplate(w, "layout", data)
-	fmt.Println(err)
+	views[view].ExecuteTemplate(w, "layout", data)
 }

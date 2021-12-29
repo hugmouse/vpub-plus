@@ -3,10 +3,7 @@ package model
 import (
 	"errors"
 	"golang.org/x/crypto/bcrypt"
-	"os"
-	"path"
 	"regexp"
-	"strings"
 )
 
 const UserDir = "users"
@@ -38,15 +35,4 @@ func (u User) HashPassword() ([]byte, error) {
 
 func (u User) CompareHashToPassword(hash []byte) error {
 	return bcrypt.CompareHashAndPassword(hash, []byte(u.Password))
-}
-
-func (u User) Folder() string {
-	return path.Join(UserDir, strings.ToLower(u.Name))
-}
-
-func (u User) CreateFolder() error {
-	if _, err := os.Stat(u.Folder()); !os.IsNotExist(err) {
-		return err
-	}
-	return os.Mkdir(strings.ToLower(u.Folder()), 0700)
 }

@@ -43,10 +43,7 @@ func (s *Storage) CreateUser(user model.User) error {
 		return err
 	}
 	_, err = statement.Exec(user.Name, hash)
-	if err != nil {
-		return err
-	}
-	return user.CreateFolder()
+	return err
 }
 
 func (s *Storage) Users() ([]string, error) {
