@@ -1,0 +1,17 @@
+{{ define "title" }}Login{{ end }}
+
+{{ define "content" }}
+<h2>Login</h2>
+<form action="/login" method="post" class="auth-form">
+    {{ .csrf }}
+    <div class="field">
+        <label for="name">Username</label>
+        <input type="text" name="name" id="name" autocomplete="off" required/>
+    </div>
+    <div class="field">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required/>
+    </div>
+    <input type="submit" value="Login">
+</form>
+{{ end }}

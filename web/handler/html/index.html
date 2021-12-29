@@ -1,3 +1,9 @@
 {{ define "content" }}
+{{ if .logged }}
+<p>Logged as {{ .logged }}</p>
+<p><a href="/logout">Logout</a></p>
+{{ else }}
 <p><a href="/register">Register</a></p>
+<p><a href="/login">Login</a></p>
+{{ end }}
 {{ end }}

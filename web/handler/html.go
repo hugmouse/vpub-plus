@@ -3,7 +3,33 @@
 package handler
 
 var TplMap = map[string]string{
-	"create_user": `{{ define "title" }}Register{{ end }}
+	"index": `{{ define "content" }}
+{{ if .logged }}
+<p>Logged as {{ .logged }}</p>
+<p><a href="/logout">Logout</a></p>
+{{ else }}
+<p><a href="/register">Register</a></p>
+<p><a href="/login">Login</a></p>
+{{ end }}
+{{ end }}`,
+	"login": `{{ define "title" }}Login{{ end }}
+
+{{ define "content" }}
+<h2>Login</h2>
+<form action="/login" method="post" class="auth-form">
+    {{ .csrf }}
+    <div class="field">
+        <label for="name">Username</label>
+        <input type="text" name="name" id="name" autocomplete="off" required/>
+    </div>
+    <div class="field">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required/>
+    </div>
+    <input type="submit" value="Login">
+</form>
+{{ end }}`,
+	"register": `{{ define "title" }}Register{{ end }}
 
 {{ define "content" }}
     <h2>Register</h2>
@@ -25,7 +51,4 @@ var TplMap = map[string]string{
     </form>
 {{ end }}
 `,
-	"index": `{{ define "content" }}
-<p><a href="/register">Register</a></p>
-{{ end }}`,
 }

@@ -1,15 +1,13 @@
 package session
 
 import (
+	"errors"
 	"github.com/gorilla/sessions"
 	"net/http"
 	"pboard/storage"
 )
 
-const (
-	cookieName = "pboard"
-	field      = "user"
-)
+const cookieName = "pboard"
 
 type Session struct {
 	Store   *sessions.CookieStore
@@ -21,21 +19,11 @@ func New(key string, storage *storage.Storage) *Session {
 	store.Options = &sessions.Options{
 		HttpOnly: true,
 		MaxAge:   86400 * 30,
-		SameSite: http.SameSiteLaxMode,
 	}
 	return &Session{
 		Store:   store,
 		Storage: storage,
 	}
-}
-
-func (s *Session) Save(r *http.Request, w http.ResponseWriter, name string) error {
-	session, _ := s.Store.Get(r, cookieName)
-	session.Values[field] = User{
-		Name:            name,
-		IsAuthenticated: true,
-	}
-	return session.Save(r, w)
 }
 
 func (s *Session) Delete(w http.ResponseWriter, r *http.Request) error {
@@ -48,23 +36,23 @@ func (s *Session) Delete(w http.ResponseWriter, r *http.Request) error {
 	return err
 }
 
-func (s *Session) Get(r *http.Request) User {
-	session, err := s.Store.Get(r, cookieName)
-	if err != nil {
-		return User{IsAuthenticated: false}
-	}
-	user, ok := session.Values[field].(User)
-	if !ok {
-		return User{IsAuthenticated: false}
-	}
-	user.HasNotification = s.Storage.UserHasNotifications(user.Name)
-	user.Theme = s.Storage.ThemeByUsername(user.Name)
-	return user
+func (s *Session) Save(r *http.Request, w http.ResponseWriter, name string) error {
+	session, _ := s.Store.Get(r, cookieName)
+	session.Values["name"] = name
+	return session.Save(r, w)
 }
 
-type User struct {
-	Name            string
-	IsAuthenticated bool
-	HasNotification bool
-	Theme           string
+func (s *Session) Get(r *http.Request) (string, error) {
+	session, err := s.Store.Get(r, cookieName)
+	if err != nil {
+		return "", err
+	}
+	name, ok := session.Values["name"].(string)
+	if name == "" || !ok {
+		return "", errors.New("error extracting session")
+	}
+	if ok = s.Storage.UserExists(name); !ok {
+		return "", errors.New("username not found")
+	}
+	return name, nil
 }

@@ -8,7 +8,7 @@ import (
 )
 
 func (h *Handler) showRegisterView(w http.ResponseWriter, r *http.Request) {
-	h.renderLayout(w, "create_user", nil, "") // TODO
+	h.renderLayout(w, "register", nil, "")
 }
 
 func (h *Handler) register(w http.ResponseWriter, r *http.Request) {

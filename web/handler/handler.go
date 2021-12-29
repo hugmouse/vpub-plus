@@ -116,11 +116,11 @@ func New(host, env, csrfKey string, data *storage.Storage, s *session.Session) (
 	//router.HandleFunc("/feed.xml", h.showFeedView).Name("feed").Methods(http.MethodGet)
 	//
 	//// Auth
-	//router.HandleFunc("/login", h.showLoginView).Name("login").Methods(http.MethodGet)
-	//router.HandleFunc("/check-login", h.checkLogin).Name("checkLogin").Methods(http.MethodPost)
+	router.HandleFunc("/login", h.showLoginView).Methods(http.MethodGet)
+	router.HandleFunc("/login", h.checkLogin).Methods(http.MethodPost)
 	router.HandleFunc("/register", h.showRegisterView).Methods(http.MethodGet)
 	router.HandleFunc("/register", h.register).Methods(http.MethodPost)
-	//router.HandleFunc("/logout", h.logout).Name("logout").Methods(http.MethodGet)
+	router.HandleFunc("/logout", h.logout).Methods(http.MethodGet)
 	//
 	//// Pages
 	//router.HandleFunc("/pages/new", h.protect(h.showNewPageView)).Name("newPage").Methods(http.MethodGet)
