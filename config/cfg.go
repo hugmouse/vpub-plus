@@ -7,8 +7,10 @@ type (
 		DatabaseFile string
 		Host         string
 		SessionKey   string
-		Env          string
 		CSRFKey      string
+		CSSFile      string
+		Title        string
+		MOTDFile     string
 	}
 )
 
@@ -16,8 +18,10 @@ func New() *Config {
 	cfg := &Config{
 		DatabaseFile: os.Getenv("DATABASE_FILE"),
 		SessionKey:   os.Getenv("SESSION_KEY"),
-		Env:          os.Getenv("ENV"),
 		CSRFKey:      os.Getenv("CSRF_KEY"),
+		CSSFile:      os.Getenv("CSS_FILE"),
+		Title:        os.Getenv("TITLE"),
+		MOTDFile:     os.Getenv("MOTD_FILE"),
 	}
 	cfg.Host = os.Getenv("HOST")
 	if os.Getenv("HOST") == "" {

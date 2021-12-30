@@ -51,14 +51,25 @@ var TplMap = map[string]string{
 {{ end }}
 `,
 	"index": `{{ define "content" }}
+<div class="auth">
 {{ if .logged }}
-<p>Logged as {{ .logged }}</p>
-<p><a href="/logout">Logout</a></p>
-<p><a href="/posts/new">Write post</a></p>
+<p>{{ .logged }} (<a href="/logout">Logout</a>)</p>
 {{ else }}
-<p><a href="/register">Register</a></p>
-<p><a href="/login">Login</a></p>
+<p><a href="/login">Login</a> <a href="/register">Register</a></p>
 {{ end }}
+</div>
+{{ .motd }}
+<p><a href="/posts/new">Write post</a> <a href="">Subscribe via Atom</a></p>
+
+<section>
+{{ range .posts -}}
+    <article>
+        <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
+        <div><a href="/~{{ .User }}">{{ .User }}</a></div>
+        <div>{{ .Date }}</div>
+    </article>
+{{ end }}
+</section>
 {{ end }}`,
 	"login": `{{ define "title" }}Login{{ end }}
 

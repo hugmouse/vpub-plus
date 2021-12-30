@@ -3,8 +3,11 @@ package handler
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"pboard/config"
 	"pboard/storage"
 	"pboard/web/session"
 	"strconv"
@@ -48,9 +51,11 @@ type Handler struct {
 	session *session.Session
 	host    string
 	env     string
-	//tpl     *template.Engine
+	css     []byte
 	mux     *mux.Router
 	storage *storage.Storage
+	title   string
+	motd    []byte
 }
 
 //func (h *Handler) ViewFromGmi(r *http.Request, gmi string) *view.View {
@@ -98,19 +103,33 @@ func (h *Handler) protect(fn ProtectedFunc) http.HandlerFunc {
 	}
 }
 
-func New(host, env, csrfKey string, data *storage.Storage, s *session.Session) (http.Handler, error) {
+func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Handler, error) {
 	router := mux.NewRouter()
 	h := &Handler{
 		session: s,
 		mux:     router,
-		host:    host,
-		env:     env,
 		storage: data,
 	}
 	h.initTpl()
-	//
-	//// Static assets
-	//router.HandleFunc("/style.css", h.showStylesheet).Name("stylesheet").Methods(http.MethodGet)
+
+	// Read and cache css
+	cssFile, _ := os.Open(cfg.CSSFile)
+	b, err := io.ReadAll(cssFile)
+	if err != nil {
+		fmt.Println("Couldn't read CSS file. Set CSS_FILE. Value: ", cfg.CSSFile)
+	}
+	h.css = b
+	// Read and cache motd
+	motdFile, _ := os.Open(cfg.MOTDFile)
+	b, err = io.ReadAll(motdFile)
+	if err != nil {
+		fmt.Println("Couldn't read MOTD file. Set MOTD_FILE. Value:", cfg.MOTDFile)
+	}
+	h.motd = b
+	h.title = cfg.Title
+
+	// Static assets
+	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)
 	//router.HandleFunc("/manual", h.showManual).Name("manual").Methods(http.MethodGet)
 	//router.HandleFunc("/favicon.ico", h.showFavicon).Name("favicon").Methods(http.MethodGet)
 	//router.HandleFunc("/feed.xml", h.showFeedView).Name("feed").Methods(http.MethodGet)

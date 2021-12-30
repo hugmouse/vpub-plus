@@ -10,11 +10,11 @@ var TplCommonMap = map[string]string{
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css"/>
-    <title>pboard</title>
+    <title>{{ .boardTitle }}</title>
     {{ template "head" . }}
 </head>
 <body>
-    <p>Layout</p>
+    <nav><a href="/">{{ .boardTitle }}</a></nav>
     {{ template "content" . }}
 </body>
 </html>
@@ -23,7 +23,6 @@ var TplCommonMap = map[string]string{
 	"post_form": `{{ define "post_form" }}
     <label for="title">Title</label>
     <input type="text" name="title" id="title" value="{{ .Title }}" autocomplete="off" required autofocus/>
-    <a href="https://portal.mozz.us/gemini/gemini.circumlunar.space/docs/cheatsheet.gmi" target="_blank">Use gemtext for formatting</a>
     <textarea class="editor" name="content" id="content" required>{{ .Content }}</textarea>
     <br>
 {{ end }}`,

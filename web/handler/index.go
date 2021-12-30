@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"html/template"
 	"net/http"
 	"strconv"
 )
@@ -31,5 +32,6 @@ func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 		"posts":            posts,
 		"hasNotifications": hasNotifs,
 		"users":            users,
+		"motd":             template.HTML(h.motd),
 	}, user)
 }

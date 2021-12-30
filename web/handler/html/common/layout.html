@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css"/>
-    <title>pboard</title>
+    <title>{{ .boardTitle }}</title>
     {{ template "head" . }}
 </head>
 <body>
-    <p>Layout</p>
+    <nav><a href="/">{{ .boardTitle }}</a></nav>
     {{ template "content" . }}
 </body>
 </html>
