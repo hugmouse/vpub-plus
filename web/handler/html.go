@@ -11,6 +11,14 @@ var TplMap = map[string]string{
         <input type="submit" value="Submit">
     </form>
 {{ end }}`,
+	"confirm_remove_reply": `{{ define "content" }}
+    Are you sure you you want to delete the following reply?
+    <p>{{ .reply.Content }}</p>
+    <form action="/replies/{{ .reply.Id }}/remove" method="post">
+        {{ .csrfField }}
+        <input type="submit" value="Submit">
+    </form>
+{{ end }}`,
 	"create_post": `{{ define "title" }}New Post{{ end }}
 
 {{ define "content" }}
@@ -31,6 +39,14 @@ var TplMap = map[string]string{
         {{ .csrfField }}
         {{ template "post_form" .form }}
         <input type="submit" value="Update">
+    </form>
+{{ end }}
+`,
+	"edit_reply": `{{ define "content" }}
+    <form action="/replies/{{ .reply.Id }}/update" method="post" class="form">
+        {{ .csrfField }}
+        <label for="reply">reply</label><textarea name="reply" id="reply">{{ .form.Content }}</textarea>
+        <input type="submit" value="Submit">
     </form>
 {{ end }}
 `,

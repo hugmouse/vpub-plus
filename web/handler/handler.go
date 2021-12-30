@@ -143,9 +143,9 @@ func New(host, env, csrfKey string, data *storage.Storage, s *session.Session) (
 	// Replies
 	router.HandleFunc("/replies/{replyId}", h.protect(h.showReplyView)).Methods(http.MethodGet)
 	router.HandleFunc("/replies/{replyId}/save", h.protect(h.saveReplyReply)).Methods(http.MethodPost)
-	//router.HandleFunc("/replies/{replyId}/edit", h.protect(h.showEditReplyView)).Name("editReply").Methods(http.MethodGet)
-	//router.HandleFunc("/replies/{replyId}/update", h.protect(h.updateReply)).Name("updateReply").Methods(http.MethodPost)
-	//router.HandleFunc("/replies/{replyId}/remove", h.protect(h.handleRemoveReply)).Name("removeReply")
+	router.HandleFunc("/replies/{replyId}/edit", h.protect(h.showEditReplyView)).Methods(http.MethodGet)
+	router.HandleFunc("/replies/{replyId}/update", h.protect(h.updateReply)).Methods(http.MethodPost)
+	router.HandleFunc("/replies/{replyId}/remove", h.protect(h.handleRemoveReply)).Name("removeReply")
 	//
 	//// Notifications
 	//router.HandleFunc("/notifications", h.protect(h.showNotificationsView)).Name("notifications").Methods(http.MethodGet)

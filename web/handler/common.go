@@ -36,8 +36,8 @@ var TplCommonMap = map[string]string{
                     <div class="content">{{ .Content }}</div>
                     <a href="/replies/{{ .Id }}">reply</a>
                     {{ if hasPermission .Author }}
-                        <a href="/todo">edit</a>
-                        <a href="/todo">Remove</a>
+                        <a href="/replies/{{ .Id }}/edit">edit</a>
+                        <a href="/replies/{{ .Id }}/remove">Remove</a>
                     {{ end }}
                     <br>
                     {{ template "reply" .Thread }}

@@ -75,3 +75,60 @@ func (h *Handler) showReplyView(w http.ResponseWriter, r *http.Request, user str
 		csrf.TemplateTag: csrf.TemplateField(r),
 	}, user)
 }
+
+func (h *Handler) showEditReplyView(w http.ResponseWriter, r *http.Request, user string) {
+	reply, err := h.storage.ReplyById(RouteInt64Param(r, "replyId"))
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+
+	replyForm := form.ReplyForm{
+		Content: reply.Content,
+	}
+
+	h.renderLayout(w, "edit_reply", map[string]interface{}{
+		"reply":          reply,
+		"form":           replyForm,
+		csrf.TemplateTag: csrf.TemplateField(r),
+	}, user)
+}
+
+func (h *Handler) updateReply(w http.ResponseWriter, r *http.Request, user string) {
+	replyForm := form.NewReplyForm(r)
+	reply := model.Reply{
+		Id:      RouteInt64Param(r, "replyId"),
+		Content: replyForm.Content,
+	}
+	if err := reply.Validate(); err != nil {
+		serverError(w, err)
+		return
+	}
+	if err := h.storage.UpdateReply(reply); err != nil {
+		serverError(w, err)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/replies/%d", reply.Id), http.StatusFound)
+}
+
+func (h *Handler) handleRemoveReply(w http.ResponseWriter, r *http.Request, user string) {
+	reply, err := h.storage.ReplyById(RouteInt64Param(r, "replyId"))
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	switch r.Method {
+	case http.MethodGet:
+		h.renderLayout(w, "confirm_remove_reply", map[string]interface{}{
+			"reply":          reply,
+			csrf.TemplateTag: csrf.TemplateField(r),
+		}, user)
+	case http.MethodPost:
+		err = h.storage.DeleteReply(reply.Id)
+		if err != nil {
+			serverError(w, err)
+			return
+		}
+		http.Redirect(w, r, fmt.Sprintf("/posts/%d", reply.PostId), http.StatusFound)
+	}
+}
