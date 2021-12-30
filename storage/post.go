@@ -15,7 +15,7 @@ type postQueryBuilder struct {
 }
 
 func (p postQueryBuilder) build() string {
-	query := []string{`SELECT id, author, title, created_at from posts`}
+	query := []string{`SELECT id, author, title, created_at, topic from posts`}
 	if p.where != "" {
 		query = append(query, `WHERE`, p.where)
 	}
@@ -32,7 +32,7 @@ func (p postQueryBuilder) build() string {
 func (s *Storage) populatePost(rows *sql.Rows) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
-	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr)
+	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &post.Topic)
 	post.CreatedAt, err = time.Parse("2006-01-02 15:04:05", createdAtStr)
 	if err != nil {
 		return post, err
@@ -42,19 +42,20 @@ func (s *Storage) populatePost(rows *sql.Rows) (model.Post, error) {
 
 func (s *Storage) CreatePost(post model.Post) (int64, error) {
 	var lid int64
-	err := s.db.QueryRow(`INSERT INTO posts (author, title, content) VALUES ($1, $2, $3) RETURNING id`,
-		post.User, post.Title, post.Content).Scan(&lid)
+	err := s.db.QueryRow(`INSERT INTO posts (author, title, content, topic) VALUES ($1, $2, $3, $4) RETURNING id`,
+		post.User, post.Title, post.Content, post.Topic).Scan(&lid)
 	return lid, err
 }
 
 func (s *Storage) PostById(id int64) (model.Post, error) {
 	var post model.Post
 	err := s.db.QueryRow(
-		`SELECT id, author, title, content from posts WHERE id=$1`, id).Scan(
+		`SELECT id, author, title, content, topic from posts WHERE id=$1`, id).Scan(
 		&post.Id,
 		&post.User,
 		&post.Title,
 		&post.Content,
+		&post.Topic,
 	)
 	return post, err
 }
@@ -64,7 +65,7 @@ func (s *Storage) PostsByUsername(user string, perPage int, page int64) ([]model
 		where:  `author = $1`,
 		limit:  strconv.Itoa(perPage + 1),
 		offset: `$2`,
-	}.build(), user, page*int64(perPage))
+	}.build(), user, (page-1)*int64(perPage))
 	if err != nil {
 		return nil, false, err
 	}
@@ -86,7 +87,30 @@ func (s *Storage) Posts(page int64, perPage int) ([]model.Post, bool, error) {
 	rows, err := s.db.Query(postQueryBuilder{
 		limit:  strconv.Itoa(perPage + 1),
 		offset: `$1`,
-	}.build(), page*int64(perPage))
+	}.build(), (page-1)*int64(perPage))
+	if err != nil {
+		return nil, false, err
+	}
+	var posts []model.Post
+	for rows.Next() {
+		post, err := s.populatePost(rows)
+		if err != nil {
+			return posts, false, err
+		}
+		posts = append(posts, post)
+	}
+	if len(posts) > perPage {
+		return posts[0:perPage], true, err
+	}
+	return posts, false, err
+}
+
+func (s *Storage) PostsTopic(topic string, page int64, perPage int) ([]model.Post, bool, error) {
+	rows, err := s.db.Query(postQueryBuilder{
+		where:  `topic=$1`,
+		limit:  strconv.Itoa(perPage + 1),
+		offset: `$2`,
+	}.build(), topic, (page-1)*int64(perPage))
 	if err != nil {
 		return nil, false, err
 	}
@@ -105,11 +129,11 @@ func (s *Storage) Posts(page int64, perPage int) ([]model.Post, bool, error) {
 }
 
 func (s *Storage) UpdatePost(post model.Post) error {
-	stmt, err := s.db.Prepare(`UPDATE posts SET title = $1, content = $2 WHERE id = $3 and author = $4;`)
+	stmt, err := s.db.Prepare(`UPDATE posts SET title = $1, content = $2, topic = $3 WHERE id = $4 and author = $5;`)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(post.Title, post.Content, post.Id, post.User)
+	_, err = stmt.Exec(post.Title, post.Content, post.Topic, post.Id, post.User)
 	return err
 }
 

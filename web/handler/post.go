@@ -10,6 +10,7 @@ import (
 
 func (h *Handler) showNewPostView(w http.ResponseWriter, r *http.Request, user string) {
 	form := form.PostForm{}
+	form.Topics = h.topics
 	h.renderLayout(w, "create_post", map[string]interface{}{
 		"form":           form,
 		csrf.TemplateTag: csrf.TemplateField(r),
@@ -17,11 +18,12 @@ func (h *Handler) showNewPostView(w http.ResponseWriter, r *http.Request, user s
 }
 
 func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user string) {
-	postForm := form.NewPostForm(r)
+	postForm := form.NewPostForm(r, h.topics)
 	post := model.Post{
 		User:    user,
 		Title:   postForm.Title,
 		Content: postForm.Content,
+		Topic:   postForm.Topic,
 	}
 	if err := post.Validate(); err != nil {
 		serverError(w, err)
@@ -71,6 +73,8 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user 
 	postForm := form.PostForm{
 		Title:   post.Title,
 		Content: post.Content,
+		Topic:   post.Topic,
+		Topics:  h.topics,
 	}
 	h.renderLayout(w, "edit_post", map[string]interface{}{
 		"form":           postForm,
@@ -93,10 +97,11 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user string
 		return
 	}
 
-	postForm := form.NewPostForm(r)
+	postForm := form.NewPostForm(r, h.topics)
 
 	post.Title = postForm.Title
 	post.Content = postForm.Content
+	post.Topic = postForm.Topic
 	post.User = user
 
 	if err := post.Validate(); err != nil {

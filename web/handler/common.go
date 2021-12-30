@@ -21,6 +21,14 @@ var TplCommonMap = map[string]string{
 {{ end }}
 {{ define "head" }}{{ end }}`,
 	"post_form": `{{ define "post_form" }}
+    {{ if .Topics }}
+    <select name="topic">
+        {{ range .Topics }}
+        <option value="{{ . }}" {{ if eq . $.Topic }}selected{{ end }}>{{ . }}</option>
+        {{ end }}
+    </select>
+    {{ end }}
+
     <label for="title">Title</label>
     <input type="text" name="title" id="title" value="{{ .Title }}" autocomplete="off" required autofocus/>
     <textarea class="editor" name="content" id="content" required>{{ .Content }}</textarea>
@@ -43,5 +51,12 @@ var TplCommonMap = map[string]string{
                 </div>
             {{ end }}
     {{ end }}
+{{ end }}`,
+	"topics": `{{ define "topics" }}
+{{ if . }}
+{{ range . }}
+<a href="/topics/{{ . }}">{{ . }}</a>
+{{ end }}
+{{ end }}
 {{ end }}`,
 }

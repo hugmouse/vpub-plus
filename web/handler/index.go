@@ -14,13 +14,13 @@ func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 		page, _ = strconv.ParseInt(val[0], 10, 64)
 	}
 
-	posts, _, err := h.storage.Posts(page, 50)
+	posts, hasMore, err := h.storage.Posts(page, h.perPage)
 	if err != nil {
 		serverError(w, err)
 		return
 	}
 
-	users, err := h.storage.RandomUsers(20)
+	users, err := h.storage.Users()
 	if err != nil {
 		serverError(w, err)
 		return
@@ -28,10 +28,14 @@ func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 
 	hasNotifs := h.storage.UserHasNotifications(user)
 
-	h.renderLayout(w, "index", map[string]interface{}{
+	h.view("index").Execute(w, map[string]interface{}{
 		"posts":            posts,
 		"hasNotifications": hasNotifs,
 		"users":            users,
+		"topics":           h.topics,
 		"motd":             template.HTML(h.motd),
-	}, user)
+		"logged":           user,
+		"hasMore":          hasMore,
+		"boardTitle":       h.title,
+	})
 }

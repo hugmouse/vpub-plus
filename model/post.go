@@ -12,6 +12,7 @@ type Post struct {
 	Content   string
 	Comments  int
 	CreatedAt time.Time
+	Topic     string
 }
 
 func (p Post) Validate() error {

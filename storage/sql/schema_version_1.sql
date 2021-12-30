@@ -18,6 +18,7 @@ create table posts
     author TEXT references users(name) NOT NULL,
     title TEXT NOT NULL CHECK (title <> ''),
     content TEXT NOT NULL CHECK (content <> ''),
+    topic TEXT,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );
 

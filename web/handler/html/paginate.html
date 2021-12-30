@@ -1,0 +1,20 @@
+{{ define "content" }}
+<p>Page {{ .page }}{{ if .topic }} of <a href="/topics/{{ .topic }}">{{ .topic }}</a>{{ end }}</p>
+<section>
+    {{ range .posts -}}
+    <article>
+        <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
+        <div>{{ .User }}</div>
+        <div>{{ .Date }}</div>
+    </article>
+    {{ end }}
+
+    {{ if .hasMore }}
+    {{ if .topic }}
+    <a href="/page/{{ .nextPage }}?topic={{ .topic }}">More</a>
+    {{ else }}
+    <a href="/page/{{ .nextPage }}">More</a>
+    {{ end }}
+    {{ end }}
+</section>
+{{ end }}

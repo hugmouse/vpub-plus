@@ -64,7 +64,7 @@ func (s *Storage) Users() ([]string, error) {
 }
 
 func (s *Storage) RandomUsers(n int) ([]string, error) {
-	rows, err := s.db.Query("select  author from posts group by author order by random() limit $1", n)
+	rows, err := s.db.Query("select author from posts group by author order by random() limit $1", n)
 	if err != nil {
 		return nil, err
 	}

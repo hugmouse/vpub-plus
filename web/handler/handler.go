@@ -56,13 +56,9 @@ type Handler struct {
 	storage *storage.Storage
 	title   string
 	motd    []byte
+	topics  []string
+	perPage int
 }
-
-//func (h *Handler) ViewFromGmi(r *http.Request, gmi string) *view.View {
-//	v := view.New(h.tpl, r, h.session.Get(r))
-//	v.Set("body", template.HTMLFromGemini(gmi))
-//	return v
-//}
 
 func (h *Handler) Get(name string, args ...interface{}) string {
 	route := h.mux.Get(name)
@@ -109,6 +105,8 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 		session: s,
 		mux:     router,
 		storage: data,
+		topics:  cfg.Topics,
+		perPage: cfg.PerPage,
 	}
 	h.initTpl()
 
@@ -133,21 +131,16 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	//router.HandleFunc("/manual", h.showManual).Name("manual").Methods(http.MethodGet)
 	//router.HandleFunc("/favicon.ico", h.showFavicon).Name("favicon").Methods(http.MethodGet)
 	//router.HandleFunc("/feed.xml", h.showFeedView).Name("feed").Methods(http.MethodGet)
-	//
-	//// Auth
+
+	// Auth
 	router.HandleFunc("/login", h.showLoginView).Methods(http.MethodGet)
 	router.HandleFunc("/login", h.checkLogin).Methods(http.MethodPost)
 	router.HandleFunc("/register", h.showRegisterView).Methods(http.MethodGet)
 	router.HandleFunc("/register", h.register).Methods(http.MethodPost)
 	router.HandleFunc("/logout", h.logout).Methods(http.MethodGet)
-	//
-	//// Pages
-	//router.HandleFunc("/pages/new", h.protect(h.showNewPageView)).Name("newPage").Methods(http.MethodGet)
-	//router.HandleFunc("/pages/save", h.protect(h.savePage)).Name("savePage").Methods(http.MethodPost)
-	//router.HandleFunc("/pages/{pageId}/edit", h.protect(h.showEditPageView)).Name("editPage").Methods(http.MethodGet)
-	//router.HandleFunc("/pages/{pageId}/update", h.protect(h.updatePage)).Name("updatePage").Methods(http.MethodPost)
-	//router.HandleFunc("/pages/{pageId}/remove", h.protect(h.removePage)).Name("removePage").Methods(http.MethodPost)
-	//router.HandleFunc("/upload", h.protect(h.upload)).Name("upload").Methods(http.MethodPost)
+
+	// Topics
+	router.HandleFunc("/topics/{topic}", h.showTopicView).Methods(http.MethodGet)
 
 	// Posts
 	//router.HandleFunc("/posts", h.showPostsView).Name("posts").Methods(http.MethodGet)
@@ -158,6 +151,9 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	router.HandleFunc("/posts/{postId}/update", h.protect(h.updatePost)).Methods(http.MethodPost)
 	router.HandleFunc("/posts/{postId}/remove", h.protect(h.handleRemovePost))
 	router.HandleFunc("/posts/{postId}/reply", h.protect(h.savePostReply)).Name("savePostReply").Methods(http.MethodPost)
+
+	// Pagination
+	router.HandleFunc("/page/{nb}", h.showPageNumber).Methods(http.MethodGet)
 
 	// Replies
 	router.HandleFunc("/replies/{replyId}", h.protect(h.showReplyView)).Methods(http.MethodGet)
@@ -171,7 +167,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	//router.HandleFunc("/notifications/{notificationId}/mark-read", h.protect(h.markRead)).Name("markRead").Methods(http.MethodPost)
 	//
 	//// User
-	//router.HandleFunc("/~{userId}", h.showUserPostsView).Name("user").Methods(http.MethodGet)
+	router.HandleFunc("/~{userId}", h.showUserPostsView).Methods(http.MethodGet)
 	//router.HandleFunc("/account", h.protect(h.showAccountView)).Name("account").Methods(http.MethodGet)
 	//router.HandleFunc("/patrons", h.showUserListView).Name("patrons").Methods(http.MethodGet)
 	//router.HandleFunc("/save-about", h.protect(h.saveAbout)).Name("saveAbout").Methods(http.MethodPost)

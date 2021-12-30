@@ -7,11 +7,15 @@ import (
 type PostForm struct {
 	Title   string
 	Content string
+	Topics  []string
+	Topic   string
 }
 
-func NewPostForm(r *http.Request) *PostForm {
+func NewPostForm(r *http.Request, topics []string) *PostForm {
 	return &PostForm{
 		Title:   r.FormValue("title"),
 		Content: r.FormValue("content"),
+		Topic:   r.FormValue("topic"),
+		Topics:  topics,
 	}
 }

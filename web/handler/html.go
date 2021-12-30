@@ -50,7 +50,17 @@ var TplMap = map[string]string{
     </form>
 {{ end }}
 `,
-	"index": `{{ define "content" }}
+	"index": `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css"/>
+    <title>{{ .boardTitle }}</title>
+    {{ template "head" . }}
+</head>
+<body>
+<h1>{{ .boardTitle }}</h1>
 <div class="auth">
 {{ if .logged }}
 <p>{{ .logged }} (<a href="/logout">Logout</a>)</p>
@@ -59,18 +69,29 @@ var TplMap = map[string]string{
 {{ end }}
 </div>
 {{ .motd }}
-<p><a href="/posts/new">Write post</a> <a href="">Subscribe via Atom</a></p>
+<p><a href="/posts/new">write</a> <a href="">follow</a></p>
 
-<section>
+{{ if .topics }}
+{{ range .topics }}<a href="/topics/{{ . }}">{{ . }}</a> {{ end }}
+{{ end }}
+<section class="posts">
 {{ range .posts -}}
     <article>
         <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
-        <div><a href="/~{{ .User }}">{{ .User }}</a></div>
+        <div>{{ .User }}</div>
         <div>{{ .Date }}</div>
     </article>
 {{ end }}
+{{ if .hasMore }}
+<a href="/page/2">More</a>
+{{ end }}
 </section>
-{{ end }}`,
+
+<section>
+{{ range .users }}<a href="/~{{ . }}">{{ . }}</a> {{ end }}
+</section>
+</body>
+</html>`,
 	"login": `{{ define "title" }}Login{{ end }}
 
 {{ define "content" }}
@@ -87,6 +108,26 @@ var TplMap = map[string]string{
     </div>
     <input type="submit" value="Login">
 </form>
+{{ end }}`,
+	"paginate": `{{ define "content" }}
+<p>Page {{ .page }}{{ if .topic }} of <a href="/topics/{{ .topic }}">{{ .topic }}</a>{{ end }}</p>
+<section>
+    {{ range .posts -}}
+    <article>
+        <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
+        <div>{{ .User }}</div>
+        <div>{{ .Date }}</div>
+    </article>
+    {{ end }}
+
+    {{ if .hasMore }}
+    {{ if .topic }}
+    <a href="/page/{{ .nextPage }}?topic={{ .topic }}">More</a>
+    {{ else }}
+    <a href="/page/{{ .nextPage }}">More</a>
+    {{ end }}
+    {{ end }}
+</section>
 {{ end }}`,
 	"post": `{{ define "title "}}Post{{ end }}
 
@@ -151,6 +192,41 @@ var TplMap = map[string]string{
         </form>
         {{ template "reply" .reply.Thread }}
     </section>
+{{ end }}
+`,
+	"topic": `{{ define "content" }}
+<h1>{{ .topic }}</h1>
+{{ if .logged }}
+<p><a href="/posts/new">write</a> <a href="">follow</a></p>
+{{ end }}
+<nav>
+{{ if .topics }}
+{{ range .topics }}<a href="/topics/{{ . }}" {{ if eq . $.topic }}class="selected"{{ end }}>{{ . }}</a> {{ end }}
+{{ end }}
+</nav>
+<section>
+    {{ range .posts -}}
+    <article>
+        <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
+        <div><a href="/~{{ .User }}">{{ .User }}</a></div>
+        <div>{{ .Date }}</div>
+    </article>
+    {{ end }}
+    {{ if .hasMore }}
+    <a href="/page/2?topic={{ .topic }}">More</a>
+    {{ end }}
+</section>
+{{ end }}`,
+	"user_posts": `{{ define "content" }}
+<h1>{{ .user.Name }}</h1>
+
+{{- range .posts }}
+=> /posts/{{ .Id }} {{ .Date }} {{ .Title }}
+{{- end }}
+
+{{if .showMore }}
+<a href="/~{{ .user.Name }}?page={{ .nextPage }}">More</a>
+{{ end }}
 {{ end }}
 `,
 }

@@ -1,0 +1,7 @@
+{{ define "topics" }}
+{{ if . }}
+{{ range . }}
+<a href="/topics/{{ . }}">{{ . }}</a>
+{{ end }}
+{{ end }}
+{{ end }}

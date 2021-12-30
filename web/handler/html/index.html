@@ -1,4 +1,14 @@
-{{ define "content" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css"/>
+    <title>{{ .boardTitle }}</title>
+    {{ template "head" . }}
+</head>
+<body>
+<h1>{{ .boardTitle }}</h1>
 <div class="auth">
 {{ if .logged }}
 <p>{{ .logged }} (<a href="/logout">Logout</a>)</p>
@@ -7,15 +17,26 @@
 {{ end }}
 </div>
 {{ .motd }}
-<p><a href="/posts/new">Write post</a> <a href="">Subscribe via Atom</a></p>
+<p><a href="/posts/new">write</a> <a href="">follow</a></p>
 
-<section>
+{{ if .topics }}
+{{ range .topics }}<a href="/topics/{{ . }}">{{ . }}</a> {{ end }}
+{{ end }}
+<section class="posts">
 {{ range .posts -}}
     <article>
         <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
-        <div><a href="/~{{ .User }}">{{ .User }}</a></div>
+        <div>{{ .User }}</div>
         <div>{{ .Date }}</div>
     </article>
 {{ end }}
-</section>
+{{ if .hasMore }}
+<a href="/page/2">More</a>
 {{ end }}
+</section>
+
+<section>
+{{ range .users }}<a href="/~{{ . }}">{{ . }}</a> {{ end }}
+</section>
+</body>
+</html>

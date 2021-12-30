@@ -37,3 +37,7 @@ func (h *Handler) renderLayout(w io.Writer, view string, params map[string]inter
 		},
 	}).ExecuteTemplate(w, "layout", data)
 }
+
+func (h *Handler) view(view string) *template.Template {
+	return views[view]
+}

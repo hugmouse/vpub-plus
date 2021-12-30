@@ -1,6 +1,10 @@
 package config
 
-import "os"
+import (
+	"os"
+	"strconv"
+	"strings"
+)
 
 type (
 	Config struct {
@@ -11,6 +15,8 @@ type (
 		CSSFile      string
 		Title        string
 		MOTDFile     string
+		Topics       []string
+		PerPage      int
 	}
 )
 
@@ -22,10 +28,16 @@ func New() *Config {
 		CSSFile:      os.Getenv("CSS_FILE"),
 		Title:        os.Getenv("TITLE"),
 		MOTDFile:     os.Getenv("MOTD_FILE"),
+		Topics:       strings.Split(os.Getenv("TOPICS"), ","),
 	}
 	cfg.Host = os.Getenv("HOST")
 	if os.Getenv("HOST") == "" {
 		cfg.Host = "localhost:8080"
+	}
+	perPage, _ := strconv.Atoi(os.Getenv("PER_PAGE"))
+	cfg.PerPage = perPage
+	if os.Getenv("PER_PAGE") == "" {
+		cfg.PerPage = 50
 	}
 	return cfg
 }
