@@ -57,3 +57,93 @@ func (h *Handler) showPostView(w http.ResponseWriter, r *http.Request) {
 		csrf.TemplateTag: csrf.TemplateField(r),
 	}, user)
 }
+
+func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user string) {
+	post, err := h.storage.PostById(RouteInt64Param(r, "postId"))
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	if user != post.User {
+		forbidden(w)
+		return
+	}
+	postForm := form.PostForm{
+		Title:   post.Title,
+		Content: post.Content,
+	}
+	h.renderLayout(w, "edit_post", map[string]interface{}{
+		"form":           postForm,
+		"post":           post,
+		csrf.TemplateTag: csrf.TemplateField(r),
+	}, user)
+}
+
+func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user string) {
+	id := RouteInt64Param(r, "postId")
+
+	post, err := h.storage.PostById(id)
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+
+	if user != post.User {
+		forbidden(w)
+		return
+	}
+
+	postForm := form.NewPostForm(r)
+
+	post.Title = postForm.Title
+	post.Content = postForm.Content
+	post.User = user
+
+	if err := post.Validate(); err != nil {
+		serverError(w, err)
+		return
+	}
+
+	if err := h.storage.UpdatePost(post); err != nil {
+		serverError(w, err)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/posts/%d", post.Id), http.StatusFound)
+}
+
+func (h *Handler) handleRemovePost(w http.ResponseWriter, r *http.Request, user string) {
+	switch r.Method {
+	case "GET":
+		id := RouteInt64Param(r, "postId")
+		post, err := h.storage.PostById(id)
+		if err != nil {
+			serverError(w, err)
+			return
+		}
+		if user != post.User {
+			forbidden(w)
+			return
+		}
+		h.renderLayout(w, "confirm_remove_post", map[string]interface{}{
+			"post":           post,
+			csrf.TemplateTag: csrf.TemplateField(r),
+		}, user)
+	case "POST":
+		post, err := h.storage.PostById(RouteInt64Param(r, "postId"))
+		if err != nil {
+			serverError(w, err)
+			return
+		}
+		if user != post.User {
+			forbidden(w)
+			return
+		}
+		err = h.storage.DeletePost(post.Id, user)
+		if err != nil {
+			serverError(w, err)
+			return
+		}
+		http.Redirect(w, r, "/", http.StatusFound)
+	}
+}

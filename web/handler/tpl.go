@@ -14,7 +14,11 @@ func (h *Handler) initTpl() {
 	}
 
 	for name, content := range TplMap {
-		views[name] = template.Must(template.New("main").Parse(commonTemplates + content))
+		views[name] = template.Must(template.New("main").Funcs(template.FuncMap{
+			"hasPermission": func(name string) bool {
+				return false
+			},
+		}).Parse(commonTemplates + content))
 	}
 }
 
@@ -26,5 +30,9 @@ func (h *Handler) renderLayout(w io.Writer, view string, params map[string]inter
 		}
 	}
 	data["logged"] = user
-	views[view].ExecuteTemplate(w, "layout", data)
+	views[view].Funcs(template.FuncMap{
+		"hasPermission": func(name string) bool {
+			return user == name
+		},
+	}).ExecuteTemplate(w, "layout", data)
 }

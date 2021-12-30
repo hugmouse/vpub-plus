@@ -1,0 +1,10 @@
+{{ define "title" }}Edit Post{{ end }}
+
+{{ define "content" }}
+    <h2>Edit Post</h2>
+    <form action="/posts/{{ .post.Id }}/update" method="post">
+        {{ .csrfField }}
+        {{ template "post_form" .form }}
+        <input type="submit" value="Update">
+    </form>
+{{ end }}

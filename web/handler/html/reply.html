@@ -1,0 +1,21 @@
+{{ define "content" }}
+    <article>
+        From: <a href="/~{{ .reply.Author }}">{{ .reply.Author }}</a><br>
+        In: <a href="/posts/{{ .post.Id }}">{{ .post.Title }}</a><br>
+        {{ if .reply.ParentId }}
+            <a href="/replies/{{ .reply.ParentId }}">Parent</a><br>
+        {{ end }}
+        {{ .reply.Content }}
+    </article>
+    <section>
+        <form action="/replies/{{ .reply.Id }}/save" method="post">
+            {{ .csrfField }}
+            <div class="field">
+                <label for="content">Reply</label>
+                <textarea name="reply" autofocus></textarea>
+            </div>
+            <input type="submit" value="Submit">
+        </form>
+        {{ template "reply" .reply.Thread }}
+    </section>
+{{ end }}

@@ -27,4 +27,22 @@ var TplCommonMap = map[string]string{
     <textarea class="editor" name="content" id="content" required>{{ .Content }}</textarea>
     <br>
 {{ end }}`,
+	"reply": `{{ define "reply" }}
+    {{ if . }}
+            {{ range . }}
+                <br>
+                <div class="reply">
+                    <a href="/~{{ .Author }}">{{ .Author }}</a><br>
+                    <div class="content">{{ .Content }}</div>
+                    <a href="/replies/{{ .Id }}">reply</a>
+                    {{ if hasPermission .Author }}
+                        <a href="/todo">edit</a>
+                        <a href="/todo">Remove</a>
+                    {{ end }}
+                    <br>
+                    {{ template "reply" .Thread }}
+                </div>
+            {{ end }}
+    {{ end }}
+{{ end }}`,
 }

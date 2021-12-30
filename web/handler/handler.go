@@ -129,20 +129,20 @@ func New(host, env, csrfKey string, data *storage.Storage, s *session.Session) (
 	//router.HandleFunc("/pages/{pageId}/update", h.protect(h.updatePage)).Name("updatePage").Methods(http.MethodPost)
 	//router.HandleFunc("/pages/{pageId}/remove", h.protect(h.removePage)).Name("removePage").Methods(http.MethodPost)
 	//router.HandleFunc("/upload", h.protect(h.upload)).Name("upload").Methods(http.MethodPost)
-	//
+
 	// Posts
 	//router.HandleFunc("/posts", h.showPostsView).Name("posts").Methods(http.MethodGet)
 	router.HandleFunc("/posts/new", h.protect(h.showNewPostView)).Methods(http.MethodGet)
 	router.HandleFunc("/posts/save", h.protect(h.savePost)).Methods(http.MethodPost)
 	router.HandleFunc("/posts/{postId}", h.showPostView).Methods(http.MethodGet)
-	//router.HandleFunc("/posts/{postId}/edit", h.protect(h.showEditPostView)).Name("editPost").Methods(http.MethodGet)
-	//router.HandleFunc("/posts/{postId}/update", h.protect(h.updatePost)).Name("updatePost").Methods(http.MethodPost)
-	//router.HandleFunc("/posts/{postId}/remove", h.protect(h.handleRemovePost)).Name("removePost")
-	//router.HandleFunc("/posts/{postId}/reply", h.protect(h.savePostReply)).Name("savePostReply").Methods(http.MethodPost)
-	//
-	//// Replies
-	//router.HandleFunc("/replies/{replyId}", h.protect(h.showReplyView)).Name("reply").Methods(http.MethodGet)
-	//router.HandleFunc("/replies/{replyId}/save", h.protect(h.saveReplyReply)).Name("saveReplyReply").Methods(http.MethodPost)
+	router.HandleFunc("/posts/{postId}/edit", h.protect(h.showEditPostView)).Methods(http.MethodGet)
+	router.HandleFunc("/posts/{postId}/update", h.protect(h.updatePost)).Methods(http.MethodPost)
+	router.HandleFunc("/posts/{postId}/remove", h.protect(h.handleRemovePost))
+	router.HandleFunc("/posts/{postId}/reply", h.protect(h.savePostReply)).Name("savePostReply").Methods(http.MethodPost)
+
+	// Replies
+	router.HandleFunc("/replies/{replyId}", h.protect(h.showReplyView)).Methods(http.MethodGet)
+	router.HandleFunc("/replies/{replyId}/save", h.protect(h.saveReplyReply)).Methods(http.MethodPost)
 	//router.HandleFunc("/replies/{replyId}/edit", h.protect(h.showEditReplyView)).Name("editReply").Methods(http.MethodGet)
 	//router.HandleFunc("/replies/{replyId}/update", h.protect(h.updateReply)).Name("updateReply").Methods(http.MethodPost)
 	//router.HandleFunc("/replies/{replyId}/remove", h.protect(h.handleRemoveReply)).Name("removeReply")

@@ -5,6 +5,7 @@ import (
 	"pboard/model"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type postQueryBuilder struct {
@@ -30,7 +31,9 @@ func (p postQueryBuilder) build() string {
 
 func (s *Storage) populatePost(rows *sql.Rows) (model.Post, error) {
 	var post model.Post
-	err := rows.Scan(&post.Id, &post.User, &post.Title, &post.CreatedAt)
+	var createdAtStr string
+	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr)
+	post.CreatedAt, err = time.Parse("2006-01-02 15:04:05", createdAtStr)
 	if err != nil {
 		return post, err
 	}

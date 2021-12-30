@@ -3,6 +3,14 @@
 package handler
 
 var TplMap = map[string]string{
+	"confirm_remove_post": `{{ define "content" }}
+    Are you sure you you want to delete the following post?
+    <p>{{ .post.Content }}</p>
+    <form action="/posts/{{ .post.Id }}/remove" method="post">
+        {{ .csrfField }}
+        <input type="submit" value="Submit">
+    </form>
+{{ end }}`,
 	"create_post": `{{ define "title" }}New Post{{ end }}
 
 {{ define "content" }}
@@ -12,6 +20,17 @@ var TplMap = map[string]string{
         {{ .csrfField }}
         {{ template "post_form" .form }}
         <input type="submit" value="Submit">
+    </form>
+{{ end }}
+`,
+	"edit_post": `{{ define "title" }}Edit Post{{ end }}
+
+{{ define "content" }}
+    <h2>Edit Post</h2>
+    <form action="/posts/{{ .post.Id }}/update" method="post">
+        {{ .csrfField }}
+        {{ template "post_form" .form }}
+        <input type="submit" value="Update">
     </form>
 {{ end }}
 `,
@@ -53,14 +72,15 @@ var TplMap = map[string]string{
             <a href="/posts/{{ .post.Id }}/remove">Remove</a>
         {{- end }}
     </p>
-    here{{ .content }}
-    <form action="/todo" method="post">
-        {{ .csrf }}
+    {{ .content }}
+    <form action="/posts/{{ .post.Id }}/reply" method="post">
+        {{ .csrfField }}
         <div class="field">
             <textarea name="reply"></textarea>
         </div>
         <input type="submit" value="Reply">
     </form>
+    {{ template "reply" .replies }}
 {{ end }}`,
 	"register": `{{ define "title" }}Register{{ end }}
 
@@ -82,6 +102,28 @@ var TplMap = map[string]string{
         </div>
         <input type="submit" value="Submit">
     </form>
+{{ end }}
+`,
+	"reply": `{{ define "content" }}
+    <article>
+        From: <a href="/~{{ .reply.Author }}">{{ .reply.Author }}</a><br>
+        In: <a href="/posts/{{ .post.Id }}">{{ .post.Title }}</a><br>
+        {{ if .reply.ParentId }}
+            <a href="/replies/{{ .reply.ParentId }}">Parent</a><br>
+        {{ end }}
+        {{ .reply.Content }}
+    </article>
+    <section>
+        <form action="/replies/{{ .reply.Id }}/save" method="post">
+            {{ .csrfField }}
+            <div class="field">
+                <label for="content">Reply</label>
+                <textarea name="reply" autofocus></textarea>
+            </div>
+            <input type="submit" value="Submit">
+        </form>
+        {{ template "reply" .reply.Thread }}
+    </section>
 {{ end }}
 `,
 }
