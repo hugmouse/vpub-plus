@@ -19,6 +19,9 @@ func (h *Handler) initTpl() {
 			"hasPermission": func(name string) bool {
 				return false
 			},
+			"logged": func() bool {
+				return false
+			},
 			"gmi2html": func(gmi string) template.HTML {
 				return template.HTML(gmi2html.Convert(gmi))
 			},
@@ -33,11 +36,17 @@ func (h *Handler) renderLayout(w io.Writer, view string, params map[string]inter
 			data[k] = v
 		}
 	}
+	if user != "" {
+		data["hasNotifications"] = h.storage.UserHasNotifications(user)
+	}
 	data["logged"] = user
 	data["boardTitle"] = h.title
 	views[view].Funcs(template.FuncMap{
 		"hasPermission": func(name string) bool {
 			return user == name
+		},
+		"logged": func() bool {
+			return user != ""
 		},
 	}).ExecuteTemplate(w, "layout", data)
 }

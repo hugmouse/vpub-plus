@@ -9,10 +9,19 @@ import (
 )
 
 func (h *Handler) showNewPostView(w http.ResponseWriter, r *http.Request, user string) {
-	form := form.PostForm{}
-	form.Topics = h.topics
+	var topic string
+	if val, ok := r.URL.Query()["topic"]; ok && len(val) == 1 {
+		topic = val[0]
+	}
+	if !contains(h.topics, topic) && topic != "" {
+		notFound(w)
+		return
+	}
+	postForm := form.PostForm{}
+	postForm.Topics = h.topics
+	postForm.Topic = topic
 	h.renderLayout(w, "create_post", map[string]interface{}{
-		"form":           form,
+		"form":           postForm,
 		csrf.TemplateTag: csrf.TemplateField(r),
 	}, user)
 }

@@ -1,33 +1,29 @@
-{{ define "title "}}Post{{ end }}
-
 {{ define "content"}}
-    <h1>{{ .post.Title }}</h1>
+<h1>{{ .post.Title }}</h1>
+<div class="post-data">
+    <div>From: <a href="/~{{ .post.User }}">{{ .post.User }}</a></div>
+    <div>On: {{ .post.Date }}</div>
+    {{ if .post.Topic }}
+    <div>Topic: <a href="/topics/{{ .post.Topic }}">{{ .post.Topic }}</a></div>
+    {{ end }}
+    {{- if eq .logged .post.User }}
     <div>
-        <div>On: {{ .post.Date }}</div>
-        <div>From: <a href="/~{{ .post.User }}">{{ .post.User }}</a></div>
-        {{ if .post.Topic }}
-        <div>In: <a href="/topics/{{ .post.Topic }}">{{ .post.Topic }}</a></div>
-        {{ end }}
-        {{- if eq .logged .post.User }}
-        <div>
         <a href="/posts/{{ .post.Id }}/edit">Edit</a>
         <a href="/posts/{{ .post.Id }}/remove">Remove</a>
-        </div>
-        {{- end }}
     </div>
+    {{- end }}
+</div>
 
 <div>
     {{ gmi2html .content }}
 </div>
 
 {{ if .logged }}
-    <form action="/posts/{{ .post.Id }}/reply" method="post">
-        {{ .csrfField }}
-        <div class="field">
-            <textarea name="reply"></textarea>
-        </div>
-        <input type="submit" value="Reply">
-    </form>
+<form action="/posts/{{ .post.Id }}/reply" method="post">
+    {{ .csrfField }}
+    <textarea name="reply"></textarea>
+    <input type="submit" value="Reply">
+</form>
 {{ end }}
-    {{ template "reply" .replies }}
+{{ template "reply" .replies }}
 {{ end }}

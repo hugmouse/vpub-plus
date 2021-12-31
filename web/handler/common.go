@@ -14,8 +14,18 @@ var TplCommonMap = map[string]string{
     {{ template "head" . }}
 </head>
 <body>
-    <nav><a href="/">{{ .boardTitle }}</a></nav>
+    <header>
+        <span><a href="/">{{ .boardTitle }}</a></span>
+        <nav>
+            {{ if .logged }}
+            {{ if .hasNotifications }}<a href="/notifications" class="notifications">New replies</a> {{ end }} {{ .logged }} (<a href="/logout">logout</a>)
+            {{ else }}
+            <a href="/login">login</a> <a href="/register">register</a>
+            {{ end }}
+        </nav>
+    </header>
     {{ template "content" . }}
+    <footer><p>Powered by vpub</p></footer>
 </body>
 </html>
 {{ end }}
@@ -35,30 +45,57 @@ var TplCommonMap = map[string]string{
     <br>
 {{ end }}`,
 	"posts": `{{ define "posts" }}
-{{ range . }}
-<article>
-    <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
-    <div>{{ .User }}</div>
-    <div>{{ .Date }}</div>
-</article>
-{{ end }}
+<ol>
+    {{ if . }}
+    {{ range . }}
+    <li>
+        <article>
+            <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
+            <div>From: {{ .User }}</div>
+            <div>On: {{ .Date }}</div>
+        </article>
+    </li>
+    {{ end }}
+    {{ else }}
+    <li>No post yet</li>
+    {{ end }}
+</ol>
 {{ end }}`,
 	"reply": `{{ define "reply" }}
     {{ if . }}
-            {{ range . }}
-                <br>
-                <div class="reply">
-                    <a href="/~{{ .Author }}">{{ .Author }}</a><br>
-                    <div>{{ gmi2html .Content }}</div>
+    <ol class="replies">
+    {{ range . }}
+        <li>
+            <details class="reply" open>
+                <summary><a href="/~{{ .Author }}">{{ .Author }}</a></summary>
+                <div class="reply-content">{{ gmi2html .Content }}</div>
+                {{ if logged }}
+                <footer>
                     <a href="/replies/{{ .Id }}">reply</a>
                     {{ if hasPermission .Author }}
-                        <a href="/replies/{{ .Id }}/edit">edit</a>
-                        <a href="/replies/{{ .Id }}/remove">Remove</a>
+                    <a href="/replies/{{ .Id }}/edit">edit</a>
+                    <a href="/replies/{{ .Id }}/remove">Remove</a>
                     {{ end }}
-                    <br>
-                    {{ template "reply" .Thread }}
-                </div>
-            {{ end }}
+                </footer>
+                {{ end }}
+                {{ template "reply" .Thread }}
+            </details>
+        </li>
     {{ end }}
+    </ol>
+    {{ end }}
+{{ end }}`,
+	"topics": `{{ define "topics" }}
+{{ if .topics }}
+<nav class="topics">
+  {{ range .topics }}
+  {{ if .Selected }}
+  <span class="selected">{{ .Name }}</span>
+  {{ else }}
+  <a href="/topics/{{ .Name }}">{{ .Name }}</a>
+  {{ end }}
+  {{ end }}
+</nav>
+{{ end }}
 {{ end }}`,
 }

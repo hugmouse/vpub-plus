@@ -50,33 +50,22 @@ var TplMap = map[string]string{
     </form>
 {{ end }}
 `,
-	"index": `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/style.css"/>
-    <title>{{ .boardTitle }}</title>
-    {{ template "head" . }}
-</head>
-<body>
+	"index": `{{ define "content"}}
 <h1>{{ .boardTitle }}</h1>
-<div class="auth">
-{{ if .logged }}
-<p>{{ .logged }} (<a href="/logout">Logout</a>)</p>
-    {{ if .hasNotifications }}
-<p><b><a href="/notifications">New replies</a></b></p>
-    {{ end }}
-{{ else }}
-<p><a href="/login">Login</a> <a href="/register">Register</a></p>
-{{ end }}
-</div>
-{{ .motd }}
-<p><a href="/posts/new">write</a> <a href="/feed.atom">atom</a></p>
 
-{{ if .topics }}
-{{ range .topics }}<a href="/topics/{{ . }}">{{ . }}</a> {{ end }}
-{{ end }}
+{{ .motd }}
+
+<nav class="actions">
+    <p>
+        {{ if .logged }}
+        <a href="/posts/new">write</a>
+        {{ end }}
+        <a href="/feed.atom">atom</a>
+    </p>
+</nav>
+
+{{ template "topics" . }}
+
 <section class="posts">
 {{ template "posts" .posts }}
 {{ if .hasMore }}
@@ -85,10 +74,10 @@ var TplMap = map[string]string{
 </section>
 
 <section>
+    <h2>Users</h2>
 {{ range .users }}<a href="/~{{ . }}">{{ . }}</a> {{ end }}
 </section>
-</body>
-</html>`,
+{{ end }}`,
 	"login": `{{ define "title" }}Login{{ end }}
 
 {{ define "content" }}
@@ -147,38 +136,34 @@ var TplMap = map[string]string{
     {{ end }}
 </section>
 {{ end }}`,
-	"post": `{{ define "title "}}Post{{ end }}
-
-{{ define "content"}}
-    <h1>{{ .post.Title }}</h1>
+	"post": `{{ define "content"}}
+<h1>{{ .post.Title }}</h1>
+<div class="post-data">
+    <div>From: <a href="/~{{ .post.User }}">{{ .post.User }}</a></div>
+    <div>On: {{ .post.Date }}</div>
+    {{ if .post.Topic }}
+    <div>Topic: <a href="/topics/{{ .post.Topic }}">{{ .post.Topic }}</a></div>
+    {{ end }}
+    {{- if eq .logged .post.User }}
     <div>
-        <div>On: {{ .post.Date }}</div>
-        <div>From: <a href="/~{{ .post.User }}">{{ .post.User }}</a></div>
-        {{ if .post.Topic }}
-        <div>In: <a href="/topics/{{ .post.Topic }}">{{ .post.Topic }}</a></div>
-        {{ end }}
-        {{- if eq .logged .post.User }}
-        <div>
         <a href="/posts/{{ .post.Id }}/edit">Edit</a>
         <a href="/posts/{{ .post.Id }}/remove">Remove</a>
-        </div>
-        {{- end }}
     </div>
+    {{- end }}
+</div>
 
 <div>
     {{ gmi2html .content }}
 </div>
 
 {{ if .logged }}
-    <form action="/posts/{{ .post.Id }}/reply" method="post">
-        {{ .csrfField }}
-        <div class="field">
-            <textarea name="reply"></textarea>
-        </div>
-        <input type="submit" value="Reply">
-    </form>
+<form action="/posts/{{ .post.Id }}/reply" method="post">
+    {{ .csrfField }}
+    <textarea name="reply"></textarea>
+    <input type="submit" value="Reply">
+</form>
 {{ end }}
-    {{ template "reply" .replies }}
+{{ template "reply" .replies }}
 {{ end }}`,
 	"register": `{{ define "title" }}Register{{ end }}
 
@@ -203,21 +188,21 @@ var TplMap = map[string]string{
 {{ end }}
 `,
 	"reply": `{{ define "content" }}
+    <h1>Reply</h1>
     <article>
-        From: <a href="/~{{ .reply.Author }}">{{ .reply.Author }}</a><br>
-        In: <a href="/posts/{{ .post.Id }}">{{ .post.Title }}</a><br>
-        {{ if .reply.ParentId }}
-            <a href="/replies/{{ .reply.ParentId }}">Parent</a><br>
-        {{ end }}
-        {{ .reply.Content }}
+        <div class="post-data">
+            <div>From: <a href="/~{{ .reply.Author }}">{{ .reply.Author }}</a></div>
+            <div>Post: <a href="/posts/{{ .post.Id }}">{{ .post.Title }}</a></div>
+            {{ if .reply.ParentId }}
+            <div><a href="/replies/{{ .reply.ParentId }}">Parent</a></div>
+            {{ end }}
+        </div>
+        {{ gmi2html .reply.Content }}
     </article>
     <section>
         <form action="/replies/{{ .reply.Id }}/save" method="post">
             {{ .csrfField }}
-            <div class="field">
-                <label for="content">Reply</label>
-                <textarea name="reply" autofocus></textarea>
-            </div>
+            <textarea name="reply" autofocus></textarea>
             <input type="submit" value="Submit">
         </form>
         {{ template "reply" .reply.Thread }}
@@ -226,14 +211,18 @@ var TplMap = map[string]string{
 `,
 	"topic": `{{ define "content" }}
 <h1>{{ .topic }}</h1>
-{{ if .logged }}
-<p><a href="/posts/new">write</a> <a href="/topics/{{ .topic }}/feed.atom">atom</a></p>
-{{ end }}
-<nav>
-{{ if .topics }}
-{{ range .topics }}<a href="/topics/{{ . }}" {{ if eq . $.topic }}class="selected"{{ end }}>{{ . }}</a> {{ end }}
-{{ end }}
+
+<nav class="actions">
+    <p>
+        {{ if .logged }}
+        <a href="/posts/new?topic={{ .topic }}">write</a>
+        {{ end }}
+        <a href="/feed.atom">atom</a>
+    </p>
 </nav>
+
+{{ template "topics" . }}
+
 <section class="posts">
     {{ template "posts" .posts }}
     {{ if .hasMore }}

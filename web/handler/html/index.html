@@ -1,30 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/style.css"/>
-    <title>{{ .boardTitle }}</title>
-    {{ template "head" . }}
-</head>
-<body>
+{{ define "content"}}
 <h1>{{ .boardTitle }}</h1>
-<div class="auth">
-{{ if .logged }}
-<p>{{ .logged }} (<a href="/logout">Logout</a>)</p>
-    {{ if .hasNotifications }}
-<p><b><a href="/notifications">New replies</a></b></p>
-    {{ end }}
-{{ else }}
-<p><a href="/login">Login</a> <a href="/register">Register</a></p>
-{{ end }}
-</div>
-{{ .motd }}
-<p><a href="/posts/new">write</a> <a href="/feed.atom">atom</a></p>
 
-{{ if .topics }}
-{{ range .topics }}<a href="/topics/{{ . }}">{{ . }}</a> {{ end }}
-{{ end }}
+{{ .motd }}
+
+<nav class="actions">
+    <p>
+        {{ if .logged }}
+        <a href="/posts/new">write</a>
+        {{ end }}
+        <a href="/feed.atom">atom</a>
+    </p>
+</nav>
+
+{{ template "topics" . }}
+
 <section class="posts">
 {{ template "posts" .posts }}
 {{ if .hasMore }}
@@ -33,7 +22,7 @@
 </section>
 
 <section>
+    <h2>Users</h2>
 {{ range .users }}<a href="/~{{ . }}">{{ . }}</a> {{ end }}
 </section>
-</body>
-</html>
+{{ end }}

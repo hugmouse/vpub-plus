@@ -16,13 +16,13 @@ func contains(list []string, val string) bool {
 	return false
 }
 
+type topicTab struct {
+	Name     string
+	Selected bool
+}
+
 func (h *Handler) showTopicView(w http.ResponseWriter, r *http.Request) {
 	user, _ := h.session.Get(r)
-
-	var page int64 = 0
-	if val, ok := r.URL.Query()["page"]; ok && len(val[0]) == 1 {
-		page, _ = strconv.ParseInt(val[0], 10, 64)
-	}
 
 	topic := mux.Vars(r)["topic"]
 	if !contains(h.topics, topic) {
@@ -30,16 +30,25 @@ func (h *Handler) showTopicView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	posts, hasMore, err := h.storage.PostsTopic(topic, page, h.perPage)
+	posts, hasMore, err := h.storage.PostsTopic(topic, 1, h.perPage)
 	if err != nil {
 		serverError(w, err)
 		return
 	}
 
+	var topics []topicTab
+
+	for _, t := range h.topics {
+		topics = append(topics, topicTab{
+			Name:     t,
+			Selected: t == topic,
+		})
+	}
+
 	h.renderLayout(w, "topic", map[string]interface{}{
 		"topic":   topic,
 		"posts":   posts,
-		"topics":  h.topics,
+		"topics":  topics,
 		"hasMore": hasMore,
 	}, user)
 }

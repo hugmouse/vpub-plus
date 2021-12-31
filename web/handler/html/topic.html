@@ -1,13 +1,17 @@
 {{ define "content" }}
 <h1>{{ .topic }}</h1>
-{{ if .logged }}
-<p><a href="/posts/new">write</a> <a href="/topics/{{ .topic }}/feed.atom">atom</a></p>
-{{ end }}
-<nav>
-{{ if .topics }}
-{{ range .topics }}<a href="/topics/{{ . }}" {{ if eq . $.topic }}class="selected"{{ end }}>{{ . }}</a> {{ end }}
-{{ end }}
+
+<nav class="actions">
+    <p>
+        {{ if .logged }}
+        <a href="/posts/new?topic={{ .topic }}">write</a>
+        {{ end }}
+        <a href="/feed.atom">atom</a>
+    </p>
 </nav>
+
+{{ template "topics" . }}
+
 <section class="posts">
     {{ template "posts" .posts }}
     {{ if .hasMore }}

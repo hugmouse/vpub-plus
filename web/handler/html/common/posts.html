@@ -1,9 +1,17 @@
 {{ define "posts" }}
-{{ range . }}
-<article>
-    <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
-    <div>{{ .User }}</div>
-    <div>{{ .Date }}</div>
-</article>
-{{ end }}
+<ol>
+    {{ if . }}
+    {{ range . }}
+    <li>
+        <article>
+            <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
+            <div>From: {{ .User }}</div>
+            <div>On: {{ .Date }}</div>
+        </article>
+    </li>
+    {{ end }}
+    {{ else }}
+    <li>No post yet</li>
+    {{ end }}
+</ol>
 {{ end }}

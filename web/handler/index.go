@@ -28,14 +28,21 @@ func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 
 	hasNotifs := h.storage.UserHasNotifications(user)
 
-	h.view("index").Execute(w, map[string]interface{}{
+	var topics []topicTab
+
+	for _, t := range h.topics {
+		topics = append(topics, topicTab{
+			Name: t,
+		})
+	}
+	h.renderLayout(w, "index", map[string]interface{}{
 		"posts":            posts,
 		"hasNotifications": hasNotifs,
 		"users":            users,
-		"topics":           h.topics,
+		"topics":           topics,
 		"motd":             template.HTML(h.motd),
 		"logged":           user,
 		"hasMore":          hasMore,
 		"boardTitle":       h.title,
-	})
+	}, user)
 }

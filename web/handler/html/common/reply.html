@@ -1,18 +1,24 @@
 {{ define "reply" }}
     {{ if . }}
-            {{ range . }}
-                <br>
-                <div class="reply">
-                    <a href="/~{{ .Author }}">{{ .Author }}</a><br>
-                    <div>{{ gmi2html .Content }}</div>
+    <ol class="replies">
+    {{ range . }}
+        <li>
+            <details class="reply" open>
+                <summary><a href="/~{{ .Author }}">{{ .Author }}</a></summary>
+                <div class="reply-content">{{ gmi2html .Content }}</div>
+                {{ if logged }}
+                <footer>
                     <a href="/replies/{{ .Id }}">reply</a>
                     {{ if hasPermission .Author }}
-                        <a href="/replies/{{ .Id }}/edit">edit</a>
-                        <a href="/replies/{{ .Id }}/remove">Remove</a>
+                    <a href="/replies/{{ .Id }}/edit">edit</a>
+                    <a href="/replies/{{ .Id }}/remove">Remove</a>
                     {{ end }}
-                    <br>
-                    {{ template "reply" .Thread }}
-                </div>
-            {{ end }}
+                </footer>
+                {{ end }}
+                {{ template "reply" .Thread }}
+            </details>
+        </li>
+    {{ end }}
+    </ol>
     {{ end }}
 {{ end }}

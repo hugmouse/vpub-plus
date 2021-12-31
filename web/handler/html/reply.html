@@ -1,19 +1,19 @@
 {{ define "content" }}
+    <h1>Reply</h1>
     <article>
-        From: <a href="/~{{ .reply.Author }}">{{ .reply.Author }}</a><br>
-        In: <a href="/posts/{{ .post.Id }}">{{ .post.Title }}</a><br>
-        {{ if .reply.ParentId }}
-            <a href="/replies/{{ .reply.ParentId }}">Parent</a><br>
-        {{ end }}
-        {{ .reply.Content }}
+        <div class="post-data">
+            <div>From: <a href="/~{{ .reply.Author }}">{{ .reply.Author }}</a></div>
+            <div>Post: <a href="/posts/{{ .post.Id }}">{{ .post.Title }}</a></div>
+            {{ if .reply.ParentId }}
+            <div><a href="/replies/{{ .reply.ParentId }}">Parent</a></div>
+            {{ end }}
+        </div>
+        {{ gmi2html .reply.Content }}
     </article>
     <section>
         <form action="/replies/{{ .reply.Id }}/save" method="post">
             {{ .csrfField }}
-            <div class="field">
-                <label for="content">Reply</label>
-                <textarea name="reply" autofocus></textarea>
-            </div>
+            <textarea name="reply" autofocus></textarea>
             <input type="submit" value="Submit">
         </form>
         {{ template "reply" .reply.Thread }}
