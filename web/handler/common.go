@@ -34,13 +34,22 @@ var TplCommonMap = map[string]string{
     <textarea class="editor" name="content" id="content" required>{{ .Content }}</textarea>
     <br>
 {{ end }}`,
+	"posts": `{{ define "posts" }}
+{{ range . }}
+<article>
+    <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
+    <div>{{ .User }}</div>
+    <div>{{ .Date }}</div>
+</article>
+{{ end }}
+{{ end }}`,
 	"reply": `{{ define "reply" }}
     {{ if . }}
             {{ range . }}
                 <br>
                 <div class="reply">
                     <a href="/~{{ .Author }}">{{ .Author }}</a><br>
-                    <div class="content">{{ .Content }}</div>
+                    <div>{{ gmi2html .Content }}</div>
                     <a href="/replies/{{ .Id }}">reply</a>
                     {{ if hasPermission .Author }}
                         <a href="/replies/{{ .Id }}/edit">edit</a>
@@ -51,12 +60,5 @@ var TplCommonMap = map[string]string{
                 </div>
             {{ end }}
     {{ end }}
-{{ end }}`,
-	"topics": `{{ define "topics" }}
-{{ if . }}
-{{ range . }}
-<a href="/topics/{{ . }}">{{ . }}</a>
-{{ end }}
-{{ end }}
 {{ end }}`,
 }

@@ -1,11 +1,11 @@
 {{ define "content" }}
 <h1>{{ .user.Name }}</h1>
 
-{{- range .posts }}
-=> /posts/{{ .Id }} {{ .Date }} {{ .Title }}
-{{- end }}
+<section class="posts">
+{{ template "posts" .posts }}
 
 {{if .showMore }}
 <a href="/~{{ .user.Name }}?page={{ .nextPage }}">More</a>
 {{ end }}
+</section>
 {{ end }}

@@ -2,14 +2,25 @@
 
 {{ define "content"}}
     <h1>{{ .post.Title }}</h1>
-    <p>
-        <a href="/~{{ .post.User }}">~{{ .post.User }}</a>
+    <div>
+        <div>On: {{ .post.Date }}</div>
+        <div>From: <a href="/~{{ .post.User }}">{{ .post.User }}</a></div>
+        {{ if .post.Topic }}
+        <div>In: <a href="/topics/{{ .post.Topic }}">{{ .post.Topic }}</a></div>
+        {{ end }}
         {{- if eq .logged .post.User }}
-            <a href="/posts/{{ .post.Id }}/edit">Edit</a>
-            <a href="/posts/{{ .post.Id }}/remove">Remove</a>
+        <div>
+        <a href="/posts/{{ .post.Id }}/edit">Edit</a>
+        <a href="/posts/{{ .post.Id }}/remove">Remove</a>
+        </div>
         {{- end }}
-    </p>
-    {{ .content }}
+    </div>
+
+<div>
+    {{ gmi2html .content }}
+</div>
+
+{{ if .logged }}
     <form action="/posts/{{ .post.Id }}/reply" method="post">
         {{ .csrfField }}
         <div class="field">
@@ -17,5 +28,6 @@
         </div>
         <input type="submit" value="Reply">
     </form>
+{{ end }}
     {{ template "reply" .replies }}
 {{ end }}

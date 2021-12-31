@@ -49,14 +49,17 @@ func (s *Storage) CreatePost(post model.Post) (int64, error) {
 
 func (s *Storage) PostById(id int64) (model.Post, error) {
 	var post model.Post
+	var createdAtStr string
 	err := s.db.QueryRow(
-		`SELECT id, author, title, content, topic from posts WHERE id=$1`, id).Scan(
+		`SELECT id, author, title, content, topic, created_at from posts WHERE id=$1`, id).Scan(
 		&post.Id,
 		&post.User,
 		&post.Title,
 		&post.Content,
 		&post.Topic,
+		&createdAtStr,
 	)
+	post.CreatedAt, err = time.Parse("2006-01-02 15:04:05", createdAtStr)
 	return post, err
 }
 

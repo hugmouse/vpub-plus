@@ -75,13 +75,7 @@ var TplMap = map[string]string{
 {{ range .topics }}<a href="/topics/{{ . }}">{{ . }}</a> {{ end }}
 {{ end }}
 <section class="posts">
-{{ range .posts -}}
-    <article>
-        <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
-        <div>{{ .User }}</div>
-        <div>{{ .Date }}</div>
-    </article>
-{{ end }}
+{{ template "posts" .posts }}
 {{ if .hasMore }}
 <a href="/page/2">More</a>
 {{ end }}
@@ -133,14 +127,25 @@ var TplMap = map[string]string{
 
 {{ define "content"}}
     <h1>{{ .post.Title }}</h1>
-    <p>
-        <a href="/~{{ .post.User }}">~{{ .post.User }}</a>
+    <div>
+        <div>On: {{ .post.Date }}</div>
+        <div>From: <a href="/~{{ .post.User }}">{{ .post.User }}</a></div>
+        {{ if .post.Topic }}
+        <div>In: <a href="/topics/{{ .post.Topic }}">{{ .post.Topic }}</a></div>
+        {{ end }}
         {{- if eq .logged .post.User }}
-            <a href="/posts/{{ .post.Id }}/edit">Edit</a>
-            <a href="/posts/{{ .post.Id }}/remove">Remove</a>
+        <div>
+        <a href="/posts/{{ .post.Id }}/edit">Edit</a>
+        <a href="/posts/{{ .post.Id }}/remove">Remove</a>
+        </div>
         {{- end }}
-    </p>
-    {{ .content }}
+    </div>
+
+<div>
+    {{ gmi2html .content }}
+</div>
+
+{{ if .logged }}
     <form action="/posts/{{ .post.Id }}/reply" method="post">
         {{ .csrfField }}
         <div class="field">
@@ -148,6 +153,7 @@ var TplMap = map[string]string{
         </div>
         <input type="submit" value="Reply">
     </form>
+{{ end }}
     {{ template "reply" .replies }}
 {{ end }}`,
 	"register": `{{ define "title" }}Register{{ end }}
@@ -204,14 +210,8 @@ var TplMap = map[string]string{
 {{ range .topics }}<a href="/topics/{{ . }}" {{ if eq . $.topic }}class="selected"{{ end }}>{{ . }}</a> {{ end }}
 {{ end }}
 </nav>
-<section>
-    {{ range .posts -}}
-    <article>
-        <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
-        <div><a href="/~{{ .User }}">{{ .User }}</a></div>
-        <div>{{ .Date }}</div>
-    </article>
-    {{ end }}
+<section class="posts">
+    {{ template "posts" .posts }}
     {{ if .hasMore }}
     <a href="/page/2?topic={{ .topic }}">More</a>
     {{ end }}
@@ -220,13 +220,13 @@ var TplMap = map[string]string{
 	"user_posts": `{{ define "content" }}
 <h1>{{ .user.Name }}</h1>
 
-{{- range .posts }}
-=> /posts/{{ .Id }} {{ .Date }} {{ .Title }}
-{{- end }}
+<section class="posts">
+{{ template "posts" .posts }}
 
 {{if .showMore }}
 <a href="/~{{ .user.Name }}?page={{ .nextPage }}">More</a>
 {{ end }}
+</section>
 {{ end }}
 `,
 }

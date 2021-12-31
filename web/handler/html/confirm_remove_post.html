@@ -1,6 +1,6 @@
 {{ define "content" }}
     Are you sure you you want to delete the following post?
-    <p>{{ .post.Content }}</p>
+    <p>{{ gmi2html .post.Content }}</p>
     <form action="/posts/{{ .post.Id }}/remove" method="post">
         {{ .csrfField }}
         <input type="submit" value="Submit">

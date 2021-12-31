@@ -3,6 +3,7 @@ package handler
 import (
 	"html/template"
 	"io"
+	"pboard/gmi2html"
 )
 
 var views = make(map[string]*template.Template)
@@ -17,6 +18,9 @@ func (h *Handler) initTpl() {
 		views[name] = template.Must(template.New("main").Funcs(template.FuncMap{
 			"hasPermission": func(name string) bool {
 				return false
+			},
+			"gmi2html": func(gmi string) template.HTML {
+				return template.HTML(gmi2html.Convert(gmi))
 			},
 		}).Parse(commonTemplates + content))
 	}

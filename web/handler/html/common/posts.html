@@ -1,0 +1,9 @@
+{{ define "posts" }}
+{{ range . }}
+<article>
+    <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
+    <div>{{ .User }}</div>
+    <div>{{ .Date }}</div>
+</article>
+{{ end }}
+{{ end }}

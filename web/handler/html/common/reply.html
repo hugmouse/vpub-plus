@@ -4,7 +4,7 @@
                 <br>
                 <div class="reply">
                     <a href="/~{{ .Author }}">{{ .Author }}</a><br>
-                    <div class="content">{{ .Content }}</div>
+                    <div>{{ gmi2html .Content }}</div>
                     <a href="/replies/{{ .Id }}">reply</a>
                     {{ if hasPermission .Author }}
                         <a href="/replies/{{ .Id }}/edit">edit</a>

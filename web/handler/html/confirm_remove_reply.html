@@ -1,6 +1,6 @@
 {{ define "content" }}
     Are you sure you you want to delete the following reply?
-    <p>{{ .reply.Content }}</p>
+    <p>{{ gmi2html .reply.Content }}</p>
     <form action="/replies/{{ .reply.Id }}/remove" method="post">
         {{ .csrfField }}
         <input type="submit" value="Submit">

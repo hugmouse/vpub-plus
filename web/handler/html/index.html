@@ -23,13 +23,7 @@
 {{ range .topics }}<a href="/topics/{{ . }}">{{ . }}</a> {{ end }}
 {{ end }}
 <section class="posts">
-{{ range .posts -}}
-    <article>
-        <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
-        <div>{{ .User }}</div>
-        <div>{{ .Date }}</div>
-    </article>
-{{ end }}
+{{ template "posts" .posts }}
 {{ if .hasMore }}
 <a href="/page/2">More</a>
 {{ end }}
