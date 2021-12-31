@@ -97,7 +97,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)
 	//router.HandleFunc("/manual", h.showManual).Name("manual").Methods(http.MethodGet)
 	//router.HandleFunc("/favicon.ico", h.showFavicon).Name("favicon").Methods(http.MethodGet)
-	//router.HandleFunc("/feed.xml", h.showFeedView).Name("feed").Methods(http.MethodGet)
+	router.HandleFunc("/feed.atom", h.showFeedView).Methods(http.MethodGet)
 
 	// Auth
 	router.HandleFunc("/login", h.showLoginView).Methods(http.MethodGet)
@@ -108,6 +108,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 
 	// Topics
 	router.HandleFunc("/topics/{topic}", h.showTopicView).Methods(http.MethodGet)
+	router.HandleFunc("/topics/{topic}/feed.atom", h.showFeedViewTopic).Methods(http.MethodGet)
 
 	// Posts
 	//router.HandleFunc("/posts", h.showPostsView).Name("posts").Methods(http.MethodGet)

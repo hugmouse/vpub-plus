@@ -72,7 +72,7 @@ var TplMap = map[string]string{
 {{ end }}
 </div>
 {{ .motd }}
-<p><a href="/posts/new">write</a> <a href="">follow</a></p>
+<p><a href="/posts/new">write</a> <a href="/feed.atom">atom</a></p>
 
 {{ if .topics }}
 {{ range .topics }}<a href="/topics/{{ . }}">{{ . }}</a> {{ end }}
@@ -227,7 +227,7 @@ var TplMap = map[string]string{
 	"topic": `{{ define "content" }}
 <h1>{{ .topic }}</h1>
 {{ if .logged }}
-<p><a href="/posts/new">write</a> <a href="">follow</a></p>
+<p><a href="/posts/new">write</a> <a href="/topics/{{ .topic }}/feed.atom">atom</a></p>
 {{ end }}
 <nav>
 {{ if .topics }}
