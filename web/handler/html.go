@@ -5,7 +5,7 @@ package handler
 var TplMap = map[string]string{
 	"confirm_remove_post": `{{ define "content" }}
     Are you sure you you want to delete the following post?
-    <p>{{ .post.Content }}</p>
+    <p>{{ gmi2html .post.Content }}</p>
     <form action="/posts/{{ .post.Id }}/remove" method="post">
         {{ .csrfField }}
         <input type="submit" value="Submit">
@@ -13,7 +13,7 @@ var TplMap = map[string]string{
 {{ end }}`,
 	"confirm_remove_reply": `{{ define "content" }}
     Are you sure you you want to delete the following reply?
-    <p>{{ .reply.Content }}</p>
+    <p>{{ gmi2html .reply.Content }}</p>
     <form action="/replies/{{ .reply.Id }}/remove" method="post">
         {{ .csrfField }}
         <input type="submit" value="Submit">
@@ -64,6 +64,9 @@ var TplMap = map[string]string{
 <div class="auth">
 {{ if .logged }}
 <p>{{ .logged }} (<a href="/logout">Logout</a>)</p>
+    {{ if .hasNotifications }}
+<p><b><a href="/notifications">New replies</a></b></p>
+    {{ end }}
 {{ else }}
 <p><a href="/login">Login</a> <a href="/register">Register</a></p>
 {{ end }}
@@ -102,6 +105,27 @@ var TplMap = map[string]string{
     </div>
     <input type="submit" value="Login">
 </form>
+{{ end }}`,
+	"notifications": `{{ define "content" }}
+<h2>Notifications</h2>
+<form action="/notifications/mark-all-read" method="POST">
+    {{ $.csrfField }}
+    <input class="button" type="submit" value="mark all read">
+</form>
+{{ range .notifications }}
+<div>
+    From: <a href="/~{{ .Reply.Author }}">{{ .Reply.Author }}</a><br>
+    In: <a href="/posts/{{ .Reply.PostId }}">{{ .Reply.PostTitle }}</a><br>
+    <a href="/replies/{{ .Reply.Id }}">Reply</a>
+    {{ gmi2html .Reply.Content }}
+    <footer>
+        <form action="/notifications/{{ .Id }}/mark-read" method="POST">
+        {{ $.csrfField }}
+        <input class="button" type="submit" value="mark as read">
+        </form>
+    </footer>
+</div>
+{{ end }}
 {{ end }}`,
 	"paginate": `{{ define "content" }}
 <p>Page {{ .page }}{{ if .topic }} of <a href="/topics/{{ .topic }}">{{ .topic }}</a>{{ end }}</p>

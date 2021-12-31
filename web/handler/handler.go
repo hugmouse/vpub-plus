@@ -27,11 +27,6 @@ func RouteInt64Param(r *http.Request, param string) int64 {
 	return value
 }
 
-func writeHTML(w http.ResponseWriter, body []byte) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Write(body)
-}
-
 func forbidden(w http.ResponseWriter) {
 	http.Error(w, "Forbidden", http.StatusForbidden)
 }
@@ -58,34 +53,6 @@ type Handler struct {
 	motd    []byte
 	topics  []string
 	perPage int
-}
-
-func (h *Handler) Get(name string, args ...interface{}) string {
-	route := h.mux.Get(name)
-	if route == nil {
-		log.Fatalf("[ui] Route not found: %s", name)
-	}
-
-	var pairs []string
-	for _, param := range args {
-		switch param.(type) {
-		case string:
-			pairs = append(pairs, param.(string))
-		case int64:
-			val := param.(int64)
-			pairs = append(pairs, strconv.FormatInt(val, 10))
-		case *int64:
-			val := param.(*int64)
-			pairs = append(pairs, strconv.FormatInt(*val, 10))
-		}
-	}
-
-	result, err := route.URLPath(pairs...)
-	if err != nil {
-		log.Fatalf("[ui] route %s: %v", name, err)
-	}
-
-	return result.String()
 }
 
 func (h *Handler) protect(fn ProtectedFunc) http.HandlerFunc {
@@ -163,8 +130,9 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	router.HandleFunc("/replies/{replyId}/remove", h.protect(h.handleRemoveReply)).Name("removeReply")
 	//
 	//// Notifications
-	//router.HandleFunc("/notifications", h.protect(h.showNotificationsView)).Name("notifications").Methods(http.MethodGet)
-	//router.HandleFunc("/notifications/{notificationId}/mark-read", h.protect(h.markRead)).Name("markRead").Methods(http.MethodPost)
+	router.HandleFunc("/notifications", h.protect(h.showNotificationsView)).Methods(http.MethodGet)
+	router.HandleFunc("/notifications/{notificationId}/mark-read", h.protect(h.markRead)).Methods(http.MethodPost)
+	router.HandleFunc("/notifications/mark-all-read", h.protect(h.markAllRead)).Methods(http.MethodPost)
 	//
 	//// User
 	router.HandleFunc("/~{userId}", h.showUserPostsView).Methods(http.MethodGet)

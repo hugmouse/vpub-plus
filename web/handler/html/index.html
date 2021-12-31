@@ -12,6 +12,9 @@
 <div class="auth">
 {{ if .logged }}
 <p>{{ .logged }} (<a href="/logout">Logout</a>)</p>
+    {{ if .hasNotifications }}
+<p><b><a href="/notifications">New replies</a></b></p>
+    {{ end }}
 {{ else }}
 <p><a href="/login">Login</a> <a href="/register">Register</a></p>
 {{ end }}

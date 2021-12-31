@@ -31,8 +31,8 @@ create table replies
     post_id int references posts(id) NOT NULL,
     parent_id int references replies(id),
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    foreign key (post_id) references posts(id) ON DELETE RESTRICT,
-    foreign key (parent_id) references replies(id) ON DELETE RESTRICT
+    foreign key (post_id) references posts(id),
+    foreign key (parent_id) references replies(id)
 );
 
 -- create notification table
@@ -41,8 +41,8 @@ create table notifications
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     author text references users(name),
     reply_id int references replies(id),
-    foreign key (author) references users(name) ON DELETE RESTRICT,
-    foreign key (reply_id) references replies(id) ON DELETE RESTRICT
+    foreign key (author) references users(name),
+    foreign key (reply_id) references replies(id)
 );
 
 -- indices

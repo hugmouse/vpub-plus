@@ -1,0 +1,21 @@
+{{ define "content" }}
+<h2>Notifications</h2>
+<form action="/notifications/mark-all-read" method="POST">
+    {{ $.csrfField }}
+    <input class="button" type="submit" value="mark all read">
+</form>
+{{ range .notifications }}
+<div>
+    From: <a href="/~{{ .Reply.Author }}">{{ .Reply.Author }}</a><br>
+    In: <a href="/posts/{{ .Reply.PostId }}">{{ .Reply.PostTitle }}</a><br>
+    <a href="/replies/{{ .Reply.Id }}">Reply</a>
+    {{ gmi2html .Reply.Content }}
+    <footer>
+        <form action="/notifications/{{ .Id }}/mark-read" method="POST">
+        {{ $.csrfField }}
+        <input class="button" type="submit" value="mark as read">
+        </form>
+    </footer>
+</div>
+{{ end }}
+{{ end }}

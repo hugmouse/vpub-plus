@@ -43,6 +43,15 @@ func (s *Storage) DeleteNotification(id int64) error {
 	return err
 }
 
+func (s *Storage) DeleteNotificationsFromUser(user string) error {
+	stmt, err := s.db.Prepare(`DELETE from notifications WHERE author = $1;`)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(user)
+	return err
+}
+
 func (s *Storage) DeleteNotificationByReplyId(id int64) error {
 	stmt, err := s.db.Prepare(`DELETE from notifications WHERE reply_id = $1;`)
 	if err != nil {
