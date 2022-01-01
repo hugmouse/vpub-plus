@@ -3,8 +3,8 @@ package handler
 import (
 	"github.com/gorilla/csrf"
 	"net/http"
-	"pboard/model"
-	"pboard/web/handler/form"
+	"vpub/model"
+	"vpub/web/handler/form"
 )
 
 func (h *Handler) showLoginView(w http.ResponseWriter, r *http.Request) {

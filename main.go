@@ -3,9 +3,9 @@ package main
 
 import (
 	"log"
-	"pboard/config"
-	"pboard/storage"
-	"pboard/web"
+	"vpub/config"
+	"vpub/storage"
+	"vpub/web"
 )
 
 func main() {
@@ -15,8 +15,6 @@ func main() {
 		log.Fatal(err)
 	}
 	data := storage.New(db)
-	//go gemini.Start(data)
-	//go gopher.Start(data)
 	log.Fatal(
 		web.Serve(cfg, data),
 	)

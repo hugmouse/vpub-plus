@@ -4,10 +4,10 @@ import (
 	"errors"
 	"github.com/gorilla/sessions"
 	"net/http"
-	"pboard/storage"
+	"vpub/storage"
 )
 
-const cookieName = "pboard"
+const cookieName = "vpub"
 
 type Session struct {
 	Store   *sessions.CookieStore

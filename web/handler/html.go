@@ -119,13 +119,7 @@ var TplMap = map[string]string{
 	"paginate": `{{ define "content" }}
 <p>Page {{ .page }}{{ if .topic }} of <a href="/topics/{{ .topic }}">{{ .topic }}</a>{{ end }}</p>
 <section>
-    {{ range .posts -}}
-    <article>
-        <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
-        <div>{{ .User }}</div>
-        <div>{{ .Date }}</div>
-    </article>
-    {{ end }}
+    {{ template "posts" .posts }}
 
     {{ if .hasMore }}
     {{ if .topic }}

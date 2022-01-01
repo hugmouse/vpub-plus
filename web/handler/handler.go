@@ -7,10 +7,10 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"pboard/config"
-	"pboard/storage"
-	"pboard/web/session"
 	"strconv"
+	"vpub/config"
+	"vpub/storage"
+	"vpub/web/session"
 )
 
 func RouteInt64Param(r *http.Request, param string) int64 {

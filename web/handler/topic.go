@@ -3,8 +3,8 @@ package handler
 import (
 	"github.com/gorilla/mux"
 	"net/http"
-	"pboard/model"
 	"strconv"
+	"vpub/model"
 )
 
 func contains(list []string, val string) bool {
@@ -30,7 +30,7 @@ func (h *Handler) showTopicView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	posts, hasMore, err := h.storage.PostsTopic(topic, 1, h.perPage)
+	posts, hasMore, err := h.storage.PostsTopicWithReplyCount(topic, 1, h.perPage)
 	if err != nil {
 		serverError(w, err)
 		return
@@ -74,9 +74,9 @@ func (h *Handler) showPageNumber(w http.ResponseWriter, r *http.Request) {
 	var hasMore bool
 	var err error
 	if topic != "" {
-		posts, hasMore, err = h.storage.PostsTopic(topic, page, h.perPage)
+		posts, hasMore, err = h.storage.PostsTopicWithReplyCount(topic, page, h.perPage)
 	} else {
-		posts, hasMore, err = h.storage.Posts(page, h.perPage)
+		posts, hasMore, err = h.storage.PostsWithReplyCount(page, h.perPage)
 	}
 
 	if err != nil {

@@ -2,10 +2,10 @@ package storage
 
 import (
 	"database/sql"
-	"pboard/model"
 	"strconv"
 	"strings"
 	"time"
+	"vpub/model"
 )
 
 type postQueryBuilder struct {
@@ -33,6 +33,17 @@ func (s *Storage) populatePost(rows *sql.Rows) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
 	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &post.Topic)
+	post.CreatedAt, err = time.Parse("2006-01-02 15:04:05", createdAtStr)
+	if err != nil {
+		return post, err
+	}
+	return post, nil
+}
+
+func (s *Storage) populatePostWithReply(rows *sql.Rows) (model.Post, error) {
+	var post model.Post
+	var createdAtStr string
+	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &post.Topic, &post.Replies)
 	post.CreatedAt, err = time.Parse("2006-01-02 15:04:05", createdAtStr)
 	if err != nil {
 		return post, err
@@ -78,6 +89,59 @@ func (s *Storage) PostsByUsername(user string, perPage int, page int64) ([]model
 		if err != nil {
 			return posts, false, err
 		}
+		posts = append(posts, post)
+	}
+	if len(posts) > perPage {
+		return posts[0:perPage], true, err
+	}
+	return posts, false, err
+}
+
+func (s *Storage) PostsWithReplyCount(page int64, perPage int) ([]model.Post, bool, error) {
+	rows, err := s.db.Query(`
+        select
+            id, author, title, created_at, topic, coalesce(replies, 0)
+        from
+            posts
+        left join (select post_id, count(post_id) replies from replies group by post_id) r on
+            r.post_id = posts.id
+        ORDER BY created_at desc LIMIT $1 OFFSET $2;`, strconv.Itoa(perPage+1), (page-1)*int64(perPage))
+	if err != nil {
+		return nil, false, err
+	}
+	var posts []model.Post
+	for rows.Next() {
+		post, err := s.populatePostWithReply(rows)
+		if err != nil {
+			return posts, false, err
+		}
+		posts = append(posts, post)
+	}
+	if len(posts) > perPage {
+		return posts[0:perPage], true, err
+	}
+	return posts, false, err
+}
+
+func (s *Storage) PostsTopicWithReplyCount(topic string, page int64, perPage int) ([]model.Post, bool, error) {
+	rows, err := s.db.Query(`
+        select
+            id, author, title, created_at, topic, coalesce(replies, 0)
+        from
+            posts
+        left join (select post_id, count(post_id) replies from replies group by post_id) r on
+            r.post_id = posts.id
+        where topic=$1 ORDER BY created_at desc LIMIT $2 OFFSET $3;`, topic, strconv.Itoa(perPage+1), (page-1)*int64(perPage))
+	if err != nil {
+		return nil, false, err
+	}
+	var posts []model.Post
+	for rows.Next() {
+		post, err := s.populatePostWithReply(rows)
+		if err != nil {
+			return posts, false, err
+		}
+		post.Topic = ""
 		posts = append(posts, post)
 	}
 	if len(posts) > perPage {

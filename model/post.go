@@ -10,7 +10,7 @@ type Post struct {
 	User      string
 	Title     string
 	Content   string
-	Comments  int
+	Replies   int
 	CreatedAt time.Time
 	Topic     string
 }

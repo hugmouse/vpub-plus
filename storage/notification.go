@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"pboard/model"
+	"vpub/model"
 )
 
 func (s *Storage) NotificationsByUser(user string) ([]model.Notification, error) {

@@ -5,10 +5,10 @@ import (
 	"github.com/gorilla/csrf"
 	"log"
 	"net/http"
-	"pboard/config"
-	"pboard/storage"
-	"pboard/web/handler"
-	"pboard/web/session"
+	"vpub/config"
+	"vpub/storage"
+	"vpub/web/handler"
+	"vpub/web/session"
 )
 
 func Serve(cfg *config.Config, data *storage.Storage) error {

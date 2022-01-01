@@ -4,8 +4,8 @@ import (
 	"errors"
 	"github.com/gorilla/csrf"
 	"net/http"
-	"pboard/model"
-	"pboard/web/handler/form"
+	"vpub/model"
+	"vpub/web/handler/form"
 )
 
 func (h *Handler) showRegisterView(w http.ResponseWriter, r *http.Request) {

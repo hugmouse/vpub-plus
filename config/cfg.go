@@ -28,11 +28,14 @@ func New() *Config {
 		CSSFile:      os.Getenv("CSS_FILE"),
 		Title:        os.Getenv("TITLE"),
 		MOTDFile:     os.Getenv("MOTD_FILE"),
+		Host:         os.Getenv("HOST"),
 		Topics:       strings.Split(os.Getenv("TOPICS"), ","),
 	}
-	cfg.Host = os.Getenv("HOST")
 	if os.Getenv("HOST") == "" {
 		cfg.Host = "localhost:8080"
+	}
+	if os.Getenv("TOPICS") == "" {
+		cfg.Topics = []string{}
 	}
 	perPage, _ := strconv.Atoi(os.Getenv("PER_PAGE"))
 	cfg.PerPage = perPage

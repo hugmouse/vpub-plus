@@ -3,7 +3,7 @@ package handler
 import (
 	"html/template"
 	"io"
-	"pboard/gmi2html"
+	"vpub/gmi2html"
 )
 
 var views = make(map[string]*template.Template)

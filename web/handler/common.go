@@ -53,6 +53,16 @@ var TplCommonMap = map[string]string{
             <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
             <div>From: {{ .User }}</div>
             <div>On: {{ .Date }}</div>
+            {{ if .Topic }}
+            <div>Topic: <a href="/topics/{{ .Topic }}">{{ .Topic }}</a></div>
+            {{ end }}
+            {{ if .Replies }}
+            {{ if eq .Replies 1 }}
+            <div>1 reply</div>
+            {{ else }}
+            <div>{{ .Replies }} replies</div>
+            {{ end }}
+            {{ end }}
         </article>
     </li>
     {{ end }}

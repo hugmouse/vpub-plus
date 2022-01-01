@@ -14,7 +14,7 @@ func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 		page, _ = strconv.ParseInt(val[0], 10, 64)
 	}
 
-	posts, hasMore, err := h.storage.Posts(page, h.perPage)
+	posts, hasMore, err := h.storage.PostsWithReplyCount(page, h.perPage)
 	if err != nil {
 		serverError(w, err)
 		return

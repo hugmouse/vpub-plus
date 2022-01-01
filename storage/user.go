@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"pboard/model"
+	"vpub/model"
 )
 
 const queryFindName = `SELECT name, hash, about FROM users WHERE name=lower($1);`

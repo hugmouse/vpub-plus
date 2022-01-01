@@ -1,4 +1,4 @@
-module pboard
+module vpub
 
 go 1.16
 

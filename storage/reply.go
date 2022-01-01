@@ -3,7 +3,7 @@ package storage
 import (
 	"context"
 	"database/sql"
-	"pboard/model"
+	"vpub/model"
 )
 
 func (s *Storage) populateReply(rows *sql.Rows) (model.Reply, error) {
