@@ -19,7 +19,7 @@ func (s *Storage) NotificationsByUser(user string) ([]model.Notification, error)
 	var notifications []model.Notification
 	for rows.Next() {
 		var notification model.Notification
-		err := rows.Scan(&notification.Id, &notification.Reply.Id, &notification.Reply.Author, &notification.Reply.Content, &notification.Reply.PostId, &notification.Reply.ParentId, &notification.Reply.PostTitle)
+		err := rows.Scan(&notification.Id, &notification.Reply.Id, &notification.Reply.User, &notification.Reply.Content, &notification.Reply.PostId, &notification.Reply.ParentId, &notification.Reply.PostTitle)
 		if err != nil {
 			return notifications, err
 		}

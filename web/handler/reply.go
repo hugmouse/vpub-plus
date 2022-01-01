@@ -16,7 +16,7 @@ func (h *Handler) saveReplyReply(w http.ResponseWriter, r *http.Request, user st
 	}
 	replyForm := form.NewReplyForm(r)
 	reply := model.Reply{
-		Author:   user,
+		User:     user,
 		Content:  replyForm.Content,
 		PostId:   parent.PostId,
 		ParentId: &parent.Id,
@@ -25,7 +25,7 @@ func (h *Handler) saveReplyReply(w http.ResponseWriter, r *http.Request, user st
 		serverError(w, err)
 		return
 	}
-	if parent.Author != reply.Author {
+	if parent.User != reply.User {
 		if err := h.storage.DeleteNotificationByReplyId(*reply.ParentId); err != nil {
 			serverError(w, err)
 			return
@@ -37,7 +37,7 @@ func (h *Handler) saveReplyReply(w http.ResponseWriter, r *http.Request, user st
 func (h *Handler) savePostReply(w http.ResponseWriter, r *http.Request, user string) {
 	replyForm := form.NewReplyForm(r)
 	reply := model.Reply{
-		Author:  user,
+		User:    user,
 		Content: replyForm.Content,
 		PostId:  RouteInt64Param(r, "postId"),
 	}

@@ -8,7 +8,9 @@ import (
 
 func (s *Storage) populateReply(rows *sql.Rows) (model.Reply, error) {
 	var reply model.Reply
-	err := rows.Scan(&reply.Id, &reply.Author, &reply.Content, &reply.PostId, &reply.ParentId, &reply.Comments)
+	var createdAtStr string
+	err := rows.Scan(&reply.Id, &reply.User, &reply.Content, &reply.PostId, &reply.ParentId, &reply.Comments, &createdAtStr)
+	reply.CreatedAt, err = parseCreatedAt(createdAtStr)
 	if err != nil {
 		return reply, err
 	}
@@ -23,7 +25,7 @@ func (s *Storage) CreateReply(reply model.Reply) (int64, error) {
 		return lid, err
 	}
 	if err := tx.QueryRowContext(ctx, `INSERT INTO replies (author, content, post_id, parent_id) VALUES ($1, $2, $3, $4) RETURNING id`,
-		reply.Author, reply.Content, reply.PostId, reply.ParentId).Scan(&lid); err != nil {
+		reply.User, reply.Content, reply.PostId, reply.ParentId).Scan(&lid); err != nil {
 		tx.Rollback()
 		return lid, err
 	}
@@ -34,7 +36,7 @@ func (s *Storage) CreateReply(reply model.Reply) (int64, error) {
 			tx.Rollback()
 			return lid, nil
 		}
-		author = parent.Author
+		author = parent.User
 	} else {
 		parent, err := s.PostById(reply.PostId)
 		if err != nil {
@@ -43,7 +45,7 @@ func (s *Storage) CreateReply(reply model.Reply) (int64, error) {
 		}
 		author = parent.User
 	}
-	if author != reply.Author {
+	if author != reply.User {
 		if _, err := tx.ExecContext(ctx, `INSERT into notifications (author, reply_id) values ($1, $2)`, author, lid); err != nil {
 			tx.Rollback()
 			return lid, err
@@ -72,7 +74,7 @@ func (s *Storage) RepliesByUsername(name string, page int64) ([]model.Reply, boo
 	var replies []model.Reply
 	for rows.Next() {
 		var reply model.Reply
-		err := rows.Scan(&reply.Id, &reply.Author, &reply.Content, &reply.PostId, &reply.ParentId, &reply.PostTitle)
+		err := rows.Scan(&reply.Id, &reply.User, &reply.Content, &reply.PostId, &reply.ParentId, &reply.PostTitle)
 		if err != nil {
 			return replies, false, err
 		}
@@ -87,7 +89,7 @@ func (s *Storage) RepliesByUsername(name string, page int64) ([]model.Reply, boo
 func (s *Storage) RepliesByPostId(postId int64) ([]model.Reply, error) {
 	q := `
 		SELECT
-		   r.id, r.author, r.content, r.post_id, r.parent_id, coalesce(count(s.id), 0) from replies r
+		   r.id, r.author, r.content, r.post_id, r.parent_id, coalesce(count(s.id), 0), r.created_at from replies r
 		LEFT JOIN replies s ON r.id = s.parent_id
 		WHERE r.post_id=$1 AND r.parent_id IS NULL
 		GROUP BY r.id
@@ -103,7 +105,9 @@ func (s *Storage) RepliesByPostId(postId int64) ([]model.Reply, error) {
 	for rows.Next() {
 		var reply model.Reply
 		var count int
-		rows.Scan(&reply.Id, &reply.Author, &reply.Content, &reply.PostId, &reply.ParentId, &count)
+		var createdAtStr string
+		rows.Scan(&reply.Id, &reply.User, &reply.Content, &reply.PostId, &reply.ParentId, &count, &createdAtStr)
+		reply.CreatedAt, err = parseCreatedAt(createdAtStr)
 		if count > 0 {
 			reply.Thread, err = s.RepliesByParentId(reply.Id)
 			if err != nil {
@@ -118,7 +122,7 @@ func (s *Storage) RepliesByPostId(postId int64) ([]model.Reply, error) {
 func (s *Storage) RepliesByParentId(parentId int64) ([]model.Reply, error) {
 	q := `
 		SELECT
-			r.id, r.author, r.content, r.post_id, r.parent_id, coalesce(count(s.id), 0) from replies r
+			r.id, r.author, r.content, r.post_id, r.parent_id, coalesce(count(s.id), 0), r.created_at from replies r
 		LEFT JOIN replies s ON r.id = s.parent_id
 		WHERE r.parent_id=$1
 		GROUP BY r.id
@@ -149,14 +153,17 @@ func (s *Storage) RepliesByParentId(parentId int64) ([]model.Reply, error) {
 
 func (s *Storage) ReplyById(id int64) (model.Reply, error) {
 	var reply model.Reply
+	var createdAtStr string
 	err := s.db.QueryRow(
-		`SELECT id, author, content, post_id, parent_id from replies WHERE id=$1`, id).Scan(
+		`SELECT id, author, content, post_id, parent_id, created_at from replies WHERE id=$1`, id).Scan(
 		&reply.Id,
-		&reply.Author,
+		&reply.User,
 		&reply.Content,
 		&reply.PostId,
 		&reply.ParentId,
+		&createdAtStr,
 	)
+	reply.CreatedAt, err = parseCreatedAt(createdAtStr)
 	return reply, err
 }
 

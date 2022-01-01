@@ -66,7 +66,7 @@ var TplMap = map[string]string{
 
 {{ template "topics" . }}
 
-<section class="posts">
+<section>
 {{ template "posts" .posts }}
 {{ if .hasMore }}
 <a href="/page/2">More</a>
@@ -132,24 +132,25 @@ var TplMap = map[string]string{
 {{ end }}`,
 	"post": `{{ define "content"}}
 <h1>{{ .post.Title }}</h1>
-<div class="post-data">
-    <div>From: <a href="/~{{ .post.User }}">{{ .post.User }}</a></div>
-    <div>On: {{ .post.Date }}</div>
-    {{ if .post.Topic }}
-    <div>Topic: <a href="/topics/{{ .post.Topic }}">{{ .post.Topic }}</a></div>
+<div class="meta">
+    {{ with .post }}
+    <ul class="key-value">
+        <li><span class="key">From: </span><span class="value"><a href="/~{{ .User }}">{{ .User }}</a></span></li>
+        <li><span class="key">On: </span><span class="value">{{ .Date }}</span></li>
+        {{ if .Topic }}<li><span class="key">Topic: </span><span class="value"><a href="/topics/{{ .Topic }}">{{ .Topic }}</a></span></li>{{ end }}
+    </ul>
     {{ end }}
-    {{- if eq .logged .post.User }}
-    <div>
-        <a href="/posts/{{ .post.Id }}/edit">Edit</a>
-        <a href="/posts/{{ .post.Id }}/remove">Remove</a>
-    </div>
-    {{- end }}
 </div>
 
 <div>
     {{ gmi2html .content }}
 </div>
-
+{{- if eq .logged .post.User }}
+<p>
+    <a href="/posts/{{ .post.Id }}/edit">Edit</a>
+    <a href="/posts/{{ .post.Id }}/remove">Remove</a>
+</p>
+{{- end }}
 {{ if .logged }}
 <form action="/posts/{{ .post.Id }}/reply" method="post">
     {{ .csrfField }}
@@ -184,12 +185,15 @@ var TplMap = map[string]string{
 	"reply": `{{ define "content" }}
     <h1>Reply</h1>
     <article>
-        <div class="post-data">
-            <div>From: <a href="/~{{ .reply.Author }}">{{ .reply.Author }}</a></div>
-            <div>Post: <a href="/posts/{{ .post.Id }}">{{ .post.Title }}</a></div>
-            {{ if .reply.ParentId }}
-            <div><a href="/replies/{{ .reply.ParentId }}">Parent</a></div>
-            {{ end }}
+        <div class="meta">
+            <ul class="key-value">
+                <li><span class="key">From: </span><span class="value"><a href="/~{{ .post.User }}">{{ .post.User }}</a></span></li>
+                <li><span class="key">On: </span><span class="value">{{ .post.Date }}</span></li>
+                <li><span class="key">Post: </span><span class="value"><a href="/posts/{{ .post.Id }}">{{ .post.Title }}</a></span></li>
+                <li><span class="key">Parent: </span><span class="value">
+                    {{ if .reply.ParentId }}<a href="/replies/{{ .reply.ParentId }}">view</a>{{ else }}view{{end}}
+                </span></li>
+            </ul>
         </div>
         {{ gmi2html .reply.Content }}
     </article>

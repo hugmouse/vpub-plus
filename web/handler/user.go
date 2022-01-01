@@ -18,7 +18,7 @@ func (h *Handler) showUserPostsView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	posts, showMore, err := h.storage.PostsByUsername(user.Name, h.perPage, page)
+	posts, showMore, err := h.storage.PostsByUsernameWithReplyCount(user.Name, h.perPage, page)
 	if err != nil {
 		serverError(w, err)
 		return

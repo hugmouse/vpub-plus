@@ -1,12 +1,15 @@
 {{ define "content" }}
     <h1>Reply</h1>
     <article>
-        <div class="post-data">
-            <div>From: <a href="/~{{ .reply.Author }}">{{ .reply.Author }}</a></div>
-            <div>Post: <a href="/posts/{{ .post.Id }}">{{ .post.Title }}</a></div>
-            {{ if .reply.ParentId }}
-            <div><a href="/replies/{{ .reply.ParentId }}">Parent</a></div>
-            {{ end }}
+        <div class="meta">
+            <ul class="key-value">
+                <li><span class="key">From: </span><span class="value"><a href="/~{{ .post.User }}">{{ .post.User }}</a></span></li>
+                <li><span class="key">On: </span><span class="value">{{ .post.Date }}</span></li>
+                <li><span class="key">Post: </span><span class="value"><a href="/posts/{{ .post.Id }}">{{ .post.Title }}</a></span></li>
+                <li><span class="key">Parent: </span><span class="value">
+                    {{ if .reply.ParentId }}<a href="/replies/{{ .reply.ParentId }}">view</a>{{ else }}view{{end}}
+                </span></li>
+            </ul>
         </div>
         {{ gmi2html .reply.Content }}
     </article>

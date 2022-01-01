@@ -33,7 +33,7 @@ func (s *Storage) populatePost(rows *sql.Rows) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
 	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &post.Topic)
-	post.CreatedAt, err = time.Parse("2006-01-02 15:04:05", createdAtStr)
+	post.CreatedAt, err = parseCreatedAt(createdAtStr)
 	if err != nil {
 		return post, err
 	}
@@ -44,7 +44,7 @@ func (s *Storage) populatePostWithReply(rows *sql.Rows) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
 	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &post.Topic, &post.Replies)
-	post.CreatedAt, err = time.Parse("2006-01-02 15:04:05", createdAtStr)
+	post.CreatedAt, err = parseCreatedAt(createdAtStr)
 	if err != nil {
 		return post, err
 	}
@@ -56,6 +56,10 @@ func (s *Storage) CreatePost(post model.Post) (int64, error) {
 	err := s.db.QueryRow(`INSERT INTO posts (author, title, content, topic) VALUES ($1, $2, $3, $4) RETURNING id`,
 		post.User, post.Title, post.Content, post.Topic).Scan(&lid)
 	return lid, err
+}
+
+func parseCreatedAt(createdAt string) (time.Time, error) {
+	return time.Parse("2006-01-02 15:04:05", createdAt)
 }
 
 func (s *Storage) PostById(id int64) (model.Post, error) {
@@ -70,7 +74,7 @@ func (s *Storage) PostById(id int64) (model.Post, error) {
 		&post.Topic,
 		&createdAtStr,
 	)
-	post.CreatedAt, err = time.Parse("2006-01-02 15:04:05", createdAtStr)
+	post.CreatedAt, err = parseCreatedAt(createdAtStr)
 	return post, err
 }
 
@@ -86,6 +90,32 @@ func (s *Storage) PostsByUsername(user string, perPage int, page int64) ([]model
 	var posts []model.Post
 	for rows.Next() {
 		post, err := s.populatePost(rows)
+		if err != nil {
+			return posts, false, err
+		}
+		posts = append(posts, post)
+	}
+	if len(posts) > perPage {
+		return posts[0:perPage], true, err
+	}
+	return posts, false, err
+}
+
+func (s *Storage) PostsByUsernameWithReplyCount(user string, perPage int, page int64) ([]model.Post, bool, error) {
+	rows, err := s.db.Query(`
+        select
+            id, author, title, created_at, topic, coalesce(replies, 0)
+        from
+            posts
+        left join (select post_id, count(post_id) replies from replies group by post_id) r on
+            r.post_id = posts.id
+        where author=$1 ORDER BY created_at desc LIMIT $2 OFFSET $3;`, user, strconv.Itoa(perPage+1), (page-1)*int64(perPage))
+	if err != nil {
+		return nil, false, err
+	}
+	var posts []model.Post
+	for rows.Next() {
+		post, err := s.populatePostWithReply(rows)
 		if err != nil {
 			return posts, false, err
 		}

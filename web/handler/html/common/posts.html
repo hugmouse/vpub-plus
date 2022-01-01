@@ -1,23 +1,15 @@
 {{ define "posts" }}
-<ol>
+<ol class="posts">
     {{ if . }}
     {{ range . }}
     <li>
-        <article>
-            <div><a href="/posts/{{ .Id }}">{{ .Title }}</a></div>
-            <div>From: {{ .User }}</div>
-            <div>On: {{ .Date }}</div>
-            {{ if .Topic }}
-            <div>Topic: <a href="/topics/{{ .Topic }}">{{ .Topic }}</a></div>
-            {{ end }}
-            {{ if .Replies }}
-            {{ if eq .Replies 1 }}
-            <div>1 reply</div>
-            {{ else }}
-            <div>{{ .Replies }} replies</div>
-            {{ end }}
-            {{ end }}
-        </article>
+        <h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2>
+        <ul class="key-value">
+            <li><span class="key">From: </span><span class="value"><a href="/~{{ .User }}">{{ .User }}</a></span></li>
+            <li><span class="key">On: </span><span class="value">{{ .Date }}</span></li>
+            {{ if .Topic }}<li><span class="key">Topic: </span><span class="value"><a href="/topics/{{ .Topic }}">{{ .Topic }}</a></span></li>{{ end }}
+            <li><span class="key">Replies: </span><span class="value">{{ .Replies }}</span></li>
+        </ul>
     </li>
     {{ end }}
     {{ else }}
