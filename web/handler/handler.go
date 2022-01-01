@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"vpub/assets"
 	"vpub/config"
 	"vpub/storage"
 	"vpub/web/session"
@@ -79,23 +80,16 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 
 	// Read and cache css
 	cssFile, _ := os.Open(cfg.CSSFile)
-	b, err := io.ReadAll(cssFile)
-	if err != nil {
-		fmt.Println("Couldn't read CSS file. Set CSS_FILE. Value: ", cfg.CSSFile)
-	}
-	h.css = b
+	b, _ := io.ReadAll(cssFile)
+	h.css = []byte(assets.AssetsMap["style"] + "\n" + string(b))
 	// Read and cache motd
 	motdFile, _ := os.Open(cfg.MOTDFile)
-	b, err = io.ReadAll(motdFile)
-	if err != nil {
-		fmt.Println("Couldn't read MOTD file. Set MOTD_FILE. Value:", cfg.MOTDFile)
-	}
+	b, _ = io.ReadAll(motdFile)
 	h.motd = b
 	h.title = cfg.Title
 
 	// Static assets
 	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)
-	//router.HandleFunc("/manual", h.showManual).Name("manual").Methods(http.MethodGet)
 	//router.HandleFunc("/favicon.ico", h.showFavicon).Name("favicon").Methods(http.MethodGet)
 	router.HandleFunc("/feed.atom", h.showFeedView).Methods(http.MethodGet)
 
@@ -137,12 +131,6 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	//
 	//// User
 	router.HandleFunc("/~{userId}", h.showUserPostsView).Methods(http.MethodGet)
-	//router.HandleFunc("/account", h.protect(h.showAccountView)).Name("account").Methods(http.MethodGet)
-	//router.HandleFunc("/patrons", h.showUserListView).Name("patrons").Methods(http.MethodGet)
-	//router.HandleFunc("/save-about", h.protect(h.saveAbout)).Name("saveAbout").Methods(http.MethodPost)
-	//router.HandleFunc("/site", h.protect(h.showSiteView)).Name("site").Methods(http.MethodGet)
-	//router.HandleFunc("/theme", h.protect(h.showEditThemeView)).Name("editTheme").Methods(http.MethodGet)
-	//router.HandleFunc("/theme/update", h.protect(h.updateTheme)).Name("updateTheme").Methods(http.MethodPost)
 	//
 	//// Index
 	router.HandleFunc("/", h.showIndexView).Name("index").Methods(http.MethodGet)

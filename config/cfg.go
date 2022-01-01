@@ -32,7 +32,13 @@ func New() *Config {
 		Topics:       strings.Split(os.Getenv("TOPICS"), ","),
 	}
 	if os.Getenv("HOST") == "" {
-		cfg.Host = "localhost:8080"
+		cfg.Host = ":8080"
+	}
+	if os.Getenv("TITLE") == "" {
+		cfg.Title = "vpub"
+	}
+	if os.Getenv("DATABASE_FILE") == "" {
+		cfg.DatabaseFile = "./vpub.sqlite"
 	}
 	if os.Getenv("TOPICS") == "" {
 		cfg.Topics = []string{}

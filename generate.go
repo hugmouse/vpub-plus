@@ -83,9 +83,5 @@ func main() {
 	generateMap(path.Join("storage", "sql.go"), "storage", "SqlMap", glob("storage/sql/*.sql"))
 	generateMap(path.Join("web", "handler", "html.go"), "handler", "TplMap", glob("web/handler/html/*.html"))
 	generateMap(path.Join("web", "handler", "common.go"), "handler", "TplCommonMap", glob("web/handler/html/common/*.html"))
-	//generateMap(path.Join("template", "common.go"), "template", "TplCommonMap", glob("template/html/common/*.html"))
-	//generateMap(path.Join("ui", "static", "css.go"), "static", "CssMap", glob("ui/static/css/*.css"))
-	//generateMap(path.Join("gemini", "gmi.go"), "gemini", "GmiMap", glob("gemini/gmi/*.gmi"))
-	//generateMap(path.Join("gemini", "common.go"), "gemini", "TplMap", glob("gemini/gmi/common/*.gmi"))
-	//generateMap(path.Join("gopher", "gph.go"), "gopher", "GphMap", glob("gopher/gph/*.gph"))
+	generateMap(path.Join("assets", "style.go"), "assets", "AssetsMap", glob("assets/*"))
 }
