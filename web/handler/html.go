@@ -23,7 +23,6 @@ var TplMap = map[string]string{
 
 {{ define "content" }}
     <h2>New Post</h2>
-    <br>
     <form action="/posts/save" method="post">
         {{ .csrfField }}
         {{ template "post_form" .form }}

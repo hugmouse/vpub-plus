@@ -30,22 +30,23 @@ var TplCommonMap = map[string]string{
 </html>
 {{ end }}
 {{ define "head" }}{{ end }}`,
-	"meta": `{{ define "meta" }}
-<a href="/~{{ .User }}">{{ .User }}</a> on {{ .Date }}{{ if .Topic }} in <a href="/topics/{{ .Topic }}">{{ .Topic }}</a>{{ end }}
-{{ end }}`,
 	"post_form": `{{ define "post_form" }}
-    {{ if .Topics }}
-    <select name="topic">
+{{ if .Topics }}
+<div class="field">
+    <label for="topic">Topic</label>
+    <select name="topic" id="topic">
         {{ range .Topics }}
         <option value="{{ . }}" {{ if eq . $.Topic }}selected{{ end }}>{{ . }}</option>
         {{ end }}
     </select>
-    {{ end }}
+</div>
+{{ end }}
 
+<div class="field">
     <label for="title">Title</label>
     <input type="text" name="title" id="title" value="{{ .Title }}" autocomplete="off" required autofocus/>
-    <textarea class="editor" name="content" id="content" required>{{ .Content }}</textarea>
-    <br>
+</div>
+<textarea class="editor" name="content" id="content" required>{{ .Content }}</textarea>
 {{ end }}`,
 	"posts": `{{ define "posts" }}
 <ol class="posts">

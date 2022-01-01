@@ -68,7 +68,7 @@ func Convert(gmi string) string {
 				clearUlMode(&ulMode, &rv)
 				clearLinkMode(&linkMode, &rv)
 				matches := blockquoteRegexp.FindStringSubmatch(l)
-				rv = append(rv, "<blockquote>"+sanitize(matches[1])+"</blockquote>")
+				rv = append(rv, "<blockquote>> "+sanitize(matches[1])+"</blockquote>")
 			case linkRegexp.MatchString(l):
 				clearUlMode(&ulMode, &rv)
 				matches := linkRegexp.FindStringSubmatch(l)
