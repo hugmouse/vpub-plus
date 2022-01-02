@@ -14,6 +14,21 @@ type postQueryBuilder struct {
 	offset string
 }
 
+func (p postQueryBuilder) buildFeed() string {
+	query := []string{`SELECT id, author, title, created_at, topic, content from posts`}
+	if p.where != "" {
+		query = append(query, `WHERE`, p.where)
+	}
+	query = append(query, `ORDER BY created_at desc`)
+	if p.limit != "" {
+		query = append(query, `LIMIT`, p.limit)
+	}
+	if p.offset != "" {
+		query = append(query, `OFFSET`, p.offset)
+	}
+	return strings.Join(query, " ")
+}
+
 func (p postQueryBuilder) build() string {
 	query := []string{`SELECT id, author, title, created_at, topic from posts`}
 	if p.where != "" {
@@ -33,6 +48,17 @@ func (s *Storage) populatePost(rows *sql.Rows) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
 	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &post.Topic)
+	post.CreatedAt, err = parseCreatedAt(createdAtStr)
+	if err != nil {
+		return post, err
+	}
+	return post, nil
+}
+
+func (s *Storage) populatePostContent(rows *sql.Rows) (model.Post, error) {
+	var post model.Post
+	var createdAtStr string
+	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &post.Topic, &post.Content)
 	post.CreatedAt, err = parseCreatedAt(createdAtStr)
 	if err != nil {
 		return post, err
@@ -202,6 +228,24 @@ func (s *Storage) Posts(page int64, perPage int) ([]model.Post, bool, error) {
 	return posts, false, err
 }
 
+func (s *Storage) PostsFeed() ([]model.Post, error) {
+	rows, err := s.db.Query(postQueryBuilder{
+		limit: "20",
+	}.buildFeed())
+	if err != nil {
+		return nil, err
+	}
+	var posts []model.Post
+	for rows.Next() {
+		post, err := s.populatePostContent(rows)
+		if err != nil {
+			return posts, err
+		}
+		posts = append(posts, post)
+	}
+	return posts, err
+}
+
 func (s *Storage) PostsTopic(topic string, page int64, perPage int) ([]model.Post, bool, error) {
 	rows, err := s.db.Query(postQueryBuilder{
 		where:  `topic=$1`,
@@ -223,6 +267,25 @@ func (s *Storage) PostsTopic(topic string, page int64, perPage int) ([]model.Pos
 		return posts[0:perPage], true, err
 	}
 	return posts, false, err
+}
+
+func (s *Storage) PostsTopicFeed(topic string) ([]model.Post, error) {
+	rows, err := s.db.Query(postQueryBuilder{
+		where: `topic=$1`,
+		limit: "20",
+	}.buildFeed(), topic)
+	if err != nil {
+		return nil, err
+	}
+	var posts []model.Post
+	for rows.Next() {
+		post, err := s.populatePostContent(rows)
+		if err != nil {
+			return posts, err
+		}
+		posts = append(posts, post)
+	}
+	return posts, err
 }
 
 func (s *Storage) UpdatePost(post model.Post) error {

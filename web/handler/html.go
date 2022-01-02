@@ -223,7 +223,7 @@ var TplMap = map[string]string{
         {{ if .logged }}
         <a href="/posts/new?topic={{ .topic }}">write</a>
         {{ end }}
-        <a href="/feed.atom">follow</a>
+        <a href="/topics/{{ .topic }}/feed.atom">follow</a>
     </p>
 </nav>
 

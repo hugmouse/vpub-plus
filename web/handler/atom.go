@@ -1,91 +1,161 @@
 package handler
 
 import (
-	"fmt"
-	"github.com/gorilla/feeds"
+	"encoding/xml"
 	"github.com/gorilla/mux"
 	"net/http"
-	"net/url"
 	"path"
 	"strconv"
 	"time"
+	"vpub/gmi2html"
+	"vpub/model"
 )
 
-func (h *Handler) showFeedView(w http.ResponseWriter, r *http.Request) {
-	now := time.Now()
-	feed := &feeds.Feed{
-		Title:   h.title,
-		Link:    &feeds.Link{Href: h.host},
-		Created: now,
-	}
+type TimeStr string
 
-	posts, _, err := h.storage.Posts(0, 20)
+type Feed struct {
+	XMLName  xml.Name `xml:"http://www.w3.org/2005/Atom feed"`
+	Title    string   `xml:"title"`
+	ID       string   `xml:"id"`
+	Link     []Link   `xml:"link"`
+	Updated  TimeStr  `xml:"updated"`
+	Author   *Person  `xml:"author"`
+	Icon     string   `xml:"icon,omitempty"`
+	Logo     string   `xml:"logo,omitempty"`
+	Subtitle string   `xml:"subtitle,omitempty"`
+	Entry    []*Entry `xml:"entry"`
+}
+
+type Entry struct {
+	Title     string  `xml:"title"`
+	ID        string  `xml:"id"`
+	Link      []Link  `xml:"link"`
+	Published TimeStr `xml:"published"`
+	Updated   TimeStr `xml:"updated"`
+	Author    *Person `xml:"author"`
+	Summary   *Text   `xml:"summary"`
+	Content   *Text   `xml:"content"`
+}
+
+type Link struct {
+	Rel      string `xml:"rel,attr,omitempty"`
+	Href     string `xml:"href,attr"`
+	Type     string `xml:"type,attr,omitempty"`
+	HrefLang string `xml:"hreflang,attr,omitempty"`
+	Title    string `xml:"title,attr,omitempty"`
+	Length   uint   `xml:"length,attr,omitempty"`
+}
+
+type Person struct {
+	Name     string `xml:"name"`
+	URI      string `xml:"uri,omitempty"`
+	Email    string `xml:"email,omitempty"`
+	InnerXML string `xml:",innerxml"`
+}
+
+type Text struct {
+	Type string `xml:"type,attr"`
+	Body string `xml:",chardata"`
+}
+
+func Time(t time.Time) TimeStr {
+	return TimeStr(t.Format("2006-01-02T15:04:05-07:00"))
+}
+
+func createAtomEntryFromPost(post model.Post, u string) *Entry {
+	postLink := u + "/posts/" + strconv.FormatInt(post.Id, 10)
+	return &Entry{
+		Title: post.Title,
+		ID:    postLink,
+		Link: []Link{
+			{
+				Rel:  "alternate",
+				Href: postLink,
+				Type: "text/html",
+			},
+		},
+		Updated:   Time(post.CreatedAt),
+		Published: Time(post.CreatedAt),
+		Author: &Person{
+			Name: post.User,
+			URI:  u + "/~" + post.User,
+		},
+		Content: &Text{
+			Type: "html",
+			Body: gmi2html.Convert(post.Content),
+		},
+	}
+}
+
+func (h *Handler) showFeedView(w http.ResponseWriter, r *http.Request) {
+	u := path.Clean(h.url)
+	feed := Feed{
+		Title:   h.title,
+		ID:      h.url,
+		Updated: Time(time.Now()),
+		Link: []Link{
+			{
+				Rel:  "self",
+				Href: u + "/feed.atom",
+			},
+			{
+				Rel:  "alternate",
+				Type: "text/html",
+				Href: u,
+			},
+		},
+	}
+	posts, err := h.storage.PostsFeed()
 	if err != nil {
 		serverError(w, err)
 		return
-	}
-
-	u, err := url.Parse(h.host)
-	if err != nil {
-		serverError(w, err)
 	}
 	for _, post := range posts {
-		if err != nil {
-			serverError(w, err)
-			return
-		}
-		feed.Items = append(feed.Items, &feeds.Item{
-			Title:   post.Title,
-			Link:    &feeds.Link{Href: path.Join(u.Path, strconv.FormatInt(post.Id, 10))},
-			Author:  &feeds.Author{Name: post.User},
-			Created: post.CreatedAt,
-		})
+		feed.Entry = append(feed.Entry, createAtomEntryFromPost(post, u))
 	}
-	f, err := feed.ToAtom()
+	var data []byte
+	data, err = xml.MarshalIndent(&feed, "", "    ")
 	if err != nil {
 		serverError(w, err)
-		return
 	}
-	w.Write([]byte(f))
+	w.Write([]byte(xml.Header + string(data)))
 }
 
 func (h *Handler) showFeedViewTopic(w http.ResponseWriter, r *http.Request) {
-	now := time.Now()
-	feed := &feeds.Feed{
-		Title: h.title,
-		Link:  &feeds.Link{Href: "TODO"}, // TODO
-		//Description: "Virtual Pub", // TODO
-		Created: now,
-	}
-
 	topic := mux.Vars(r)["topic"]
 	if !contains(h.topics, topic) {
 		notFound(w)
 		return
 	}
-
-	posts, _, err := h.storage.PostsTopic(topic, 0, 20)
+	u := path.Clean(h.url)
+	feed := Feed{
+		Title:   h.title + " - " + topic,
+		ID:      u + "/topics/" + topic,
+		Updated: Time(time.Now()),
+		Link: []Link{
+			{
+				Rel:  "self",
+				Href: u + "/topics/" + topic + "/feed.atom",
+			},
+			{
+				Rel:  "alternate",
+				Type: "text/html",
+				Href: u + "/topics/" + topic,
+			},
+		},
+	}
+	posts, err := h.storage.PostsTopicFeed(topic)
 	if err != nil {
 		serverError(w, err)
 		return
 	}
-
 	for _, post := range posts {
-		if err != nil {
-			serverError(w, err)
-			return
-		}
-		feed.Items = append(feed.Items, &feeds.Item{
-			Title:   post.Title,
-			Link:    &feeds.Link{Href: fmt.Sprintf("TODO/%d", post.Id)}, // TODO
-			Author:  &feeds.Author{Name: post.User},
-			Created: post.CreatedAt,
-		})
+		feed.Entry = append(feed.Entry, createAtomEntryFromPost(post, u))
 	}
-	atom, err := feed.ToAtom()
+	var data []byte
+	data, err = xml.MarshalIndent(&feed, "", "    ")
 	if err != nil {
 		serverError(w, err)
-		return
 	}
-	w.Write([]byte(atom))
+	w.Write([]byte(xml.Header + string(data)))
 }

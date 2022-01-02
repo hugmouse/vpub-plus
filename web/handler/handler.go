@@ -45,7 +45,7 @@ type ProtectedFunc func(http.ResponseWriter, *http.Request, string)
 
 type Handler struct {
 	session *session.Session
-	host    string
+	url     string
 	env     string
 	css     []byte
 	mux     *mux.Router
@@ -75,7 +75,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 		storage: data,
 		topics:  cfg.Topics,
 		perPage: cfg.PerPage,
-		host:    cfg.Host,
+		url:     cfg.URL,
 	}
 	h.initTpl()
 

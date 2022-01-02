@@ -10,7 +10,7 @@ type (
 	Config struct {
 		DatabaseFile string
 		Port         string
-		Host         string
+		URL          string
 		SessionKey   string
 		CSRFKey      string
 		CSSFile      string
@@ -29,12 +29,12 @@ func New() *Config {
 		CSSFile:      os.Getenv("CSS_FILE"),
 		Title:        os.Getenv("TITLE"),
 		MOTDFile:     os.Getenv("MOTD_FILE"),
-		Host:         os.Getenv("HOST"),
+		URL:          os.Getenv("URL"),
 		Port:         os.Getenv("PORT"),
 		Topics:       strings.Split(os.Getenv("TOPICS"), ","),
 	}
-	if os.Getenv("HOST") == "" {
-		cfg.Host = "localhost"
+	if os.Getenv("URL") == "" {
+		cfg.URL = "http://localhost"
 	}
 	if os.Getenv("PORT") == "" {
 		cfg.Port = "8080"
