@@ -18,7 +18,7 @@ var TplCommonMap = map[string]string{
         <span><a href="/">{{ .boardTitle }}</a></span>
         <nav>
             {{ if .logged }}
-            {{ if .hasNotifications }}<a href="/notifications" class="notifications">New replies</a> {{ end }} {{ .logged }} (<a href="/logout">logout</a>)
+            {{ if .hasNotifications }}<a href="/notifications" class="notifications">New replies</a> {{ end }} <a href="/account">{{ .logged }}</a> (<a href="/logout">logout</a>)
             {{ else }}
             <a href="/login">login</a> <a href="/register">register</a>
             {{ end }}

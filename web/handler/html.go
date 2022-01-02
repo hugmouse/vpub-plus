@@ -3,6 +3,22 @@
 package handler
 
 var TplMap = map[string]string{
+	"account": `{{ define "title" }}Account{{ end }}
+
+{{ define "content" }}
+<h1>Account</h1>
+
+<form action="/save-about" method="post">
+    {{ .csrfField }}
+    <div class="field">
+        <label for="about">About</label>
+        <textarea name="about" id="about" autofocus>{{ .about }}</textarea>
+    </div>
+    <input type="submit" value="Submit">
+</form>
+</section>
+{{ end }}
+`,
 	"confirm_remove_post": `{{ define "content" }}
     Are you sure you you want to delete the following post?
     <p>{{ gmi2html .post.Content }}</p>
@@ -238,7 +254,9 @@ var TplMap = map[string]string{
 {{ end }}`,
 	"user_posts": `{{ define "content" }}
 <h1>{{ .user.Name }}</h1>
-
+<div class="about">
+    {{ gmi2html .user.About }}
+</div>
 <section class="posts">
 {{ template "posts" .posts }}
 
