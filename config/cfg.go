@@ -9,6 +9,7 @@ import (
 type (
 	Config struct {
 		DatabaseFile string
+		Port         string
 		Host         string
 		SessionKey   string
 		CSRFKey      string
@@ -29,10 +30,14 @@ func New() *Config {
 		Title:        os.Getenv("TITLE"),
 		MOTDFile:     os.Getenv("MOTD_FILE"),
 		Host:         os.Getenv("HOST"),
+		Port:         os.Getenv("PORT"),
 		Topics:       strings.Split(os.Getenv("TOPICS"), ","),
 	}
 	if os.Getenv("HOST") == "" {
-		cfg.Host = ":8080"
+		cfg.Host = "localhost"
+	}
+	if os.Getenv("PORT") == "" {
+		cfg.Port = "8080"
 	}
 	if os.Getenv("TITLE") == "" {
 		cfg.Title = "vpub"

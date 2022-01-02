@@ -75,6 +75,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 		storage: data,
 		topics:  cfg.Topics,
 		perPage: cfg.PerPage,
+		host:    cfg.Host,
 	}
 	h.initTpl()
 
@@ -105,7 +106,6 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	router.HandleFunc("/topics/{topic}/feed.atom", h.showFeedViewTopic).Methods(http.MethodGet)
 
 	// Posts
-	//router.HandleFunc("/posts", h.showPostsView).Name("posts").Methods(http.MethodGet)
 	router.HandleFunc("/posts/new", h.protect(h.showNewPostView)).Methods(http.MethodGet)
 	router.HandleFunc("/posts/save", h.protect(h.savePost)).Methods(http.MethodPost)
 	router.HandleFunc("/posts/{postId}", h.showPostView).Methods(http.MethodGet)
@@ -123,30 +123,17 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	router.HandleFunc("/replies/{replyId}/edit", h.protect(h.showEditReplyView)).Methods(http.MethodGet)
 	router.HandleFunc("/replies/{replyId}/update", h.protect(h.updateReply)).Methods(http.MethodPost)
 	router.HandleFunc("/replies/{replyId}/remove", h.protect(h.handleRemoveReply)).Name("removeReply")
-	//
-	//// Notifications
+
+	// Notifications
 	router.HandleFunc("/notifications", h.protect(h.showNotificationsView)).Methods(http.MethodGet)
-	router.HandleFunc("/notifications/{notificationId}/mark-read", h.protect(h.markRead)).Methods(http.MethodPost)
-	router.HandleFunc("/notifications/mark-all-read", h.protect(h.markAllRead)).Methods(http.MethodPost)
-	//
-	//// User
+	router.HandleFunc("/notifications/{notificationId}/mark-read", h.protect(h.markRead)).Methods(http.MethodGet)
+	router.HandleFunc("/notifications/mark-all-read", h.protect(h.markAllRead)).Methods(http.MethodGet)
+
+	// User
 	router.HandleFunc("/~{userId}", h.showUserPostsView).Methods(http.MethodGet)
-	//
-	//// Index
+
+	// Index
 	router.HandleFunc("/", h.showIndexView).Name("index").Methods(http.MethodGet)
-	//
-	//engine, err := template.New(env, host, h)
-	//if err != nil {
-	//	return router, err
-	//}
-	//
-	//h.tpl = engine
-	//
-	//mux := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	//	r.Body = http.MaxBytesReader(w, r.Body, 3<<20)
-	//	router.ServeHTTP(w, r)
-	//})
 
 	return router, nil
-	//return mux, err
 }

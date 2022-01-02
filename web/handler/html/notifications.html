@@ -1,21 +1,23 @@
 {{ define "content" }}
-<h2>Notifications</h2>
-<form action="/notifications/mark-all-read" method="POST">
-    {{ $.csrfField }}
-    <input class="button" type="submit" value="mark all read">
-</form>
+<h2>New replies</h2>
+<p><a href="/notifications/mark-all-read">mark all as read</a></p>
 {{ range .notifications }}
 <div>
-    From: <a href="/~{{ .Reply.Author }}">{{ .Reply.Author }}</a><br>
-    In: <a href="/posts/{{ .Reply.PostId }}">{{ .Reply.PostTitle }}</a><br>
-    <a href="/replies/{{ .Reply.Id }}">Reply</a>
+    <div class="meta">
+        <ul class="key-value">
+            <li><span class="key">From: </span><span class="value"><a href="/~{{ .Reply.User }}">{{ .Reply.User }}</a></span></li>
+            <li><span class="key">On: </span><span class="value">{{ .Reply.Date }}</span></li>
+            <li><span class="key">Post: </span><span class="value"><a href="/posts/{{ .Reply.PostId }}">{{ .Reply.PostTitle }}</a></span></li>
+            <li><span class="key">Parent: </span><span class="value">
+                        {{ if .Reply.ParentId }}<a href="/replies/{{ .Reply.ParentId }}">view</a>{{ else }}view{{end}}
+            </span></li>
+        </ul>
+    </div>
     {{ gmi2html .Reply.Content }}
-    <footer>
-        <form action="/notifications/{{ .Id }}/mark-read" method="POST">
-        {{ $.csrfField }}
-        <input class="button" type="submit" value="mark as read">
-        </form>
-    </footer>
+    <p>
+        <a href="/replies/{{ .Reply.Id }}">reply</a>
+        <a href="/notifications/{{ .Id }}/mark-read">mark as read</a>
+    </p>
 </div>
 {{ end }}
 {{ end }}

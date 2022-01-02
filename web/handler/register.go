@@ -20,9 +20,12 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 		Name:     userForm.Username,
 		Password: userForm.Password,
 	}
-	err := user.Validate()
-	if err != nil {
-		serverError(w, err)
+	showError := func(err error) {
+		h.renderLayout(w, "register", map[string]interface{}{"form": *userForm, "error": err.Error(), csrf.TemplateTag: csrf.TemplateField(r)}, "")
+		return
+	}
+	if err := userForm.Validate(); err != nil {
+		showError(err)
 		return
 	}
 	if h.storage.UserExists(user.Name) {
@@ -33,7 +36,7 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 	//	forbidden(w)
 	//	return
 	//}
-	err = h.storage.CreateUser(user)
+	err := h.storage.CreateUser(user)
 	if err != nil {
 		serverError(w, err)
 		return

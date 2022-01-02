@@ -5,15 +5,17 @@ import (
 	"github.com/gorilla/feeds"
 	"github.com/gorilla/mux"
 	"net/http"
+	"net/url"
+	"path"
+	"strconv"
 	"time"
 )
 
 func (h *Handler) showFeedView(w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
 	feed := &feeds.Feed{
-		Title: h.title,
-		Link:  &feeds.Link{Href: "TODO"}, // TODO
-		//Description: "Virtual Pub", // TODO
+		Title:   h.title,
+		Link:    &feeds.Link{Href: h.host},
 		Created: now,
 	}
 
@@ -23,6 +25,10 @@ func (h *Handler) showFeedView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	u, err := url.Parse(h.host)
+	if err != nil {
+		serverError(w, err)
+	}
 	for _, post := range posts {
 		if err != nil {
 			serverError(w, err)
@@ -30,7 +36,7 @@ func (h *Handler) showFeedView(w http.ResponseWriter, r *http.Request) {
 		}
 		feed.Items = append(feed.Items, &feeds.Item{
 			Title:   post.Title,
-			Link:    &feeds.Link{Href: fmt.Sprintf("TODO/%d", post.Id)}, // TODO
+			Link:    &feeds.Link{Href: path.Join(u.Path, strconv.FormatInt(post.Id, 10))},
 			Author:  &feeds.Author{Name: post.User},
 			Created: post.CreatedAt,
 		})

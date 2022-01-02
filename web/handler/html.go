@@ -59,7 +59,7 @@ var TplMap = map[string]string{
         {{ if .logged }}
         <a href="/posts/new">write</a>
         {{ end }}
-        <a href="/feed.atom">atom</a>
+        <a href="/feed.atom">follow</a>
     </p>
 </nav>
 
@@ -95,23 +95,25 @@ var TplMap = map[string]string{
 </form>
 {{ end }}`,
 	"notifications": `{{ define "content" }}
-<h2>Notifications</h2>
-<form action="/notifications/mark-all-read" method="POST">
-    {{ $.csrfField }}
-    <input class="button" type="submit" value="mark all read">
-</form>
+<h2>New replies</h2>
+<p><a href="/notifications/mark-all-read">mark all as read</a></p>
 {{ range .notifications }}
 <div>
-    From: <a href="/~{{ .Reply.Author }}">{{ .Reply.Author }}</a><br>
-    In: <a href="/posts/{{ .Reply.PostId }}">{{ .Reply.PostTitle }}</a><br>
-    <a href="/replies/{{ .Reply.Id }}">Reply</a>
+    <div class="meta">
+        <ul class="key-value">
+            <li><span class="key">From: </span><span class="value"><a href="/~{{ .Reply.User }}">{{ .Reply.User }}</a></span></li>
+            <li><span class="key">On: </span><span class="value">{{ .Reply.Date }}</span></li>
+            <li><span class="key">Post: </span><span class="value"><a href="/posts/{{ .Reply.PostId }}">{{ .Reply.PostTitle }}</a></span></li>
+            <li><span class="key">Parent: </span><span class="value">
+                        {{ if .Reply.ParentId }}<a href="/replies/{{ .Reply.ParentId }}">view</a>{{ else }}view{{end}}
+            </span></li>
+        </ul>
+    </div>
     {{ gmi2html .Reply.Content }}
-    <footer>
-        <form action="/notifications/{{ .Id }}/mark-read" method="POST">
-        {{ $.csrfField }}
-        <input class="button" type="submit" value="mark as read">
-        </form>
-    </footer>
+    <p>
+        <a href="/replies/{{ .Reply.Id }}">reply</a>
+        <a href="/notifications/{{ .Id }}/mark-read">mark as read</a>
+    </p>
 </div>
 {{ end }}
 {{ end }}`,
@@ -163,20 +165,27 @@ var TplMap = map[string]string{
 
 {{ define "content" }}
     <h2>Register</h2>
+    {{ if .error }}
+    <p class="error">{{ .error }}</p>
+    {{ end }}
     <form action="/register" method="post" class="auth-form">
         {{ .csrfField }}
         <div class="field">
             <label for="name">Username</label>
-            <input type="text" id="name" name="name" autocomplete="off"/>
+            <input type="text" id="name" name="name" autocomplete="off" value="{{ .form.Username }}"/>
         </div>
         <div class="field">
             <label for="password">Password</label>
             <input type="password" id="password" name="password"/>
         </div>
         <div class="field">
-            <label for="key">Key</label>
-            <input type="text" id="key" name="key"/>
+            <label for="confirm">Confirm password</label>
+            <input type="password" id="confirm" name="confirm" required/>
         </div>
+<!--        <div class="field">-->
+<!--            <label for="key">Key</label>-->
+<!--            <input type="text" id="key" name="key"/>-->
+<!--        </div>-->
         <input type="submit" value="Submit">
     </form>
 {{ end }}
@@ -214,7 +223,7 @@ var TplMap = map[string]string{
         {{ if .logged }}
         <a href="/posts/new?topic={{ .topic }}">write</a>
         {{ end }}
-        <a href="/feed.atom">atom</a>
+        <a href="/feed.atom">follow</a>
     </p>
 </nav>
 

@@ -7,7 +7,7 @@ import (
 func (s *Storage) NotificationsByUser(user string) ([]model.Notification, error) {
 	q := `
 		SELECT
-    		n.id, r.id, r.author, r.content, r.post_id, r.parent_id, p.title from notifications n
+    		n.id, r.id, r.author, r.content, r.post_id, r.parent_id, p.title, r.created_at from notifications n
 		LEFT JOIN replies r on n.reply_id = r.id
 		LEFT JOIN posts p on r.post_id = p.id
 		WHERE n.author=$1
@@ -19,7 +19,9 @@ func (s *Storage) NotificationsByUser(user string) ([]model.Notification, error)
 	var notifications []model.Notification
 	for rows.Next() {
 		var notification model.Notification
-		err := rows.Scan(&notification.Id, &notification.Reply.Id, &notification.Reply.User, &notification.Reply.Content, &notification.Reply.PostId, &notification.Reply.ParentId, &notification.Reply.PostTitle)
+		var createdAtStr string
+		err := rows.Scan(&notification.Id, &notification.Reply.Id, &notification.Reply.User, &notification.Reply.Content, &notification.Reply.PostId, &notification.Reply.ParentId, &notification.Reply.PostTitle, &createdAtStr)
+		notification.Reply.CreatedAt, err = parseCreatedAt(createdAtStr)
 		if err != nil {
 			return notifications, err
 		}

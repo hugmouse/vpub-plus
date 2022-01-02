@@ -79,6 +79,10 @@ body > footer {
 
 /* Forms ************************************************************/
 
+.auth-form {
+	max-width: 200px;
+}
+
 .field {
 	margin-bottom: 1em;
 }

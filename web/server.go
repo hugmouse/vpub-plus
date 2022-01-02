@@ -18,7 +18,7 @@ func Serve(cfg *config.Config, data *storage.Storage) error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Starting HTTP server on %s\n", cfg.Host)
+	fmt.Printf("Starting HTTP server on %s:%s\n", cfg.Host, cfg.Port)
 	CSRF := csrf.Protect([]byte(cfg.CSRFKey), csrf.MaxAge(0))
-	return http.ListenAndServe(cfg.Host, CSRF(s))
+	return http.ListenAndServe(cfg.Host+":"+cfg.Port, CSRF(s))
 }
