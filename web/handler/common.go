@@ -46,7 +46,10 @@ var TplCommonMap = map[string]string{
     <label for="title">Title</label>
     <input type="text" name="title" id="title" value="{{ .Title }}" autocomplete="off" required autofocus/>
 </div>
-<textarea class="editor" name="content" id="content" required>{{ .Content }}</textarea>
+<div class="field">
+    <label for="content">Content</label>
+    <textarea class="editor" name="content" id="content" required>{{ .Content }}</textarea>
+</div>
 {{ end }}`,
 	"posts": `{{ define "posts" }}
 <ol class="posts">

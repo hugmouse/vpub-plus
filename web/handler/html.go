@@ -168,7 +168,9 @@ var TplMap = map[string]string{
 {{ if .logged }}
 <form action="/posts/{{ .post.Id }}/reply" method="post">
     {{ .csrfField }}
-    <textarea name="reply"></textarea>
+    <div class="field">
+        <textarea name="reply"></textarea>
+    </div>
     <input type="submit" value="Reply">
 </form>
 {{ end }}
@@ -216,12 +218,14 @@ var TplMap = map[string]string{
                 </span></li>
             </ul>
         </div>
-        {{ gmi2html .reply.Content }}
+        <div class="content">{{ gmi2html .reply.Content }}</div>
     </article>
     <section>
         <form action="/replies/{{ .reply.Id }}/save" method="post">
             {{ .csrfField }}
-            <textarea name="reply" autofocus></textarea>
+            <div class="field">
+                <textarea name="reply" autofocus></textarea>
+            </div>
             <input type="submit" value="Submit">
         </form>
         {{ template "reply" .reply.Thread }}

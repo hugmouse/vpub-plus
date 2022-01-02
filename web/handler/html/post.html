@@ -19,7 +19,9 @@
 {{ if .logged }}
 <form action="/posts/{{ .post.Id }}/reply" method="post">
     {{ .csrfField }}
-    <textarea name="reply"></textarea>
+    <div class="field">
+        <textarea name="reply"></textarea>
+    </div>
     <input type="submit" value="Reply">
 </form>
 {{ end }}
