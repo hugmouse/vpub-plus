@@ -1,8 +1,6 @@
 {{ define "content" }}
 <h1>{{ .user.Name }}</h1>
-<div class="about">
-    {{ gmi2html .user.About }}
-</div>
+<div class="content">{{ gmi2html .user.About }}</div>
 <section class="posts">
 {{ template "posts" .posts }}
 

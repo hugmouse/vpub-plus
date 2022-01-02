@@ -111,7 +111,7 @@ var TplMap = map[string]string{
 </form>
 {{ end }}`,
 	"notifications": `{{ define "content" }}
-<h2>New replies</h2>
+<h1>New replies</h1>
 <p><a href="/notifications/mark-all-read">mark all as read</a></p>
 {{ range .notifications }}
 <div>
@@ -125,7 +125,7 @@ var TplMap = map[string]string{
             </span></li>
         </ul>
     </div>
-    {{ gmi2html .Reply.Content }}
+    <div class="content">{{ gmi2html .Reply.Content }}</div>
     <p>
         <a href="/replies/{{ .Reply.Id }}">reply</a>
         <a href="/notifications/{{ .Id }}/mark-read">mark as read</a>
@@ -158,10 +158,7 @@ var TplMap = map[string]string{
     </ul>
     {{ end }}
 </div>
-
-<div>
-    {{ gmi2html .content }}
-</div>
+<div class="content">{{ gmi2html .content }}</div>
 {{- if eq .logged .post.User }}
 <p>
     <a href="/posts/{{ .post.Id }}/edit">Edit</a>
@@ -254,9 +251,7 @@ var TplMap = map[string]string{
 {{ end }}`,
 	"user_posts": `{{ define "content" }}
 <h1>{{ .user.Name }}</h1>
-<div class="about">
-    {{ gmi2html .user.About }}
-</div>
+<div class="content">{{ gmi2html .user.About }}</div>
 <section class="posts">
 {{ template "posts" .posts }}
 

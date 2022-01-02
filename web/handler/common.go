@@ -74,7 +74,7 @@ var TplCommonMap = map[string]string{
         <li>
             <details class="reply" open>
                 <summary><a href="/~{{ .User }}">{{ .User }}</a> on {{ .Date }}</summary>
-                <div class="reply-content">{{ gmi2html .Content }}</div>
+                <div class="content">{{ gmi2html .Content }}</div>
                 {{ if logged }}
                 <footer>
                     <a href="/replies/{{ .Id }}">reply</a>

@@ -9,10 +9,7 @@
     </ul>
     {{ end }}
 </div>
-
-<div>
-    {{ gmi2html .content }}
-</div>
+<div class="content">{{ gmi2html .content }}</div>
 {{- if eq .logged .post.User }}
 <p>
     <a href="/posts/{{ .post.Id }}/edit">Edit</a>

@@ -1,5 +1,5 @@
 {{ define "content" }}
-<h2>New replies</h2>
+<h1>New replies</h1>
 <p><a href="/notifications/mark-all-read">mark all as read</a></p>
 {{ range .notifications }}
 <div>
@@ -13,7 +13,7 @@
             </span></li>
         </ul>
     </div>
-    {{ gmi2html .Reply.Content }}
+    <div class="content">{{ gmi2html .Reply.Content }}</div>
     <p>
         <a href="/replies/{{ .Reply.Id }}">reply</a>
         <a href="/notifications/{{ .Id }}/mark-read">mark as read</a>

@@ -22,6 +22,10 @@ ol.replies > li:not(:last-child) {
 	font-size: 1em;
 }
 
+.content h1 { font-size: 1.5em; }
+.content h2 { font-size: 1.2em; }
+.content h3 { font-size: 1em; }
+
 /* Replies **********************************************************/
 
 .reply {
@@ -35,7 +39,7 @@ ol.replies > li:not(:last-child) {
 	padding: .2em;
 }
 
-.reply-content, .reply footer {
+.reply .content, .reply footer {
 	padding: 0 1em;
 }
 
