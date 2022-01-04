@@ -3,6 +3,8 @@
 
 {{ .motd }}
 
+{{ template "topics" . }}
+
 <nav class="actions">
     <p>
         {{ if .logged }}
@@ -11,8 +13,6 @@
         <a href="/feed.atom">follow</a>
     </p>
 </nav>
-
-{{ template "topics" . }}
 
 <section>
 {{ template "posts" .posts }}

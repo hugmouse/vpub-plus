@@ -6,6 +6,7 @@ var AssetsMap = map[string]string{
 	"style": `body {
 	max-width: 750px;
 	margin: auto;
+	padding: 5px;
 }
 
 /* Lists ************************************************************/
@@ -22,6 +23,24 @@ ol.replies > li:not(:last-child) {
 
 /* Posts ************************************************************/
 
+table.posts {
+	width: 100%;
+	border-collapse: collapse;
+	border: 1px solid darkgrey;
+}
+th {
+	background-color: darkgrey;
+}
+th, td {
+	padding: .2em;
+}
+.posts-title {
+	width: 100%;
+}
+td {
+	background-color: #eee;
+	border: 1px solid darkgrey;
+}
 .posts h2 {
 	margin: 0;
 	font-size: 1em;
@@ -95,7 +114,7 @@ body > footer {
 	display: block;
 }
 
-input[type=text] {
+input[type=text], input[type=password] {
 	width: 100%;
 	box-sizing: border-box;
 }

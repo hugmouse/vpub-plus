@@ -44,6 +44,10 @@ func (s *Storage) CreateReply(reply model.Reply) (int64, error) {
 			return lid, nil
 		}
 		author = parent.User
+		if _, err := tx.ExecContext(ctx, `update posts set updated_at=datetime('now') where id=$1`, reply.PostId); err != nil {
+			tx.Rollback()
+			return lid, err
+		}
 	}
 	if author != reply.User {
 		if _, err := tx.ExecContext(ctx, `INSERT into notifications (author, reply_id) values ($1, $2)`, author, lid); err != nil {

@@ -70,6 +70,8 @@ var TplMap = map[string]string{
 
 {{ .motd }}
 
+{{ template "topics" . }}
+
 <nav class="actions">
     <p>
         {{ if .logged }}
@@ -78,8 +80,6 @@ var TplMap = map[string]string{
         <a href="/feed.atom">follow</a>
     </p>
 </nav>
-
-{{ template "topics" . }}
 
 <section>
 {{ template "posts" .posts }}
@@ -187,7 +187,7 @@ var TplMap = map[string]string{
         {{ .csrfField }}
         <div class="field">
             <label for="name">Username</label>
-            <input type="text" id="name" name="name" autocomplete="off" value="{{ .form.Username }}"/>
+            <input type="text" id="name" name="name" autocomplete="off" value="{{ .form.Username }}" maxlength="20"/>
         </div>
         <div class="field">
             <label for="password">Password</label>

@@ -15,11 +15,11 @@ type postQueryBuilder struct {
 }
 
 func (p postQueryBuilder) buildFeed() string {
-	query := []string{`SELECT id, author, title, created_at, topic, content from posts`}
+	query := []string{`SELECT id, author, title, created_at, updated_at, topic, content from posts`}
 	if p.where != "" {
 		query = append(query, `WHERE`, p.where)
 	}
-	query = append(query, `ORDER BY created_at desc`)
+	query = append(query, `ORDER BY updated_at desc`)
 	if p.limit != "" {
 		query = append(query, `LIMIT`, p.limit)
 	}
@@ -30,11 +30,11 @@ func (p postQueryBuilder) buildFeed() string {
 }
 
 func (p postQueryBuilder) build() string {
-	query := []string{`SELECT id, author, title, created_at, topic from posts`}
+	query := []string{`SELECT id, author, title, created_at, updated_at, topic from posts`}
 	if p.where != "" {
 		query = append(query, `WHERE`, p.where)
 	}
-	query = append(query, `ORDER BY created_at desc`)
+	query = append(query, `ORDER BY updated_at desc`)
 	if p.limit != "" {
 		query = append(query, `LIMIT`, p.limit)
 	}
@@ -47,8 +47,10 @@ func (p postQueryBuilder) build() string {
 func (s *Storage) populatePost(rows *sql.Rows) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
-	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &post.Topic)
+	var updatedAtStr string
+	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &updatedAtStr, &post.Topic)
 	post.CreatedAt, err = parseCreatedAt(createdAtStr)
+	post.UpdatedAt, err = parseCreatedAt(updatedAtStr)
 	if err != nil {
 		return post, err
 	}
@@ -58,8 +60,10 @@ func (s *Storage) populatePost(rows *sql.Rows) (model.Post, error) {
 func (s *Storage) populatePostContent(rows *sql.Rows) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
-	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &post.Topic, &post.Content)
+	var updatedAtStr string
+	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &post.Topic, &updatedAtStr, &post.Content)
 	post.CreatedAt, err = parseCreatedAt(createdAtStr)
+	post.UpdatedAt, err = parseCreatedAt(updatedAtStr)
 	if err != nil {
 		return post, err
 	}
@@ -69,8 +73,10 @@ func (s *Storage) populatePostContent(rows *sql.Rows) (model.Post, error) {
 func (s *Storage) populatePostWithReply(rows *sql.Rows) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
-	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &post.Topic, &post.Replies)
+	var updatedAtStr string
+	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &updatedAtStr, &post.Topic, &post.Replies)
 	post.CreatedAt, err = parseCreatedAt(createdAtStr)
+	post.UpdatedAt, err = parseCreatedAt(updatedAtStr)
 	if err != nil {
 		return post, err
 	}
@@ -91,16 +97,19 @@ func parseCreatedAt(createdAt string) (time.Time, error) {
 func (s *Storage) PostById(id int64) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
+	var updatedAtStr string
 	err := s.db.QueryRow(
-		`SELECT id, author, title, content, topic, created_at from posts WHERE id=$1`, id).Scan(
+		`SELECT id, author, title, content, topic, created_at, updated_at from posts WHERE id=$1`, id).Scan(
 		&post.Id,
 		&post.User,
 		&post.Title,
 		&post.Content,
 		&post.Topic,
 		&createdAtStr,
+		&updatedAtStr,
 	)
 	post.CreatedAt, err = parseCreatedAt(createdAtStr)
+	post.UpdatedAt, err = parseCreatedAt(updatedAtStr)
 	return post, err
 }
 
@@ -130,12 +139,12 @@ func (s *Storage) PostsByUsername(user string, perPage int, page int64) ([]model
 func (s *Storage) PostsByUsernameWithReplyCount(user string, perPage int, page int64) ([]model.Post, bool, error) {
 	rows, err := s.db.Query(`
         select
-            id, author, title, created_at, topic, coalesce(replies, 0)
+            id, author, title, created_at, updated_at, topic, coalesce(replies, 0)
         from
             posts
         left join (select post_id, count(post_id) replies from replies group by post_id) r on
             r.post_id = posts.id
-        where author=$1 ORDER BY created_at desc LIMIT $2 OFFSET $3;`, user, strconv.Itoa(perPage+1), (page-1)*int64(perPage))
+        where author=$1 ORDER BY updated_at desc LIMIT $2 OFFSET $3;`, user, strconv.Itoa(perPage+1), (page-1)*int64(perPage))
 	if err != nil {
 		return nil, false, err
 	}
@@ -156,12 +165,12 @@ func (s *Storage) PostsByUsernameWithReplyCount(user string, perPage int, page i
 func (s *Storage) PostsWithReplyCount(page int64, perPage int) ([]model.Post, bool, error) {
 	rows, err := s.db.Query(`
         select
-            id, author, title, created_at, topic, coalesce(replies, 0)
+            id, author, title, created_at, updated_at, topic, coalesce(replies, 0)
         from
             posts
         left join (select post_id, count(post_id) replies from replies group by post_id) r on
             r.post_id = posts.id
-        ORDER BY created_at desc LIMIT $1 OFFSET $2;`, strconv.Itoa(perPage+1), (page-1)*int64(perPage))
+        ORDER BY updated_at desc LIMIT $1 OFFSET $2;`, strconv.Itoa(perPage+1), (page-1)*int64(perPage))
 	if err != nil {
 		return nil, false, err
 	}
@@ -182,12 +191,12 @@ func (s *Storage) PostsWithReplyCount(page int64, perPage int) ([]model.Post, bo
 func (s *Storage) PostsTopicWithReplyCount(topic string, page int64, perPage int) ([]model.Post, bool, error) {
 	rows, err := s.db.Query(`
         select
-            id, author, title, created_at, topic, coalesce(replies, 0)
+            id, author, title, created_at, updated_at, topic, coalesce(replies, 0)
         from
             posts
         left join (select post_id, count(post_id) replies from replies group by post_id) r on
             r.post_id = posts.id
-        where topic=$1 ORDER BY created_at desc LIMIT $2 OFFSET $3;`, topic, strconv.Itoa(perPage+1), (page-1)*int64(perPage))
+        where topic=$1 ORDER BY updated_at desc LIMIT $2 OFFSET $3;`, topic, strconv.Itoa(perPage+1), (page-1)*int64(perPage))
 	if err != nil {
 		return nil, false, err
 	}

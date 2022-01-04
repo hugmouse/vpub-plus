@@ -112,7 +112,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	router.HandleFunc("/posts/{postId}/edit", h.protect(h.showEditPostView)).Methods(http.MethodGet)
 	router.HandleFunc("/posts/{postId}/update", h.protect(h.updatePost)).Methods(http.MethodPost)
 	router.HandleFunc("/posts/{postId}/remove", h.protect(h.handleRemovePost))
-	router.HandleFunc("/posts/{postId}/reply", h.protect(h.savePostReply)).Name("savePostReply").Methods(http.MethodPost)
+	router.HandleFunc("/posts/{postId}/reply", h.protect(h.savePostReply)).Methods(http.MethodPost)
 
 	// Pagination
 	router.HandleFunc("/page/{nb}", h.showPageNumber).Methods(http.MethodGet)
@@ -122,7 +122,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	router.HandleFunc("/replies/{replyId}/save", h.protect(h.saveReplyReply)).Methods(http.MethodPost)
 	router.HandleFunc("/replies/{replyId}/edit", h.protect(h.showEditReplyView)).Methods(http.MethodGet)
 	router.HandleFunc("/replies/{replyId}/update", h.protect(h.updateReply)).Methods(http.MethodPost)
-	router.HandleFunc("/replies/{replyId}/remove", h.protect(h.handleRemoveReply)).Name("removeReply")
+	router.HandleFunc("/replies/{replyId}/remove", h.protect(h.handleRemoveReply))
 
 	// Notifications
 	router.HandleFunc("/notifications", h.protect(h.showNotificationsView)).Methods(http.MethodGet)

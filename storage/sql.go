@@ -24,7 +24,8 @@ create table posts
     title TEXT NOT NULL CHECK (title <> ''),
     content TEXT NOT NULL CHECK (content <> ''),
     topic TEXT,
-    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 -- create replies table

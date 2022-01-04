@@ -12,6 +12,7 @@ type Post struct {
 	Content   string
 	Replies   int
 	CreatedAt time.Time
+	UpdatedAt time.Time
 	Topic     string
 }
 
@@ -27,4 +28,8 @@ func (p Post) Validate() error {
 
 func (p Post) Date() string {
 	return p.CreatedAt.Format("2006-01-02")
+}
+
+func (p Post) DateUpdated() string {
+	return p.UpdatedAt.Format("2006-01-02")
 }
