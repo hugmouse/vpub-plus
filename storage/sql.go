@@ -47,8 +47,8 @@ create table notifications
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     author text references users(name),
     reply_id int references replies(id),
-    foreign key (author) references users(name),
-    foreign key (reply_id) references replies(id)
+    foreign key (author) references users(name) on delete cascade,
+    foreign key (reply_id) references replies(id) on delete cascade
 );
 
 -- indices

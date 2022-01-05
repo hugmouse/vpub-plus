@@ -55,14 +55,9 @@ var TplCommonMap = map[string]string{
 <!--TOP ONE-->
 {{ if . }}
 <table class="posts">
-    <colgroup>
-        <col span="1">
-        <col span="1" style="width: 15%;">
-        <col span="1" style="width: 10%;">
-    </colgroup>
     <thead>
         <tr style="text-align: left;">
-            <th scope="col">Title</th>
+            <th scope="col" style="width: 100%;">Title</th>
             <th scope="col" style="text-align: center;">Updated</th>
             <th scope="col" style="text-align: center;">Replies</th>
         </tr>
@@ -74,7 +69,7 @@ var TplCommonMap = map[string]string{
             <h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2>
             <div><a href="/~{{ .User }}">{{ .User }}</a>{{ if .Topic }} in <a href="/topics/{{ .Topic }}">{{ .Topic }}</a>{{ end }}</div>
         </td>
-        <td style="text-align: center;">{{ .Date }}</td>
+        <td style="text-align: center;">{{ timeAgo .UpdatedAt }}</td>
         <td style="text-align: center;">{{ .Replies }}</td>
     </tr>
     {{ end }}
@@ -219,7 +214,7 @@ var TplCommonMap = map[string]string{
                     <a href="/replies/{{ .Id }}">reply</a>
                     {{ if hasPermission .User }}
                     <a href="/replies/{{ .Id }}/edit">edit</a>
-                    <a href="/replies/{{ .Id }}/remove">Remove</a>
+                    <a href="/replies/{{ .Id }}/remove">remove</a>
                     {{ end }}
                 </footer>
                 {{ end }}

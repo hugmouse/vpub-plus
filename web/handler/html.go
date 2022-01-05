@@ -235,6 +235,8 @@ var TplMap = map[string]string{
 	"topic": `{{ define "content" }}
 <h1>{{ .topic }}</h1>
 
+{{ template "topics" . }}
+
 <nav class="actions">
     <p>
         {{ if .logged }}
@@ -243,8 +245,6 @@ var TplMap = map[string]string{
         <a href="/topics/{{ .topic }}/feed.atom">follow</a>
     </p>
 </nav>
-
-{{ template "topics" . }}
 
 <section class="posts">
     {{ template "posts" .posts }}
