@@ -4,9 +4,9 @@
 <table class="posts">
     <thead>
         <tr style="text-align: left;">
-            <th scope="col" style="width: 100%;">Title</th>
-            <th scope="col" style="text-align: center;">Updated</th>
-            <th scope="col" style="text-align: center;">Replies</th>
+            <th scope="col">Title</th>
+            <th scope="col" style="text-align: center; width: 15%;">Updated</th>
+            <th scope="col" style="text-align: center; width: 10%;">Replies</th>
         </tr>
     </thead>
     <tbody>
@@ -16,7 +16,7 @@
             <h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2>
             <div><a href="/~{{ .User }}">{{ .User }}</a>{{ if .Topic }} in <a href="/topics/{{ .Topic }}">{{ .Topic }}</a>{{ end }}</div>
         </td>
-        <td style="text-align: center;">{{ timeAgo .UpdatedAt }}</td>
+        <td style="text-align: center;">{{ .Date }}</td>
         <td style="text-align: center;">{{ .Replies }}</td>
     </tr>
     {{ end }}
