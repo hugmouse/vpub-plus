@@ -61,7 +61,7 @@ func (s *Storage) populatePostContent(rows *sql.Rows) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
 	var updatedAtStr string
-	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &post.Topic, &updatedAtStr, &post.Content)
+	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &updatedAtStr, &post.Topic, &post.Content)
 	post.CreatedAt, err = parseCreatedAt(createdAtStr)
 	post.UpdatedAt, err = parseCreatedAt(updatedAtStr)
 	if err != nil {
