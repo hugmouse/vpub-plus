@@ -68,9 +68,9 @@ var TplMap = map[string]string{
 	"index": `{{ define "content"}}
 <h1>{{ .boardTitle }}</h1>
 
-{{ .motd }}
-
 {{ template "topics" . }}
+
+{{ .motd }}
 
 <nav class="actions">
     <p>
