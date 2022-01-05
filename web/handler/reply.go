@@ -45,11 +45,12 @@ func (h *Handler) savePostReply(w http.ResponseWriter, r *http.Request, user str
 		serverError(w, err)
 		return
 	}
-	if _, err := h.storage.CreateReply(reply); err != nil {
+	rid, err := h.storage.CreateReply(reply)
+	if err != nil {
 		serverError(w, err)
 		return
 	}
-	http.Redirect(w, r, fmt.Sprintf("/posts/%d", reply.PostId), http.StatusFound)
+	http.Redirect(w, r, fmt.Sprintf("/replies/%d", rid), http.StatusFound)
 }
 
 func (h *Handler) showReplyView(w http.ResponseWriter, r *http.Request, user string) {

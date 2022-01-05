@@ -7,7 +7,7 @@ import (
 )
 
 func InitDB(cfg *config.Config) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", cfg.DatabaseFile+"?_foreign_keys=on")
+	db, err := sql.Open("sqlite3", cfg.DatabaseFile+"?_foreign_keys=on&_mutex=full")
 	if err != nil {
 		return db, err
 	}
