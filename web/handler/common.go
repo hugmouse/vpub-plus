@@ -58,7 +58,6 @@ var TplCommonMap = map[string]string{
     <thead>
         <tr style="text-align: left;">
             <th scope="col">Title</th>
-            <th scope="col" style="text-align: center; width: 15%;">Updated</th>
             <th scope="col" style="text-align: center; width: 10%;">Replies</th>
         </tr>
     </thead>
@@ -67,9 +66,8 @@ var TplCommonMap = map[string]string{
     <tr>
         <td>
             <h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2>
-            <div><a href="/~{{ .User }}">{{ .User }}</a>{{ if .Topic }} in <a href="/topics/{{ .Topic }}">{{ .Topic }}</a>{{ end }}</div>
+            <div><a href="/~{{ .User }}">{{ .User }}</a>{{ if .Topic }} in <a href="/topics/{{ .Topic }}">{{ .Topic }}</a>{{ end }} {{ timeAgo .CreatedAt }}</div>
         </td>
-        <td style="text-align: center;">{{ .Date }}</td>
         <td style="text-align: center;">{{ .Replies }}</td>
     </tr>
     {{ end }}
