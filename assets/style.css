@@ -44,6 +44,7 @@ td {
 .content h1 { font-size: 1.5em; }
 .content h2 { font-size: 1.2em; }
 .content h3 { font-size: 1em; }
+.content { margin: 1em 0; }
 
 /* Replies **********************************************************/
 
