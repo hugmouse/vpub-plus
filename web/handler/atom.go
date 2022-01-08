@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/xml"
+	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"net/http"
 	"path"
@@ -9,6 +10,7 @@ import (
 	"time"
 	"vpub/gmi2html"
 	"vpub/model"
+	"vpub/web/handler/form"
 )
 
 type TimeStr string
@@ -158,4 +160,22 @@ func (h *Handler) showFeedViewTopic(w http.ResponseWriter, r *http.Request) {
 		serverError(w, err)
 	}
 	w.Write([]byte(xml.Header + string(data)))
+}
+
+func (h *Handler) showNewPostViewTopic(w http.ResponseWriter, r *http.Request, user string) {
+	var topic string
+	if val, ok := r.URL.Query()["topic"]; ok && len(val) == 1 {
+		topic = val[0]
+	}
+	if !contains(h.topics, topic) && topic != "" {
+		notFound(w)
+		return
+	}
+	postForm := form.PostForm{}
+	postForm.Topics = h.topics
+	postForm.Topic = topic
+	h.renderLayout(w, "create_post", map[string]interface{}{
+		"form":           postForm,
+		csrf.TemplateTag: csrf.TemplateField(r),
+	}, user)
 }

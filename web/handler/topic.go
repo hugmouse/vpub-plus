@@ -24,32 +24,32 @@ type topicTab struct {
 func (h *Handler) showTopicView(w http.ResponseWriter, r *http.Request) {
 	user, _ := h.session.Get(r)
 
-	topic := mux.Vars(r)["topic"]
-	if !contains(h.topics, topic) {
+	id := RouteInt64Param(r, "topicId")
+	topic, err := h.storage.TopicById(id)
+	if err != nil {
 		notFound(w)
 		return
 	}
-
-	posts, hasMore, err := h.storage.PostsTopicWithReplyCount(topic, 1, h.perPage)
-	if err != nil {
-		serverError(w, err)
-		return
-	}
-
-	var topics []topicTab
-
-	for _, t := range h.topics {
-		topics = append(topics, topicTab{
-			Name:     t,
-			Selected: t == topic,
-		})
-	}
+	//
+	//posts, hasMore, err := h.storage.PostsTopicWithReplyCount(topic, 1, h.perPage)
+	//if err != nil {
+	//	serverError(w, err)
+	//	return
+	////}
+	//
+	//var topics []topicTab
+	//
+	//for _, t := range h.topics {
+	//	topics = append(topics, topicTab{
+	//		Name:     t,
+	//		Selected: t == topic,
+	//	})
+	//}
 
 	h.renderLayout(w, "topic", map[string]interface{}{
 		"topic":   topic,
-		"posts":   posts,
-		"topics":  topics,
-		"hasMore": hasMore,
+		"posts":   "",
+		"hasMore": "",
 	}, user)
 }
 

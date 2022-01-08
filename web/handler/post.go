@@ -1,25 +1,37 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gorilla/csrf"
 	"net/http"
+	"net/url"
+	"strconv"
 	"vpub/model"
 	"vpub/web/handler/form"
 )
 
-func (h *Handler) showNewPostView(w http.ResponseWriter, r *http.Request, user string) {
-	var topic string
-	if val, ok := r.URL.Query()["topic"]; ok && len(val) == 1 {
-		topic = val[0]
+func (h *Handler) ParseIntQS(qs *url.URL, name string) (int64, error) {
+	if v, ok := qs.Query()[name]; ok && len(v) == 1 {
+		return strconv.ParseInt(v[0], 10, 64)
 	}
-	if !contains(h.topics, topic) && topic != "" {
+	return 0, errors.New("qs value not found")
+}
+
+func (h *Handler) showNewPostView(w http.ResponseWriter, r *http.Request, user string) {
+	id, err := h.ParseIntQS(r.URL, "topicId")
+	if err != nil {
+		notFound(w)
+		return
+	}
+	topic, err := h.storage.TopicById(id)
+	if err != nil {
 		notFound(w)
 		return
 	}
 	postForm := form.PostForm{}
 	postForm.Topics = h.topics
-	postForm.Topic = topic
+	postForm.Topic = topic.Name
 	h.renderLayout(w, "create_post", map[string]interface{}{
 		"form":           postForm,
 		csrf.TemplateTag: csrf.TemplateField(r),

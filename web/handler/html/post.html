@@ -1,22 +1,67 @@
+{{ define "breadcrumb" }} > <a href="/topics/{{ .post.Topic }}">{{ .post.Topic }}</a>{{ end }}
 {{ define "content"}}
+<!--<table class="thread">-->
+<!--    <tr>-->
+<!--        <td>{{ .post.User }}</td>-->
+<!--        <td>{{ gmi2html .content }}</td>-->
+<!--    </tr>-->
+<!--    {{ range .replies }}-->
+<!--    <tr>-->
+<!--        <td>{{ .User }}</td>-->
+<!--        <td>{{ gmi2html .Content }}</td>-->
+<!--    </tr>-->
+<!--    {{ end }}-->
+<!--</table>-->
+<!--<form action="/posts/{{ .post.Id }}/reply" method="post">-->
+<!--    {{ .csrfField }}-->
+<!--    <div class="field">-->
+<!--        <textarea name="reply"></textarea>-->
+<!--    </div>-->
+<!--    <input type="submit" value="Reply">-->
+<!--</form>-->
 <h1>{{ .post.Title }}</h1>
-<div class="meta">
-    {{ with .post }}
-    <ul class="key-value">
-        <li><span class="key">From: </span><span class="value"><a href="/~{{ .User }}">{{ .User }}</a></span></li>
-        <li><span class="key">On: </span><span class="value">{{ timeAgo .CreatedAt }} ({{ .Date }})</span></li>
-        {{ if .Topic }}<li><span class="key">Topic: </span><span class="value"><a href="/topics/{{ .Topic }}">{{ .Topic }}</a></span></li>{{ end }}
-    </ul>
+<!--<ol class="thread">-->
+<!--    <li class="post">-->
+<!--        <table>-->
+<!--            <tr>-->
+<!--                <td class="post-aside">{{ .post.User }}</td>-->
+<!--                <td class="post-content">{{ gmi2html .content }}</td>-->
+<!--            </tr>-->
+<!--        </table>-->
+<!--    </li>-->
+<!--    {{ range .replies }}-->
+<!--    <li class="post">-->
+<!--        <table>-->
+<!--            <tr>-->
+<!--                <td class="post-aside">{{ .User }}</td>-->
+<!--                <td class="post-content">{{ gmi2html .Content }}</td>-->
+<!--            </tr>-->
+<!--        </table>-->
+<!--    </li>-->
+<!--    {{ end }}-->
+<!--</ol>-->
+<table class="thread">
+    <tr class="post">
+        <td class="post-aside">
+            <p>{{ .post.User }}</p>
+            <p>{{ timeAgo .post.CreatedAt }}</p>
+        </td>
+        <td class="post-content">
+            {{ gmi2html .content }}
+        </td>
+    </tr>
+    {{ range .replies }}
+    <tr class="post">
+        <td class="post-aside">
+            <p>{{ .User }}</p>
+            <p>{{ timeAgo .CreatedAt }}</p>
+        </td>
+        <td class="post-content">
+            {{ gmi2html .Content }}
+        </td>
+    </tr>
     {{ end }}
-</div>
-<div class="content">{{ gmi2html .content }}</div>
-{{- if eq .logged .post.User }}
-<p>
-    <a href="/posts/{{ .post.Id }}/edit">Edit</a>
-    <a href="/posts/{{ .post.Id }}/remove">Remove</a>
-</p>
-{{- end }}
-{{ if .logged }}
+</table>
 <form action="/posts/{{ .post.Id }}/reply" method="post">
     {{ .csrfField }}
     <div class="field">
@@ -24,6 +69,31 @@
     </div>
     <input type="submit" value="Reply">
 </form>
-{{ end }}
-{{ template "reply" .replies }}
+<!--<h1>{{ .post.Title }}</h1>-->
+<!--<div class="meta">-->
+<!--    {{ with .post }}-->
+<!--    <ul class="key-value">-->
+<!--        <li><span class="key">From: </span><span class="value"><a href="/~{{ .User }}">{{ .User }}</a></span></li>-->
+<!--        <li><span class="key">On: </span><span class="value">{{ timeAgo .CreatedAt }} ({{ .Date }})</span></li>-->
+<!--        {{ if .Topic }}<li><span class="key">Topic: </span><span class="value"><a href="/topics/{{ .Topic }}">{{ .Topic }}</a></span></li>{{ end }}-->
+<!--    </ul>-->
+<!--    {{ end }}-->
+<!--</div>-->
+<!--<div class="content">{{ gmi2html .content }}</div>-->
+<!--{{- if eq .logged .post.User }}-->
+<!--<p>-->
+<!--    <a href="/posts/{{ .post.Id }}/edit">Edit</a>-->
+<!--    <a href="/posts/{{ .post.Id }}/remove">Remove</a>-->
+<!--</p>-->
+<!--{{- end }}-->
+<!--{{ if .logged }}-->
+<!--<form action="/posts/{{ .post.Id }}/reply" method="post">-->
+<!--    {{ .csrfField }}-->
+<!--    <div class="field">-->
+<!--        <textarea name="reply"></textarea>-->
+<!--    </div>-->
+<!--    <input type="submit" value="Reply">-->
+<!--</form>-->
+<!--{{ end }}-->
+<!--{{ template "reply" .replies }}-->
 {{ end }}

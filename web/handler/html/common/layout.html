@@ -10,7 +10,7 @@
 </head>
 <body>
     <header>
-        <span><a href="/">home</a></span>
+        <span><a href="/">home</a>{{ template "breadcrumb" . }}</span>
         <nav>
             {{ if .logged }}
             {{ if .hasNotifications }}<a href="/notifications" class="notifications">New replies</a> {{ end }} <a href="/account">{{ .logged }}</a> (<a href="/logout">logout</a>)
@@ -25,3 +25,4 @@
 </html>
 {{ end }}
 {{ define "head" }}{{ end }}
+{{ define "breadcrumb" }}{{ end }}

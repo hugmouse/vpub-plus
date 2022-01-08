@@ -102,7 +102,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	router.HandleFunc("/logout", h.logout).Methods(http.MethodGet)
 
 	// Topics
-	router.HandleFunc("/topics/{topic}", h.showTopicView).Methods(http.MethodGet)
+	router.HandleFunc("/topics/{topicId}", h.showTopicView).Methods(http.MethodGet)
 	router.HandleFunc("/topics/{topic}/feed.atom", h.showFeedViewTopic).Methods(http.MethodGet)
 
 	// Posts

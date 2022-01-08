@@ -1,7 +1,7 @@
-{{ define "title" }}New Post{{ end }}
+{{ define "title" }}New Thread{{ end }}
 
 {{ define "content" }}
-    <h2>New Post</h2>
+    <h2>New Thread</h2>
     <form action="/posts/save" method="post">
         {{ .csrfField }}
         {{ template "post_form" .form }}

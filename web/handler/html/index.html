@@ -1,8 +1,6 @@
 {{ define "content"}}
 <h1>{{ .boardTitle }}</h1>
 
-{{ template "topics" . }}
-
 {{ .motd }}
 
 <nav class="actions">
@@ -14,15 +12,10 @@
     </p>
 </nav>
 
-<section>
-{{ template "postsTopic" .posts }}
-{{ if .hasMore }}
-<a href="/page/2">More</a>
-{{ end }}
-</section>
+<ol>
+    {{ range .topics }}
+    <li><h2><a href="/topics/{{ .Id }}">{{ .Name }}</a></h2><p>{{ .Description }}</p></li>
+    {{ end }}
+</ol>
 
-<section>
-    <h2>Users</h2>
-{{ range .users }}<a href="/~{{ . }}">{{ . }}</a> {{ end }}
-</section>
 {{ end }}

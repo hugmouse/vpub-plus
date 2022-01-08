@@ -35,10 +35,10 @@ var TplMap = map[string]string{
         <input type="submit" value="Submit">
     </form>
 {{ end }}`,
-	"create_post": `{{ define "title" }}New Post{{ end }}
+	"create_post": `{{ define "title" }}New Thread{{ end }}
 
 {{ define "content" }}
-    <h2>New Post</h2>
+    <h2>New Thread</h2>
     <form action="/posts/save" method="post">
         {{ .csrfField }}
         {{ template "post_form" .form }}
@@ -68,8 +68,6 @@ var TplMap = map[string]string{
 	"index": `{{ define "content"}}
 <h1>{{ .boardTitle }}</h1>
 
-{{ template "topics" . }}
-
 {{ .motd }}
 
 <nav class="actions">
@@ -81,17 +79,12 @@ var TplMap = map[string]string{
     </p>
 </nav>
 
-<section>
-{{ template "postsTopic" .posts }}
-{{ if .hasMore }}
-<a href="/page/2">More</a>
-{{ end }}
-</section>
+<ol>
+    {{ range .topics }}
+    <li><h2><a href="/topics/{{ .Id }}">{{ .Name }}</a></h2><p>{{ .Description }}</p></li>
+    {{ end }}
+</ol>
 
-<section>
-    <h2>Users</h2>
-{{ range .users }}<a href="/~{{ . }}">{{ . }}</a> {{ end }}
-</section>
 {{ end }}`,
 	"login": `{{ define "title" }}Login{{ end }}
 
@@ -147,25 +140,70 @@ var TplMap = map[string]string{
     {{ end }}
 </section>
 {{ end }}`,
-	"post": `{{ define "content"}}
+	"post": `{{ define "breadcrumb" }} > <a href="/topics/{{ .post.Topic }}">{{ .post.Topic }}</a>{{ end }}
+{{ define "content"}}
+<!--<table class="thread">-->
+<!--    <tr>-->
+<!--        <td>{{ .post.User }}</td>-->
+<!--        <td>{{ gmi2html .content }}</td>-->
+<!--    </tr>-->
+<!--    {{ range .replies }}-->
+<!--    <tr>-->
+<!--        <td>{{ .User }}</td>-->
+<!--        <td>{{ gmi2html .Content }}</td>-->
+<!--    </tr>-->
+<!--    {{ end }}-->
+<!--</table>-->
+<!--<form action="/posts/{{ .post.Id }}/reply" method="post">-->
+<!--    {{ .csrfField }}-->
+<!--    <div class="field">-->
+<!--        <textarea name="reply"></textarea>-->
+<!--    </div>-->
+<!--    <input type="submit" value="Reply">-->
+<!--</form>-->
 <h1>{{ .post.Title }}</h1>
-<div class="meta">
-    {{ with .post }}
-    <ul class="key-value">
-        <li><span class="key">From: </span><span class="value"><a href="/~{{ .User }}">{{ .User }}</a></span></li>
-        <li><span class="key">On: </span><span class="value">{{ timeAgo .CreatedAt }} ({{ .Date }})</span></li>
-        {{ if .Topic }}<li><span class="key">Topic: </span><span class="value"><a href="/topics/{{ .Topic }}">{{ .Topic }}</a></span></li>{{ end }}
-    </ul>
+<!--<ol class="thread">-->
+<!--    <li class="post">-->
+<!--        <table>-->
+<!--            <tr>-->
+<!--                <td class="post-aside">{{ .post.User }}</td>-->
+<!--                <td class="post-content">{{ gmi2html .content }}</td>-->
+<!--            </tr>-->
+<!--        </table>-->
+<!--    </li>-->
+<!--    {{ range .replies }}-->
+<!--    <li class="post">-->
+<!--        <table>-->
+<!--            <tr>-->
+<!--                <td class="post-aside">{{ .User }}</td>-->
+<!--                <td class="post-content">{{ gmi2html .Content }}</td>-->
+<!--            </tr>-->
+<!--        </table>-->
+<!--    </li>-->
+<!--    {{ end }}-->
+<!--</ol>-->
+<table class="thread">
+    <tr class="post">
+        <td class="post-aside">
+            <p>{{ .post.User }}</p>
+            <p>{{ timeAgo .post.CreatedAt }}</p>
+        </td>
+        <td class="post-content">
+            {{ gmi2html .content }}
+        </td>
+    </tr>
+    {{ range .replies }}
+    <tr class="post">
+        <td class="post-aside">
+            <p>{{ .User }}</p>
+            <p>{{ timeAgo .CreatedAt }}</p>
+        </td>
+        <td class="post-content">
+            {{ gmi2html .Content }}
+        </td>
+    </tr>
     {{ end }}
-</div>
-<div class="content">{{ gmi2html .content }}</div>
-{{- if eq .logged .post.User }}
-<p>
-    <a href="/posts/{{ .post.Id }}/edit">Edit</a>
-    <a href="/posts/{{ .post.Id }}/remove">Remove</a>
-</p>
-{{- end }}
-{{ if .logged }}
+</table>
 <form action="/posts/{{ .post.Id }}/reply" method="post">
     {{ .csrfField }}
     <div class="field">
@@ -173,8 +211,33 @@ var TplMap = map[string]string{
     </div>
     <input type="submit" value="Reply">
 </form>
-{{ end }}
-{{ template "reply" .replies }}
+<!--<h1>{{ .post.Title }}</h1>-->
+<!--<div class="meta">-->
+<!--    {{ with .post }}-->
+<!--    <ul class="key-value">-->
+<!--        <li><span class="key">From: </span><span class="value"><a href="/~{{ .User }}">{{ .User }}</a></span></li>-->
+<!--        <li><span class="key">On: </span><span class="value">{{ timeAgo .CreatedAt }} ({{ .Date }})</span></li>-->
+<!--        {{ if .Topic }}<li><span class="key">Topic: </span><span class="value"><a href="/topics/{{ .Topic }}">{{ .Topic }}</a></span></li>{{ end }}-->
+<!--    </ul>-->
+<!--    {{ end }}-->
+<!--</div>-->
+<!--<div class="content">{{ gmi2html .content }}</div>-->
+<!--{{- if eq .logged .post.User }}-->
+<!--<p>-->
+<!--    <a href="/posts/{{ .post.Id }}/edit">Edit</a>-->
+<!--    <a href="/posts/{{ .post.Id }}/remove">Remove</a>-->
+<!--</p>-->
+<!--{{- end }}-->
+<!--{{ if .logged }}-->
+<!--<form action="/posts/{{ .post.Id }}/reply" method="post">-->
+<!--    {{ .csrfField }}-->
+<!--    <div class="field">-->
+<!--        <textarea name="reply"></textarea>-->
+<!--    </div>-->
+<!--    <input type="submit" value="Reply">-->
+<!--</form>-->
+<!--{{ end }}-->
+<!--{{ template "reply" .replies }}-->
 {{ end }}`,
 	"register": `{{ define "title" }}Register{{ end }}
 
@@ -187,7 +250,7 @@ var TplMap = map[string]string{
         {{ .csrfField }}
         <div class="field">
             <label for="name">Username</label>
-            <input type="text" id="name" name="name" autocomplete="off" value="{{ .form.Username }}" maxlength="20"/>
+            <input type="text" id="name" name="name" autocomplete="off" value="{{ .form.Username }}" maxlength="15"/>
         </div>
         <div class="field">
             <label for="password">Password</label>
@@ -233,24 +296,25 @@ var TplMap = map[string]string{
 {{ end }}
 `,
 	"topic": `{{ define "content" }}
-<h1>{{ .topic }}</h1>
+<h1>{{ .topic.Name }}</h1>
 
-{{ template "topics" . }}
+<p>{{ .topic.Description }}</p>
 
 <nav class="actions">
     <p>
         {{ if .logged }}
-        <a href="/posts/new?topic={{ .topic }}">write</a>
+        <a href="/posts/new?topicId={{ .topic.Id }}">write</a>
         {{ end }}
         <a href="/topics/{{ .topic }}/feed.atom">follow</a>
     </p>
 </nav>
 
 <section>
-    {{ template "posts" .posts }}
-    {{ if .hasMore }}
-    <a href="/page/2?topic={{ .topic }}">More</a>
-    {{ end }}
+    <p>Posts will go there</p>
+<!--    {{ template "posts" .posts }}-->
+<!--    {{ if .hasMore }}-->
+<!--    <a href="/page/2?topic={{ .topic }}">More</a>-->
+<!--    {{ end }}-->
 </section>
 {{ end }}`,
 	"user_posts": `{{ define "content" }}

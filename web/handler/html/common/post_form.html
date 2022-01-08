@@ -1,17 +1,6 @@
 {{ define "post_form" }}
-{{ if .Topics }}
 <div class="field">
-    <label for="topic">Topic</label>
-    <select name="topic" id="topic">
-        {{ range .Topics }}
-        <option value="{{ . }}" {{ if eq . $.Topic }}selected{{ end }}>{{ . }}</option>
-        {{ end }}
-    </select>
-</div>
-{{ end }}
-
-<div class="field">
-    <label for="title">Title</label>
+    <label for="title">Subject</label>
     <input type="text" name="title" id="title" value="{{ .Title }}" autocomplete="off" maxlength="120" required autofocus/>
 </div>
 <div class="field">

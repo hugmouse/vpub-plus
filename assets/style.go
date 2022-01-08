@@ -23,6 +23,40 @@ ol.replies > li:not(:last-child) {
 
 /* Posts ************************************************************/
 
+/*.post:not(:last-child) {*/
+/*	border-bottom: 1px solid;*/
+/*}*/
+/*.post-aside {*/
+/*	vertical-align: top;*/
+/*	width: 150px;*/
+/*	text-align: center;*/
+/*	border-right: 1px solid;*/
+/*}*/
+/*.post-content {*/
+/*	padding: 0 1em;*/
+/*}*/
+/*.post table {*/
+/*	border-collapse: collapse;*/
+/*}*/
+/*.thread {*/
+/*	list-style: none;*/
+/*	border: 1px solid;*/
+/*	padding: 0;*/
+/*}*/
+
+table.thread {
+	border-collapse: collapse;
+	border: 1px solid;
+}
+tr, td {
+	vertical-align: top;
+	border: 1px solid;
+}
+.post-aside {
+	text-align: center;
+	width: 150px;
+}
+
 table.posts {
 	width: 100%;
 	border-collapse: collapse;
@@ -76,10 +110,6 @@ table.posts h2 { font-size: 1em; }
 
 .reply .content, .reply footer {
 	padding: 0 1em;
-}
-
-.thread {
-	padding: 1em 0 1em 1em;
 }
 
 .meta {

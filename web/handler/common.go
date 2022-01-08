@@ -15,7 +15,7 @@ var TplCommonMap = map[string]string{
 </head>
 <body>
     <header>
-        <span><a href="/">home</a></span>
+        <span><a href="/">home</a>{{ template "breadcrumb" . }}</span>
         <nav>
             {{ if .logged }}
             {{ if .hasNotifications }}<a href="/notifications" class="notifications">New replies</a> {{ end }} <a href="/account">{{ .logged }}</a> (<a href="/logout">logout</a>)
@@ -29,21 +29,11 @@ var TplCommonMap = map[string]string{
 </body>
 </html>
 {{ end }}
-{{ define "head" }}{{ end }}`,
+{{ define "head" }}{{ end }}
+{{ define "breadcrumb" }}{{ end }}`,
 	"post_form": `{{ define "post_form" }}
-{{ if .Topics }}
 <div class="field">
-    <label for="topic">Topic</label>
-    <select name="topic" id="topic">
-        {{ range .Topics }}
-        <option value="{{ . }}" {{ if eq . $.Topic }}selected{{ end }}>{{ . }}</option>
-        {{ end }}
-    </select>
-</div>
-{{ end }}
-
-<div class="field">
-    <label for="title">Title</label>
+    <label for="title">Subject</label>
     <input type="text" name="title" id="title" value="{{ .Title }}" autocomplete="off" maxlength="120" required autofocus/>
 </div>
 <div class="field">
@@ -136,17 +126,11 @@ var TplCommonMap = map[string]string{
                 <div class="content">{{ gmi2html .Content }}</div>
                 {{ if logged }}
                 <footer>
-                    <a href="/replies/{{ .Id }}">reply</a>
                     {{ if hasPermission .User }}
                     <a href="/replies/{{ .Id }}/edit">edit</a>
                     <a href="/replies/{{ .Id }}/remove">remove</a>
                     {{ end }}
                 </footer>
-                {{ end }}
-                {{ if .Thread }}
-                <div class="thread">
-                    {{ template "reply" .Thread }}
-                </div>
                 {{ end }}
             </details>
         </li>

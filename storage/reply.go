@@ -97,7 +97,7 @@ func (s *Storage) RepliesByPostId(postId int64) ([]model.Reply, error) {
 		LEFT JOIN replies s ON r.id = s.parent_id
 		WHERE r.post_id=$1 AND r.parent_id IS NULL
 		GROUP BY r.id
-		ORDER BY r.id DESC`
+		ORDER BY r.id`
 	rows, err := s.db.Query(q, postId)
 	if err != nil {
 		if err == sql.ErrNoRows {
