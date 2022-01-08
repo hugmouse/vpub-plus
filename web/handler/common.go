@@ -32,9 +32,10 @@ var TplCommonMap = map[string]string{
 {{ define "head" }}{{ end }}
 {{ define "breadcrumb" }}{{ end }}`,
 	"post_form": `{{ define "post_form" }}
+<input type="hidden" name="topicId" value="{{ .Topic.Id }}">
 <div class="field">
-    <label for="title">Subject</label>
-    <input type="text" name="title" id="title" value="{{ .Title }}" autocomplete="off" maxlength="120" required autofocus/>
+    <label for="subject">Subject</label>
+    <input type="text" name="subject" id="subject" value="{{ .Subject }}" autocomplete="off" maxlength="120" required autofocus/>
 </div>
 <div class="field">
     <label for="content">Content</label>

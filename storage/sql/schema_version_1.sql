@@ -60,7 +60,7 @@ create table topics (
 );
 
 -- Could we not have threads? Instead have posts that don't have a thread
-create table tpost (
+create table tposts (
     id integer primary key autoincrement,
     author text,
     subject text not null check ( length(subject) < 120 ),
@@ -70,6 +70,6 @@ create table tpost (
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     topic integer,
     foreign key (topic) references topics(id),
-    foreign key (thread) references tpost(id),
+    foreign key (thread) references tposts(id),
     foreign key (author) references users(name)
 )

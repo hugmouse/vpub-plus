@@ -36,7 +36,7 @@ var TplMap = map[string]string{
     </form>
 {{ end }}`,
 	"create_post": `{{ define "title" }}New Thread{{ end }}
-
+{{ define "breadcrumb" }} > <a href="/topics/{{ .form.Topic.Id }}">{{ .form.Topic.Name }}</a>{{ end }}
 {{ define "content" }}
     <h2>New Thread</h2>
     <form action="/posts/save" method="post">

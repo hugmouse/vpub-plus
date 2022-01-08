@@ -18,7 +18,7 @@ func (h *Handler) ParseIntQS(qs *url.URL, name string) (int64, error) {
 	return 0, errors.New("qs value not found")
 }
 
-func (h *Handler) showNewPostView(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) showNewThreadView(w http.ResponseWriter, r *http.Request, user string) {
 	id, err := h.ParseIntQS(r.URL, "topicId")
 	if err != nil {
 		notFound(w)
@@ -29,9 +29,9 @@ func (h *Handler) showNewPostView(w http.ResponseWriter, r *http.Request, user s
 		notFound(w)
 		return
 	}
-	postForm := form.PostForm{}
-	postForm.Topics = h.topics
-	postForm.Topic = topic.Name
+	postForm := form.ThreadForm{
+		Topic: topic,
+	}
 	h.renderLayout(w, "create_post", map[string]interface{}{
 		"form":           postForm,
 		csrf.TemplateTag: csrf.TemplateField(r),
@@ -39,10 +39,10 @@ func (h *Handler) showNewPostView(w http.ResponseWriter, r *http.Request, user s
 }
 
 func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user string) {
-	postForm := form.NewPostForm(r, h.topics)
-	post := model.Post{
-		User:    user,
-		Title:   postForm.Title,
+	postForm := form.NewThreadForm(r)
+	post := model.TPost{
+		Author:  user,
+		Subject: postForm.Subject,
 		Content: postForm.Content,
 		Topic:   postForm.Topic,
 	}
@@ -50,12 +50,12 @@ func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user string) 
 		serverError(w, err)
 		return
 	}
-	id, err := h.storage.CreatePost(post)
+	_, err := h.storage.CreateTPost(post)
 	if err != nil {
 		serverError(w, err)
 		return
 	}
-	http.Redirect(w, r, fmt.Sprintf("/posts/%d", id), http.StatusFound)
+	//http.Redirect(w, r, fmt.Sprintf("/posts/%d", id), http.StatusFound)
 }
 
 func (h *Handler) showPostView(w http.ResponseWriter, r *http.Request) {
