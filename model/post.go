@@ -13,7 +13,6 @@ type Post struct {
 	Replies   int
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	Topic     string
 }
 
 func (p Post) Validate() error {

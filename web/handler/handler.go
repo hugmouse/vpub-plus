@@ -92,7 +92,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	// Static assets
 	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)
 	//router.HandleFunc("/favicon.ico", h.showFavicon).Name("favicon").Methods(http.MethodGet)
-	router.HandleFunc("/feed.atom", h.showFeedView).Methods(http.MethodGet)
+	//router.HandleFunc("/feed.atom", h.showFeedView).Methods(http.MethodGet)
 
 	// Auth
 	router.HandleFunc("/login", h.showLoginView).Methods(http.MethodGet)
@@ -101,33 +101,35 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	router.HandleFunc("/register", h.register).Methods(http.MethodPost)
 	router.HandleFunc("/logout", h.logout).Methods(http.MethodGet)
 
-	// Topics
-	router.HandleFunc("/topics/{topicId}", h.showTopicView).Methods(http.MethodGet)
-	router.HandleFunc("/topics/{topic}/feed.atom", h.showFeedViewTopic).Methods(http.MethodGet)
+	// Boards
+	router.HandleFunc("/boards/{boardId}", h.showBoardView).Methods(http.MethodGet)
+	router.HandleFunc("/boards/{boardId}/new-topic", h.protect(h.showNewTopicView)).Methods(http.MethodGet)
+	router.HandleFunc("/boards/{boardId}/save-topic", h.protect(h.saveTopic)).Methods(http.MethodPost)
+	//router.HandleFunc("/boards/{boardId}/feed.atom", h.showFeedViewTopic).Methods(http.MethodGet)
 
 	// Posts
 	router.HandleFunc("/posts/new", h.protect(h.showNewThreadView)).Methods(http.MethodGet)
 	router.HandleFunc("/posts/save", h.protect(h.savePost)).Methods(http.MethodPost)
-	router.HandleFunc("/posts/{postId}", h.showPostView).Methods(http.MethodGet)
-	router.HandleFunc("/posts/{postId}/edit", h.protect(h.showEditPostView)).Methods(http.MethodGet)
-	router.HandleFunc("/posts/{postId}/update", h.protect(h.updatePost)).Methods(http.MethodPost)
-	router.HandleFunc("/posts/{postId}/remove", h.protect(h.handleRemovePost))
-	router.HandleFunc("/posts/{postId}/reply", h.protect(h.savePostReply)).Methods(http.MethodPost)
+	//router.HandleFunc("/posts/{postId}", h.showPostView).Methods(http.MethodGet)
+	//router.HandleFunc("/posts/{postId}/edit", h.protect(h.showEditPostView)).Methods(http.MethodGet)
+	//router.HandleFunc("/posts/{postId}/update", h.protect(h.updatePost)).Methods(http.MethodPost)
+	//router.HandleFunc("/posts/{postId}/remove", h.protect(h.handleRemovePost))
+	//router.HandleFunc("/posts/{postId}/reply", h.protect(h.savePostReply)).Methods(http.MethodPost)
 
 	// Pagination
-	router.HandleFunc("/page/{nb}", h.showPageNumber).Methods(http.MethodGet)
+	//router.HandleFunc("/page/{nb}", h.showPageNumber).Methods(http.MethodGet)
 
 	// Replies
-	router.HandleFunc("/replies/{replyId}", h.protect(h.showReplyView)).Methods(http.MethodGet)
-	router.HandleFunc("/replies/{replyId}/save", h.protect(h.saveReplyReply)).Methods(http.MethodPost)
-	router.HandleFunc("/replies/{replyId}/edit", h.protect(h.showEditReplyView)).Methods(http.MethodGet)
-	router.HandleFunc("/replies/{replyId}/update", h.protect(h.updateReply)).Methods(http.MethodPost)
-	router.HandleFunc("/replies/{replyId}/remove", h.protect(h.handleRemoveReply))
+	//router.HandleFunc("/replies/{replyId}", h.protect(h.showReplyView)).Methods(http.MethodGet)
+	//router.HandleFunc("/replies/{replyId}/save", h.protect(h.saveReplyReply)).Methods(http.MethodPost)
+	//router.HandleFunc("/replies/{replyId}/edit", h.protect(h.showEditReplyView)).Methods(http.MethodGet)
+	//router.HandleFunc("/replies/{replyId}/update", h.protect(h.updateReply)).Methods(http.MethodPost)
+	//router.HandleFunc("/replies/{replyId}/remove", h.protect(h.handleRemoveReply))
 
 	// Notifications
-	router.HandleFunc("/notifications", h.protect(h.showNotificationsView)).Methods(http.MethodGet)
-	router.HandleFunc("/notifications/{notificationId}/mark-read", h.protect(h.markRead)).Methods(http.MethodGet)
-	router.HandleFunc("/notifications/mark-all-read", h.protect(h.markAllRead)).Methods(http.MethodGet)
+	//router.HandleFunc("/notifications", h.protect(h.showNotificationsView)).Methods(http.MethodGet)
+	//router.HandleFunc("/notifications/{notificationId}/mark-read", h.protect(h.markRead)).Methods(http.MethodGet)
+	//router.HandleFunc("/notifications/mark-all-read", h.protect(h.markAllRead)).Methods(http.MethodGet)
 
 	// User
 	router.HandleFunc("/~{userId}", h.showUserPostsView).Methods(http.MethodGet)

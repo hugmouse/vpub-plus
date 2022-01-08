@@ -67,7 +67,7 @@ func (h *Handler) renderLayout(w io.Writer, view string, params map[string]inter
 		}
 	}
 	if user != "" {
-		data["hasNotifications"] = h.storage.UserHasNotifications(user)
+		//data["hasNotifications"] = h.storage.UserHasNotifications(user)
 	}
 	data["logged"] = user
 	data["boardTitle"] = h.title

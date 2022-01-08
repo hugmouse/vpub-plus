@@ -32,7 +32,7 @@ var TplCommonMap = map[string]string{
 {{ define "head" }}{{ end }}
 {{ define "breadcrumb" }}{{ end }}`,
 	"post_form": `{{ define "post_form" }}
-<input type="hidden" name="topicId" value="{{ .Topic.Id }}">
+<input type="hidden" name="topicId" value="{{ .TopicId }}">
 <div class="field">
     <label for="subject">Subject</label>
     <input type="text" name="subject" id="subject" value="{{ .Subject }}" autocomplete="off" maxlength="120" required autofocus/>
@@ -49,7 +49,7 @@ var TplCommonMap = map[string]string{
 <!--    {{ range . }}-->
 <!--    <li>-->
 <!--        <article>-->
-<!--            <header><h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2> ({{ .Replies }})</header>-->
+<!--            <header><h2><a href="/posts/{{ .Id }}">{{ .Subject }}</a></h2> ({{ .Replies }})</header>-->
 <!--            <div><a href="/~{{ .User }}">{{ .User }}</a>{{ if .Topic }} in <a href="/topics/{{ .Topic }}">{{ .Topic }}</a>{{ end }} {{ timeAgo .CreatedAt }}</div>-->
 <!--        </article>-->
 <!--    </li>-->

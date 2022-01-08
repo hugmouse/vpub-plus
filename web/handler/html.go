@@ -19,6 +19,32 @@ var TplMap = map[string]string{
 </section>
 {{ end }}
 `,
+	"board": `{{ define "content" }}
+<h1>{{ .board.Name }}</h1>
+
+<p>{{ .board.Description }}</p>
+
+<nav class="actions">
+    <p>
+        {{ if .logged }}
+        <a href="/boards/{{ .board.Id }}/new-topic">new topic</a>
+        {{ end }}
+        <a href="TODO">follow</a>
+    </p>
+</nav>
+
+<section>
+<ol>
+    {{ range .threads }}
+    <li><a href="todo">{{ .Subject }}</a></li>
+    {{ end }}
+</ol>
+<!--    {{ template "posts" .posts }}-->
+<!--    {{ if .hasMore }}-->
+<!--    <a href="/page/2?topic={{ .topic }}">More</a>-->
+<!--    {{ end }}-->
+</section>
+{{ end }}`,
 	"confirm_remove_post": `{{ define "content" }}
     Are you sure you you want to delete the following post?
     <p>{{ gmi2html .post.Content }}</p>
@@ -44,6 +70,18 @@ var TplMap = map[string]string{
         {{ template "post_form" .form }}
         <input type="submit" value="Submit">
     </form>
+{{ end }}
+`,
+	"create_topic": `{{ define "title" }}New Thread{{ end }}
+{{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
+{{ define "content" }}
+<h2>New topic</h2>
+<form action="/boards/{{ .board.Id }}/save-topic" method="post">
+    {{ .csrfField }}
+    <input type="hidden" name="boardId" value="{{ .board.Id }}">
+    {{ template "post_form" .form.PostForm }}
+    <input type="submit" value="Submit">
+</form>
 {{ end }}
 `,
 	"edit_post": `{{ define "title" }}Edit Post{{ end }}
@@ -72,16 +110,13 @@ var TplMap = map[string]string{
 
 <nav class="actions">
     <p>
-        {{ if .logged }}
-        <a href="/posts/new">write</a>
-        {{ end }}
         <a href="/feed.atom">follow</a>
     </p>
 </nav>
 
 <ol>
-    {{ range .topics }}
-    <li><h2><a href="/topics/{{ .Id }}">{{ .Name }}</a></h2><p>{{ .Description }}</p></li>
+    {{ range .boards }}
+    <li><h2><a href="/boards/{{ .Id }}">{{ .Name }}</a></h2><p>{{ .Description }}</p></li>
     {{ end }}
 </ol>
 
@@ -211,7 +246,7 @@ var TplMap = map[string]string{
     </div>
     <input type="submit" value="Reply">
 </form>
-<!--<h1>{{ .post.Title }}</h1>-->
+<!--<h1>{{ .post.Subject }}</h1>-->
 <!--<div class="meta">-->
 <!--    {{ with .post }}-->
 <!--    <ul class="key-value">-->
@@ -295,28 +330,6 @@ var TplMap = map[string]string{
     </section>
 {{ end }}
 `,
-	"topic": `{{ define "content" }}
-<h1>{{ .topic.Name }}</h1>
-
-<p>{{ .topic.Description }}</p>
-
-<nav class="actions">
-    <p>
-        {{ if .logged }}
-        <a href="/posts/new?topicId={{ .topic.Id }}">write</a>
-        {{ end }}
-        <a href="/topics/{{ .topic }}/feed.atom">follow</a>
-    </p>
-</nav>
-
-<section>
-    <p>Posts will go there</p>
-<!--    {{ template "posts" .posts }}-->
-<!--    {{ if .hasMore }}-->
-<!--    <a href="/page/2?topic={{ .topic }}">More</a>-->
-<!--    {{ end }}-->
-</section>
-{{ end }}`,
 	"user_posts": `{{ define "content" }}
 <h1>{{ .user.Name }}</h1>
 <div class="content">{{ gmi2html .user.About }}</div>

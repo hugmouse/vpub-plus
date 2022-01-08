@@ -22,7 +22,7 @@ func (h *Handler) showUserPostsView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	posts, showMore, err := h.storage.PostsByUsernameWithReplyCount(user.Name, h.perPage, page)
+	//posts, showMore, err := h.storage.PostsByUsernameWithReplyCount(user.Name, h.perPage, page)
 	if err != nil {
 		serverError(w, err)
 		return
@@ -30,9 +30,9 @@ func (h *Handler) showUserPostsView(w http.ResponseWriter, r *http.Request) {
 
 	h.renderLayout(w, "user_posts", map[string]interface{}{
 		"user":     user,
-		"posts":    posts,
+		"posts":    "",
 		"page":     page,
-		"showMore": showMore,
+		"showMore": "",
 		"nextPage": page + 1,
 	}, logged)
 }

@@ -1,19 +1,23 @@
 {{ define "content" }}
-<h1>{{ .topic.Name }}</h1>
+<h1>{{ .board.Name }}</h1>
 
-<p>{{ .topic.Description }}</p>
+<p>{{ .board.Description }}</p>
 
 <nav class="actions">
     <p>
         {{ if .logged }}
-        <a href="/posts/new?topicId={{ .topic.Id }}">write</a>
+        <a href="/boards/{{ .board.Id }}/new-topic">new topic</a>
         {{ end }}
-        <a href="/topics/{{ .topic }}/feed.atom">follow</a>
+        <a href="TODO">follow</a>
     </p>
 </nav>
 
 <section>
-    <p>Posts will go there</p>
+<ol>
+    {{ range .threads }}
+    <li><a href="todo">{{ .Subject }}</a></li>
+    {{ end }}
+</ol>
 <!--    {{ template "posts" .posts }}-->
 <!--    {{ if .hasMore }}-->
 <!--    <a href="/page/2?topic={{ .topic }}">More</a>-->

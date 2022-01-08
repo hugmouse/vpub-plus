@@ -1,31 +1,27 @@
 package storage
 
-import "vpub/model"
+import (
+	"context"
+	"vpub/model"
+)
 
-func (s *Storage) TopicById(id int64) (model.Topic, error) {
-	var topic model.Topic
-	err := s.db.QueryRow(
-		`SELECT id, name, description from topics WHERE id=$1`, id).Scan(
-		&topic.Id,
-		&topic.Name,
-		&topic.Description,
-	)
-	return topic, err
-}
-
-func (s *Storage) Topics() ([]model.Topic, error) {
-	rows, err := s.db.Query("select id, name, description from topics")
+func (s *Storage) CreateTopic(topic model.Topic) (int64, error) {
+	ctx := context.Background()
+	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, err
+		return topic.Id, err
 	}
-	var topics []model.Topic
-	for rows.Next() {
-		var topic model.Topic
-		err := rows.Scan(&topic.Id, &topic.Name, &topic.Description)
-		if err != nil {
-			return topics, err
-		}
-		topics = append(topics, topic)
+	post := topic.FirstPost
+	if err := tx.QueryRowContext(ctx, `INSERT INTO posts (author, subject, content) VALUES ($1, $2, $3) RETURNING id`,
+		post.User, post.Title, post.Content).Scan(&post.Id); err != nil {
+		tx.Rollback()
+		return topic.Id, err
 	}
-	return topics, nil
+	if err := tx.QueryRowContext(ctx, `INSERT INTO topics (board_id, first_post_id) VALUES ($1, $2) RETURNING id`,
+		topic.BoardId, post.Id).Scan(&topic.Id); err != nil {
+		tx.Rollback()
+		return topic.Id, err
+	}
+	err = tx.Commit()
+	return topic.Id, err
 }

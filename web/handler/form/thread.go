@@ -10,7 +10,7 @@ import (
 type ThreadForm struct {
 	Subject string
 	Content string
-	Topic   model.Topic
+	Topic   model.Board
 }
 
 func NewThreadForm(r *http.Request) *ThreadForm {
@@ -18,7 +18,7 @@ func NewThreadForm(r *http.Request) *ThreadForm {
 	return &ThreadForm{
 		Subject: strings.TrimSpace(r.FormValue("subject")),
 		Content: strings.TrimSpace(r.FormValue("content")),
-		Topic: model.Topic{
+		Topic: model.Board{
 			Id: topicId,
 		},
 	}

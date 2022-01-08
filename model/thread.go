@@ -12,7 +12,7 @@ type TPost struct {
 	Content   string
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	Topic     Topic
+	Topic     Board
 }
 
 func (p TPost) Validate() error {

@@ -7,7 +7,7 @@ import (
 
 func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 	user, _ := h.session.Get(r)
-	topics, err := h.storage.Topics()
+	boards, err := h.storage.Boards()
 	if err != nil {
 		serverError(w, err)
 		return
@@ -19,12 +19,12 @@ func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 	//	return
 	//}
 
-	hasNotifs := h.storage.UserHasNotifications(user)
+	//hasNotifs := h.storage.UserHasNotifications(user)
 
 	h.renderLayout(w, "index", map[string]interface{}{
 		"posts":            "",
-		"hasNotifications": hasNotifs,
-		"topics":           topics,
+		"hasNotifications": false,
+		"boards":           boards,
 		"motd":             template.HTML(h.motd),
 		"logged":           user,
 		"boardTitle":       h.title,

@@ -5,16 +5,13 @@
 
 <nav class="actions">
     <p>
-        {{ if .logged }}
-        <a href="/posts/new">write</a>
-        {{ end }}
         <a href="/feed.atom">follow</a>
     </p>
 </nav>
 
 <ol>
-    {{ range .topics }}
-    <li><h2><a href="/topics/{{ .Id }}">{{ .Name }}</a></h2><p>{{ .Description }}</p></li>
+    {{ range .boards }}
+    <li><h2><a href="/boards/{{ .Id }}">{{ .Name }}</a></h2><p>{{ .Description }}</p></li>
     {{ end }}
 </ol>
 
