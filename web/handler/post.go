@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"vpub/model"
 	"vpub/web/handler/form"
 )
 
@@ -37,25 +36,26 @@ func (h *Handler) showNewThreadView(w http.ResponseWriter, r *http.Request, user
 	}, user)
 }
 
-func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user string) {
-	postForm := form.NewThreadForm(r)
-	post := model.TPost{
-		Author:  user,
-		Subject: postForm.Subject,
-		Content: postForm.Content,
-		Topic:   postForm.Topic,
-	}
-	if err := post.Validate(); err != nil {
-		serverError(w, err)
-		return
-	}
-	_, err := h.storage.CreateTPost(post)
-	if err != nil {
-		serverError(w, err)
-		return
-	}
-	//http.Redirect(w, r, fmt.Sprintf("/posts/%d", id), http.StatusFound)
-}
+//
+//func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user string) {
+//	postForm := form.NewThreadForm(r)
+//	post := model.TPost{
+//		Author:  user,
+//		Subject: postForm.Subject,
+//		Content: postForm.Content,
+//		Topic:   postForm.Topic,
+//	}
+//	if err := post.Validate(); err != nil {
+//		serverError(w, err)
+//		return
+//	}
+//	_, err := h.storage.CreateTPost(post)
+//	if err != nil {
+//		serverError(w, err)
+//		return
+//	}
+//	//http.Redirect(w, r, fmt.Sprintf("/posts/%d", id), http.StatusFound)
+//}
 
 //
 //func (h *Handler) showPostView(w http.ResponseWriter, r *http.Request) {

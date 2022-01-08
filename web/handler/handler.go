@@ -109,7 +109,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 
 	// Posts
 	router.HandleFunc("/posts/new", h.protect(h.showNewThreadView)).Methods(http.MethodGet)
-	router.HandleFunc("/posts/save", h.protect(h.savePost)).Methods(http.MethodPost)
+	//router.HandleFunc("/posts/save", h.protect(h.savePost)).Methods(http.MethodPost)
 	//router.HandleFunc("/posts/{postId}", h.showPostView).Methods(http.MethodGet)
 	//router.HandleFunc("/posts/{postId}/edit", h.protect(h.showEditPostView)).Methods(http.MethodGet)
 	//router.HandleFunc("/posts/{postId}/update", h.protect(h.updatePost)).Methods(http.MethodPost)

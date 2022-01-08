@@ -35,7 +35,7 @@ var TplMap = map[string]string{
 
 <section>
 <ol>
-    {{ range .threads }}
+    {{ range .topics }}
     <li><a href="todo">{{ .Subject }}</a></li>
     {{ end }}
 </ol>
