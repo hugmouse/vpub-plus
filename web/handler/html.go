@@ -36,7 +36,7 @@ var TplMap = map[string]string{
 <section>
 <ol>
     {{ range .topics }}
-    <li><a href="todo">{{ .Subject }}</a></li>
+    <li><a href="/topics/{{ .Id }}">{{ .Subject }}</a></li>
     {{ end }}
 </ol>
 <!--    {{ template "posts" .posts }}-->
@@ -330,6 +330,36 @@ var TplMap = map[string]string{
     </section>
 {{ end }}
 `,
+	"topic": `{{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
+{{ define "content"}}
+<h1>{{ .post.Title }}</h1>
+<table class="thread">
+    {{ range .posts }}
+    <tr class="post">
+        <td class="post-aside">
+            <p>{{ .User }}</p>
+            <p>{{ timeAgo .CreatedAt }}</p>
+        </td>
+        <td class="post-content">
+            {{ if eq $.topic.FirstPostId .Id }}<h1>{{ .Title }}</h1>{{ end }}
+            {{ gmi2html .Content }}
+            {{ if hasPermission .User }}
+            <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
+            {{ end }}
+        </td>
+    </tr>
+    {{ end }}
+</table>
+<form action="/posts/save" method="post">
+    {{ .csrfField }}
+    <input type="hidden" name="topicId" value="{{ .topic.Id }}">
+    <input type="hidden" name="subject" value="Re: {{ .topic.Subject }}">
+    <div class="field">
+        <textarea name="content"></textarea>
+    </div>
+    <input type="submit" value="Reply">
+</form>
+{{ end }}`,
 	"user_posts": `{{ define "content" }}
 <h1>{{ .user.Name }}</h1>
 <div class="content">{{ gmi2html .user.About }}</div>

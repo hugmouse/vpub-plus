@@ -15,7 +15,7 @@
 <section>
 <ol>
     {{ range .topics }}
-    <li><a href="todo">{{ .Subject }}</a></li>
+    <li><a href="/topics/{{ .Id }}">{{ .Subject }}</a></li>
     {{ end }}
 </ol>
 <!--    {{ template "posts" .posts }}-->

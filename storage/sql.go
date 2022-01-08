@@ -35,10 +35,10 @@ create table posts (
     author text not null,
     subject text not null check ( length(subject) < 120 ),
     content text not null check ( length(content) < 50000 ),
-    topic integer,
+    topic_id integer,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    foreign key (topic) references topics(id),
+    foreign key (topic_id) references topics(id),
     foreign key (author) references users(name)
 )`,
 }

@@ -2,10 +2,12 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gorilla/csrf"
 	"net/http"
 	"net/url"
 	"strconv"
+	"vpub/model"
 	"vpub/web/handler/form"
 )
 
@@ -36,26 +38,25 @@ func (h *Handler) showNewThreadView(w http.ResponseWriter, r *http.Request, user
 	}, user)
 }
 
-//
-//func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user string) {
-//	postForm := form.NewThreadForm(r)
-//	post := model.TPost{
-//		Author:  user,
-//		Subject: postForm.Subject,
-//		Content: postForm.Content,
-//		Topic:   postForm.Topic,
-//	}
-//	if err := post.Validate(); err != nil {
-//		serverError(w, err)
-//		return
-//	}
-//	_, err := h.storage.CreateTPost(post)
-//	if err != nil {
-//		serverError(w, err)
-//		return
-//	}
-//	//http.Redirect(w, r, fmt.Sprintf("/posts/%d", id), http.StatusFound)
-//}
+func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user string) {
+	postForm := form.NewPostForm(r)
+	post := model.Post{
+		User:    user,
+		Title:   postForm.Subject,
+		Content: postForm.Content,
+		TopicId: postForm.TopicId,
+	}
+	if err := post.Validate(); err != nil {
+		serverError(w, err)
+		return
+	}
+	_, err := h.storage.CreatePost(post)
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/topics/%d", postForm.TopicId), http.StatusFound)
+}
 
 //
 //func (h *Handler) showPostView(w http.ResponseWriter, r *http.Request) {
@@ -81,96 +82,85 @@ func (h *Handler) showNewThreadView(w http.ResponseWriter, r *http.Request, user
 //	}, user)
 //}
 
-//
-//func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user string) {
-//	post, err := h.storage.PostById(RouteInt64Param(r, "postId"))
-//	if err != nil {
-//		serverError(w, err)
-//		return
-//	}
-//	if user != post.User {
-//		forbidden(w)
-//		return
-//	}
-//	postForm := form.PostForm{
-//		Subject: post.Title,
-//		Content: post.Content,
-//		Topic:   post.Topic,
-//		Topics:  h.topics,
-//	}
-//	h.renderLayout(w, "edit_post", map[string]interface{}{
-//		"form":           postForm,
-//		"post":           post,
-//		csrf.TemplateTag: csrf.TemplateField(r),
-//	}, user)
-//}
-//
-//func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user string) {
-//	id := RouteInt64Param(r, "postId")
-//
-//	post, err := h.storage.PostById(id)
-//	if err != nil {
-//		serverError(w, err)
-//		return
-//	}
-//
-//	if user != post.User {
-//		forbidden(w)
-//		return
-//	}
-//
-//	postForm := form.NewPostForm(r, h.topics)
-//
-//	post.Title = postForm.Subject
-//	post.Content = postForm.Content
-//	post.Topic = postForm.Topic
-//	post.User = user
-//
-//	if err := post.Validate(); err != nil {
-//		serverError(w, err)
-//		return
-//	}
-//
-//	if err := h.storage.UpdatePost(post); err != nil {
-//		serverError(w, err)
-//		return
-//	}
-//
-//	http.Redirect(w, r, fmt.Sprintf("/posts/%d", post.Id), http.StatusFound)
-//}
-//
-//func (h *Handler) handleRemovePost(w http.ResponseWriter, r *http.Request, user string) {
-//	switch r.Method {
-//	case "GET":
-//		id := RouteInt64Param(r, "postId")
-//		post, err := h.storage.PostById(id)
-//		if err != nil {
-//			serverError(w, err)
-//			return
-//		}
-//		if user != post.User {
-//			forbidden(w)
-//			return
-//		}
-//		h.renderLayout(w, "confirm_remove_post", map[string]interface{}{
-//			"post":           post,
-//			csrf.TemplateTag: csrf.TemplateField(r),
-//		}, user)
-//	case "POST":
-//		post, err := h.storage.PostById(RouteInt64Param(r, "postId"))
-//		if err != nil {
-//			serverError(w, err)
-//			return
-//		}
-//		if user != post.User {
-//			forbidden(w)
-//			return
-//		}
-//		err = h.storage.DeletePost(post.Id, user)
-//		if err != nil {
-//			serverError(w, err)
-//			return
-//		}
-//		http.Redirect(w, r, "/", http.StatusFound)
-//	}
-//}
+func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user string) {
+	post, err := h.storage.PostById(RouteInt64Param(r, "postId"))
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	if user != post.User {
+		forbidden(w)
+		return
+	}
+	postForm := form.PostForm{
+		Subject: post.Title,
+		Content: post.Content,
+		TopicId: post.TopicId,
+	}
+	h.renderLayout(w, "edit_post", map[string]interface{}{
+		"form":           postForm,
+		"post":           post,
+		csrf.TemplateTag: csrf.TemplateField(r),
+	}, user)
+}
+
+func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user string) {
+	id := RouteInt64Param(r, "postId")
+	post, err := h.storage.PostById(id)
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	if user != post.User {
+		forbidden(w)
+		return
+	}
+	postForm := form.NewPostForm(r)
+	post.Title = postForm.Subject
+	post.Content = postForm.Content
+	if err := post.Validate(); err != nil {
+		serverError(w, err)
+		return
+	}
+	if err := h.storage.UpdatePost(post); err != nil {
+		serverError(w, err)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/topics/%d", post.TopicId), http.StatusFound)
+}
+
+func (h *Handler) handleRemovePost(w http.ResponseWriter, r *http.Request, user string) {
+	switch r.Method {
+	case "GET":
+		id := RouteInt64Param(r, "postId")
+		post, err := h.storage.PostById(id)
+		if err != nil {
+			serverError(w, err)
+			return
+		}
+		if user != post.User {
+			forbidden(w)
+			return
+		}
+		h.renderLayout(w, "confirm_remove_post", map[string]interface{}{
+			"post":           post,
+			csrf.TemplateTag: csrf.TemplateField(r),
+		}, user)
+	case "POST":
+		post, err := h.storage.PostById(RouteInt64Param(r, "postId"))
+		if err != nil {
+			serverError(w, err)
+			return
+		}
+		if user != post.User {
+			forbidden(w)
+			return
+		}
+		err = h.storage.DeletePostById(post.Id)
+		if err != nil {
+			serverError(w, err)
+			return
+		}
+		http.Redirect(w, r, fmt.Sprintf("/topics/%d", post.TopicId), http.StatusFound)
+	}
+}

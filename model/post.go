@@ -10,6 +10,7 @@ type Post struct {
 	User      string
 	Title     string
 	Content   string
+	TopicId   int64
 	Replies   int
 	CreatedAt time.Time
 	UpdatedAt time.Time
