@@ -44,7 +44,7 @@ var TplCommonMap = map[string]string{
 
 <div class="field">
     <label for="title">Title</label>
-    <input type="text" name="title" id="title" value="{{ .Title }}" autocomplete="off" required autofocus/>
+    <input type="text" name="title" id="title" value="{{ .Title }}" autocomplete="off" maxlength="120" required autofocus/>
 </div>
 <div class="field">
     <label for="content">Content</label>
@@ -52,13 +52,31 @@ var TplCommonMap = map[string]string{
 </div>
 {{ end }}`,
 	"posts": `{{ define "posts" }}
-<!--TOP ONE-->
+<!--{{ if . }}-->
+<!--<ol class="posts">-->
+<!--    {{ if . }}-->
+<!--    {{ range . }}-->
+<!--    <li>-->
+<!--        <article>-->
+<!--            <header><h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2> ({{ .Replies }})</header>-->
+<!--            <div><a href="/~{{ .User }}">{{ .User }}</a>{{ if .Topic }} in <a href="/topics/{{ .Topic }}">{{ .Topic }}</a>{{ end }} {{ timeAgo .CreatedAt }}</div>-->
+<!--        </article>-->
+<!--    </li>-->
+<!--    {{ end }}-->
+<!--    {{ else }}-->
+<!--    <li>No post yet</li>-->
+<!--    {{ end }}-->
+<!--</ol>-->
+<!--{{ end }}-->
+
 {{ if . }}
 <table class="posts">
     <thead>
-        <tr style="text-align: left;">
-            <th scope="col">Title</th>
-            <th scope="col" style="text-align: center; width: 10%;">Replies</th>
+        <tr>
+            <th>Subject</th>
+            <th>Author</th>
+            <th>Replies</th>
+            <th>Updated</th>
         </tr>
     </thead>
     <tbody>
@@ -66,9 +84,10 @@ var TplCommonMap = map[string]string{
     <tr>
         <td>
             <h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2>
-            <div><a href="/~{{ .User }}">{{ .User }}</a>{{ if .Topic }} in <a href="/topics/{{ .Topic }}">{{ .Topic }}</a>{{ end }} {{ timeAgo .CreatedAt }}</div>
         </td>
+        <td style="text-align: center;"><a href="/~{{ .User }}">{{ .User }}</a></td>
         <td style="text-align: center;">{{ .Replies }}</td>
+        <td style="text-align: center">{{ .DateUpdated }}</td>
     </tr>
     {{ end }}
     </tbody>
@@ -76,128 +95,36 @@ var TplCommonMap = map[string]string{
 {{ else }}
 <p>No post yet</p>
 {{ end }}
-
-<!--CONTENDER-->
-<!--{{ if . }}-->
-<!--<ol class="posts">-->
-<!--    {{ if . }}-->
-<!--    {{ range . }}-->
-<!--    <li>-->
-<!--        <h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2>-->
-<!--        <div class="test"><a href="/~{{ .User }}">{{ .User }}</a> {{ .Date }} {{ if .Topic }}<a href="/topics/{{ .Topic }}">{{ .Topic }}</a> {{ end }} - {{ if .Replies }}{{ .Replies }} {{ if eq .Replies 1 }}reply{{ else }}replies{{ end }}{{ else }}no reply{{ end }}</div>-->
-<!--    </li>-->
-<!--    {{ end }}-->
-<!--    {{ else }}-->
-<!--    <li>No post yet</li>-->
-<!--    {{ end }}-->
-<!--</ol>-->
-<!--{{ end }}-->
-
-
-<!--{{ if . }}-->
-<!--<ol class="posts">-->
-<!--    {{ if . }}-->
-<!--    {{ range . }}-->
-<!--    <li>-->
-<!--        <h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2>-->
-<!--        <div class="test"><a href="/~{{ .User }}">{{ .User }}</a> {{ timeAgo .CreatedAt }} {{ if .Topic }}<a href="/topics/{{ .Topic }}">{{ .Topic }}</a> {{ end }}</div>-->
-<!--        <div>{{ if .Replies }}{{ .Replies }} {{ if eq .Replies 1 }}reply{{ else }}replies{{ end }}{{ else }}no reply{{ end }}</div>-->
-<!--    </li>-->
-<!--    {{ end }}-->
-<!--    {{ else }}-->
-<!--    <li>No post yet</li>-->
-<!--    {{ end }}-->
-<!--</ol>-->
-<!--{{ end }}-->
-<!--{{ if . }}-->
-<!--<ol class="posts">-->
-<!--    {{ if . }}-->
-<!--    {{ range . }}-->
-<!--    <li>-->
-<!--        <h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2>-->
-<!--        <ul class="key-value">-->
-<!--            <li><span class="key">From: </span><span class="value"><a href="/~{{ .User }}">{{ .User }}</a></span></li>-->
-<!--            <li><span class="key">On: </span><span class="value">{{ .Date }}</span></li>-->
-<!--            {{ if .Topic }}<li><span class="key">Topic: </span><span class="value"><a href="/topics/{{ .Topic }}">{{ .Topic }}</a></span></li>{{ end }}-->
-<!--            <li><span class="key">Replies: </span><span class="value">{{ .Replies }}</span></li>-->
-<!--        </ul>-->
-<!--    </li>-->
-<!--    {{ end }}-->
-<!--    {{ else }}-->
-<!--    <li>No post yet</li>-->
-<!--    {{ end }}-->
-<!--</ol>-->
-<!--{{ end }}-->
-
-<!--{{ if . }}-->
-<!--<ol class="posts">-->
-<!--    {{ if . }}-->
-<!--    {{ range . }}-->
-<!--    <li>-->
-<!--        <h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2>-->
-<!--        <div class="test"><a href="/~{{ .User }}">{{ .User }}</a> {{ timeAgo .CreatedAt }} {{ if .Topic }}| <a href="/topics/{{ .Topic }}">{{ .Topic }}</a> {{ end }}| {{ if .Replies }}{{ .Replies }} {{ if eq .Replies 1 }}reply{{ else }}replies{{ end }}{{ else }}no reply{{ end }}</div>-->
-<!--    </li>-->
-<!--    {{ end }}-->
-<!--    {{ else }}-->
-<!--    <li>No post yet</li>-->
-<!--    {{ end }}-->
-<!--</ol>-->
-<!--{{ end }}-->
-<!--{{ if . }}-->
-<!--<ol class="posts">-->
-<!--    {{ if . }}-->
-<!--    {{ range . }}-->
-<!--    <li>-->
-<!--        <h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2>-->
-<!--        <ul class="key-value">-->
-<!--            <li><span class="key">From: </span><span class="value"><a href="/~{{ .User }}">{{ .User }}</a></span></li>-->
-<!--            <li><span class="key">On: </span><span class="value">{{ .Date }}</span></li>-->
-<!--            {{ if .Topic }}<li><span class="key">Topic: </span><span class="value"><a href="/topics/{{ .Topic }}">{{ .Topic }}</a></span></li>{{ end }}-->
-<!--            <li><span class="key">Replies: </span><span class="value">{{ .Replies }}</span></li>-->
-<!--        </ul>-->
-<!--    </li>-->
-<!--    {{ end }}-->
-<!--    {{ else }}-->
-<!--    <li>No post yet</li>-->
-<!--    {{ end }}-->
-<!--</ol>-->
-<!--{{ end }}-->
-<!--{{ if . }}-->
-<!--<table class="posts">-->
-<!--    <colgroup>-->
-<!--        <col span="1" style="width: 60%;">-->
-<!--        <col span="1" style="width: 25%;">-->
-<!--        <col span="1" style="width: 15%;">-->
-<!--    </colgroup>-->
-
-<!--    <thead>-->
-<!--        <tr style="text-align: left;">-->
-<!--            <th scope="col">Title</th>-->
-<!--            <th scope="col">Author</th>-->
-<!--            <th scope="col" style="text-align: center;">Replies</th>-->
-<!--        </tr>-->
-<!--    </thead>-->
-<!--    <tbody>-->
-<!--    {{ range . }}-->
-<!--    <tr>-->
-<!--        <td>-->
-<!--            <a href="/posts/{{ .Id }}">{{ .Title }}</a>-->
-<!--            {{ if .Topic }}<ul class="key-value"><li><span class="key">Topic: </span><span class="value"><a href="/topics/{{ .Topic }}">{{ .Topic }}</a></span></li></ul>{{ end }}-->
-<!--        </td>-->
-<!--        <td>-->
-<!--            <ul class="key-value">-->
-<!--                <li><span class="key">From: </span><span class="value"><a href="/~{{ .User }}">{{ .User }}</a></span></li>-->
-<!--                <li><span class="key">On: </span><span class="value">{{ .Date }}</span></li>-->
-<!--            </ul>-->
-<!--        </td>-->
-<!--        <td style="width: 20%; text-align: center;">{{ .Replies }}</td>-->
-<!--    </tr>-->
-<!--    {{ end }}-->
-<!--    </tbody>-->
-<!--</table>-->
-<!--{{ else }}-->
-<!--<p>No post yet</p>-->
-<!--{{ end }}-->
+{{ end }}`,
+	"postsTopic": `{{ define "postsTopic" }}
+{{ if . }}
+<table class="posts">
+    <thead>
+    <tr>
+        <th>Topic</th>
+        <th>Subject</th>
+        <th>Author</th>
+        <th>Replies</th>
+        <th>Updated</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ range . }}
+    <tr>
+        <td style="text-align: center;"><a href="/topics/{{ .Topic }}">{{ .Topic }}</a></td>
+        <td>
+            <h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2>
+        </td>
+        <td style="text-align: center;"><a href="/~{{ .User }}">{{ .User }}</a></td>
+        <td style="text-align: center;">{{ .Replies }}</td>
+        <td style="text-align: center">{{ .DateUpdated }}</td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+{{ else }}
+<p>No post yet</p>
+{{ end }}
 {{ end }}`,
 	"reply": `{{ define "reply" }}
     {{ if . }}

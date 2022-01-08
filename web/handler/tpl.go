@@ -27,8 +27,8 @@ func (h *Handler) initTpl() {
 			"gmi2html": func(gmi string) template.HTML {
 				return template.HTML(gmi2html.Convert(gmi))
 			},
-			"timeAgo": func(t *time.Time) string {
-				d := time.Since(*t)
+			"timeAgo": func(t time.Time) string {
+				d := time.Since(t)
 				if d.Seconds() < 60 {
 					seconds := int(d.Seconds())
 					if seconds == 1 {
@@ -71,16 +71,15 @@ func (h *Handler) renderLayout(w io.Writer, view string, params map[string]inter
 	}
 	data["logged"] = user
 	data["boardTitle"] = h.title
-	views[view].Funcs(template.FuncMap{
+	if err := views[view].Funcs(template.FuncMap{
 		"hasPermission": func(name string) bool {
 			return user == name
 		},
 		"logged": func() bool {
 			return user != ""
 		},
-	}).ExecuteTemplate(w, "layout", data)
-}
+	}).ExecuteTemplate(w, "layout", data); err != nil {
+		fmt.Println(err)
+	}
 
-func (h *Handler) view(view string) *template.Template {
-	return views[view]
 }

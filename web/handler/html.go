@@ -82,7 +82,7 @@ var TplMap = map[string]string{
 </nav>
 
 <section>
-{{ template "posts" .posts }}
+{{ template "postsTopic" .posts }}
 {{ if .hasMore }}
 <a href="/page/2">More</a>
 {{ end }}
@@ -153,7 +153,7 @@ var TplMap = map[string]string{
     {{ with .post }}
     <ul class="key-value">
         <li><span class="key">From: </span><span class="value"><a href="/~{{ .User }}">{{ .User }}</a></span></li>
-        <li><span class="key">On: </span><span class="value">{{ .Date }}</span></li>
+        <li><span class="key">On: </span><span class="value">{{ timeAgo .CreatedAt }} ({{ .Date }})</span></li>
         {{ if .Topic }}<li><span class="key">Topic: </span><span class="value"><a href="/topics/{{ .Topic }}">{{ .Topic }}</a></span></li>{{ end }}
     </ul>
     {{ end }}
@@ -246,7 +246,7 @@ var TplMap = map[string]string{
     </p>
 </nav>
 
-<section class="posts">
+<section>
     {{ template "posts" .posts }}
     {{ if .hasMore }}
     <a href="/page/2?topic={{ .topic }}">More</a>

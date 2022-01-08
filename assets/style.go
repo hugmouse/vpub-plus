@@ -4,7 +4,7 @@ package assets
 
 var AssetsMap = map[string]string{
 	"style": `body {
-	max-width: 750px;
+	max-width: 800px;
 	margin: auto;
 	padding: 5px;
 }
@@ -16,7 +16,7 @@ ol.posts, ol.replies {
 	list-style: none;
 }
 
-ol.posts > li:not(:last-child),
+/*ol.posts > li:not(:last-child),*/
 ol.replies > li:not(:last-child) {
 	margin-bottom: 1em;
 }
@@ -26,25 +26,35 @@ ol.replies > li:not(:last-child) {
 table.posts {
 	width: 100%;
 	border-collapse: collapse;
+	/*table-layout: fixed;*/
+	word-wrap: break-word;
 	border: 1px solid darkgrey;
 }
-th {
-	background-color: darkgrey;
-}
-th, td {
-	padding: .2em;
-}
-.posts-title {
-	width: 100%;
-}
-td {
+.posts h2 { margin: 0; }
+td, th { padding: 5px; }
+.posts tr:nth-child(odd) {
 	background-color: #eee;
-	border: 1px solid darkgrey;
 }
-.posts h2 {
-	margin: 0;
-	font-size: 1em;
+.posts th {
+	background-color: darkgray;
 }
+table.posts h2 { font-size: 1em; }
+
+/*.posts h2 {*/
+/*	margin: 0;*/
+/*	font-size: 1em;*/
+/*}*/
+/*.posts {*/
+/*	background-color: #eee;*/
+/*}*/
+
+/*.posts article {*/
+/*	padding: .2em;*/
+/*}*/
+
+/*.posts li:nth-child(even) {*/
+/*	background-color: #eee;*/
+/*}*/
 
 .content h1 { font-size: 1.5em; }
 .content h2 { font-size: 1.2em; }

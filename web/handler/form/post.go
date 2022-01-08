@@ -2,6 +2,7 @@ package form
 
 import (
 	"net/http"
+	"strings"
 )
 
 type PostForm struct {
@@ -13,7 +14,7 @@ type PostForm struct {
 
 func NewPostForm(r *http.Request, topics []string) *PostForm {
 	return &PostForm{
-		Title:   r.FormValue("title"),
+		Title:   strings.TrimSpace(r.FormValue("title")),
 		Content: r.FormValue("content"),
 		Topic:   r.FormValue("topic"),
 		Topics:  topics,

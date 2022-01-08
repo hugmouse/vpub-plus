@@ -1,0 +1,30 @@
+{{ define "postsTopic" }}
+{{ if . }}
+<table class="posts">
+    <thead>
+    <tr>
+        <th>Topic</th>
+        <th>Subject</th>
+        <th>Author</th>
+        <th>Replies</th>
+        <th>Updated</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ range . }}
+    <tr>
+        <td style="text-align: center;"><a href="/topics/{{ .Topic }}">{{ .Topic }}</a></td>
+        <td>
+            <h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2>
+        </td>
+        <td style="text-align: center;"><a href="/~{{ .User }}">{{ .User }}</a></td>
+        <td style="text-align: center;">{{ .Replies }}</td>
+        <td style="text-align: center">{{ .DateUpdated }}</td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+{{ else }}
+<p>No post yet</p>
+{{ end }}
+{{ end }}

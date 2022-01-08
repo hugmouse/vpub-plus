@@ -4,7 +4,7 @@
     {{ with .post }}
     <ul class="key-value">
         <li><span class="key">From: </span><span class="value"><a href="/~{{ .User }}">{{ .User }}</a></span></li>
-        <li><span class="key">On: </span><span class="value">{{ .Date }}</span></li>
+        <li><span class="key">On: </span><span class="value">{{ timeAgo .CreatedAt }} ({{ .Date }})</span></li>
         {{ if .Topic }}<li><span class="key">Topic: </span><span class="value"><a href="/topics/{{ .Topic }}">{{ .Topic }}</a></span></li>{{ end }}
     </ul>
     {{ end }}

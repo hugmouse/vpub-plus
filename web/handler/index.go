@@ -40,6 +40,7 @@ func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 		"hasNotifications": hasNotifs,
 		"users":            users,
 		"topics":           topics,
+		"showTopic":        true,
 		"motd":             template.HTML(h.motd),
 		"logged":           user,
 		"hasMore":          hasMore,
