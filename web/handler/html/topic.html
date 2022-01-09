@@ -1,7 +1,7 @@
 {{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
-<h1>{{ .post.Title }}</h1>
-<table class="thread">
+<h1>{{ .topic.Subject }}</h1>
+<table>
     {{ range .posts }}
     <tr class="post">
         <td class="post-aside">
@@ -9,7 +9,7 @@
             <p>{{ timeAgo .CreatedAt }}</p>
         </td>
         <td class="post-content">
-            {{ if eq $.topic.FirstPostId .Id }}<h1>{{ .Title }}</h1>{{ end }}
+<!--            {{ if eq $.topic.FirstPostId .Id }}<h1>{{ .Title }}</h1>{{ end }}-->
             {{ gmi2html .Content }}
             {{ if hasPermission .User }}
             <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
@@ -18,6 +18,7 @@
     </tr>
     {{ end }}
 </table>
+<h2>Reply</h2>
 <form action="/posts/save" method="post">
     {{ .csrfField }}
     <input type="hidden" name="topicId" value="{{ .topic.Id }}">

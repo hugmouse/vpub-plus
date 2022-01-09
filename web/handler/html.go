@@ -19,30 +19,42 @@ var TplMap = map[string]string{
 </section>
 {{ end }}
 `,
-	"board": `{{ define "content" }}
+	"board": `{{ define "breadcrumb" }} > {{ .board.Name }}{{ end }}
+{{ define "content" }}
 <h1>{{ .board.Name }}</h1>
 
-<p>{{ .board.Description }}</p>
+<!--<p>{{ .board.Description }}</p>-->
 
 <nav class="actions">
     <p>
         {{ if .logged }}
         <a href="/boards/{{ .board.Id }}/new-topic">new topic</a>
         {{ end }}
-        <a href="TODO">follow</a>
+<!--        <a href="TODO">follow</a>-->
     </p>
 </nav>
 
 <section>
-<ol>
-    {{ range .topics }}
-    <li><a href="/topics/{{ .Id }}">{{ .Subject }}</a></li>
-    {{ end }}
-</ol>
-<!--    {{ template "posts" .posts }}-->
-<!--    {{ if .hasMore }}-->
-<!--    <a href="/page/2?topic={{ .topic }}">More</a>-->
-<!--    {{ end }}-->
+    <table>
+        <thead>
+        <tr>
+            <th class="grow">Subject</th>
+            <th>Author</th>
+            <th>Replies</th>
+            <th>Last Post</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{ range .topics }}
+        <tr>
+            <td colspan="grow"><a href="/topics/{{ .Id }}">{{ .Subject }}</a></td>
+            <td class="center"><a href="/~{{ .Author }}">{{ .Author }}</a></td>
+            <td class="center">{{ .Replies }}</td>
+            <td class="center">{{ iso8601 .UpdatedAt }}</td>
+        </tr>
+        {{ end }}
+        </tbody>
+    </table>
 </section>
 {{ end }}`,
 	"confirm_remove_post": `{{ define "content" }}
@@ -106,20 +118,32 @@ var TplMap = map[string]string{
 	"index": `{{ define "content"}}
 <h1>{{ .boardTitle }}</h1>
 
-{{ .motd }}
+<!--<nav class="actions">-->
+<!--    <p>-->
+<!--        <a href="/feed.atom">follow</a>-->
+<!--    </p>-->
+<!--</nav>-->
 
-<nav class="actions">
-    <p>
-        <a href="/feed.atom">follow</a>
-    </p>
-</nav>
-
-<ol>
-    {{ range .boards }}
-    <li><h2><a href="/boards/{{ .Id }}">{{ .Name }}</a></h2><p>{{ .Description }}</p></li>
-    {{ end }}
-</ol>
-
+<table>
+    <thead>
+        <tr>
+            <th class="grow">Board</th>
+            <th>Topics</th>
+            <th>Posts</th>
+            <th>Last Post</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{ range .boards }}
+        <tr>
+            <td colspan="grow"><a href="/boards/{{ .Id }}">{{ .Name }}</a></td>
+            <td class="center">{{ .Topics }}</td>
+            <td class="center">{{ .Posts }}</td>
+            <td class="center">{{ iso8601 .UpdatedAt }}</td>
+        </tr>
+        {{ end }}
+    </tbody>
+</table>
 {{ end }}`,
 	"login": `{{ define "title" }}Login{{ end }}
 
@@ -332,8 +356,8 @@ var TplMap = map[string]string{
 `,
 	"topic": `{{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
-<h1>{{ .post.Title }}</h1>
-<table class="thread">
+<h1>{{ .topic.Subject }}</h1>
+<table>
     {{ range .posts }}
     <tr class="post">
         <td class="post-aside">
@@ -341,7 +365,7 @@ var TplMap = map[string]string{
             <p>{{ timeAgo .CreatedAt }}</p>
         </td>
         <td class="post-content">
-            {{ if eq $.topic.FirstPostId .Id }}<h1>{{ .Title }}</h1>{{ end }}
+<!--            {{ if eq $.topic.FirstPostId .Id }}<h1>{{ .Title }}</h1>{{ end }}-->
             {{ gmi2html .Content }}
             {{ if hasPermission .User }}
             <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
@@ -350,6 +374,7 @@ var TplMap = map[string]string{
     </tr>
     {{ end }}
 </table>
+<h2>Reply</h2>
 <form action="/posts/save" method="post">
     {{ .csrfField }}
     <input type="hidden" name="topicId" value="{{ .topic.Id }}">

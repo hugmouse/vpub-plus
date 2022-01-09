@@ -12,13 +12,17 @@ create table users (
 create table boards (
     id integer primary key autoincrement,
     name text,
-    description text
+    topics integer not null default 0,
+    posts integer not null default 0,
+    description text,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 create table topics (
     id integer primary key autoincrement,
     board_id integer,
     first_post_id integer not null,
+    replies integer not null default 0,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     foreign key (first_post_id) references posts(id),
@@ -28,8 +32,8 @@ create table topics (
 create table posts (
     id integer primary key autoincrement,
     author text not null,
-    subject text not null check ( length(subject) < 120 ),
-    content text not null check ( length(content) < 50000 ),
+    subject text not null check ( length(subject) <= 120 ),
+    content text not null check ( length(content) <= 50000 ),
     topic_id integer,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,

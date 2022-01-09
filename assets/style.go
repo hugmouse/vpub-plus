@@ -23,110 +23,25 @@ ol.replies > li:not(:last-child) {
 
 /* Posts ************************************************************/
 
-/*.post:not(:last-child) {*/
-/*	border-bottom: 1px solid;*/
-/*}*/
-/*.post-aside {*/
-/*	vertical-align: top;*/
-/*	width: 150px;*/
-/*	text-align: center;*/
-/*	border-right: 1px solid;*/
-/*}*/
-/*.post-content {*/
-/*	padding: 0 1em;*/
-/*}*/
-/*.post table {*/
-/*	border-collapse: collapse;*/
-/*}*/
-/*.thread {*/
-/*	list-style: none;*/
-/*	border: 1px solid;*/
-/*	padding: 0;*/
-/*}*/
-
-table.thread {
+table {
 	border-collapse: collapse;
 	border: 1px solid;
+	width: 100%;
 }
-tr, td {
+tr, td, th {
 	vertical-align: top;
 	border: 1px solid;
+	padding: .5em;
 }
 .post-aside {
 	text-align: center;
 	width: 150px;
 }
 
-table.posts {
-	width: 100%;
-	border-collapse: collapse;
-	/*table-layout: fixed;*/
-	word-wrap: break-word;
-	border: 1px solid darkgrey;
-}
-.posts h2 { margin: 0; }
-td, th { padding: 5px; }
-.posts tr:nth-child(odd) {
-	background-color: #eee;
-}
-.posts th {
-	background-color: darkgray;
-}
-table.posts h2 { font-size: 1em; }
-
-/*.posts h2 {*/
-/*	margin: 0;*/
-/*	font-size: 1em;*/
-/*}*/
-/*.posts {*/
-/*	background-color: #eee;*/
-/*}*/
-
-/*.posts article {*/
-/*	padding: .2em;*/
-/*}*/
-
-/*.posts li:nth-child(even) {*/
-/*	background-color: #eee;*/
-/*}*/
-
 .content h1 { font-size: 1.5em; }
 .content h2 { font-size: 1.2em; }
 .content h3 { font-size: 1em; }
 .content { margin: 1em 0; }
-
-/* Replies **********************************************************/
-
-.reply {
-	border-left: 1px solid lightgrey;
-	display: block;
-}
-
-.reply summary {
-	background-color: lightgrey;
-	display: list-item;
-	padding: .2em;
-}
-
-.reply .content, .reply footer {
-	padding: 0 1em;
-}
-
-.meta {
-	background-color: lightgrey;
-	padding: .2em;
-}
-
-/* Topics ***********************************************************/
-
-.topics {
-	background-color: lightgrey;
-	padding: .2em;
-}
-
-.topics .selected {
-	font-weight: bold;
-}
 
 /* Navigation *******************************************************/
 
@@ -169,15 +84,12 @@ textarea {
 
 /* Misc *************************************************************/
 
-.key-value {
-	padding: 0;
-	margin: 0;
-	list-style: none;
-}
-
 blockquote {
 	margin: 0;
 	color: green;
 	font-style: italic;
-}`,
+}
+
+.center { text-align: center; }
+.grow { width: 100%; }`,
 }

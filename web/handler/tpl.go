@@ -27,6 +27,9 @@ func (h *Handler) initTpl() {
 			"gmi2html": func(gmi string) template.HTML {
 				return template.HTML(gmi2html.Convert(gmi))
 			},
+			"iso8601": func(t time.Time) string {
+				return t.Format("2006-01-02")
+			},
 			"timeAgo": func(t time.Time) string {
 				d := time.Since(t)
 				if d.Seconds() < 60 {

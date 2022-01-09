@@ -1,5 +1,7 @@
 package storage
 
+import "time"
+
 //
 //type postQueryBuilder struct {
 //	where  string
@@ -83,9 +85,10 @@ package storage
 //	return lid, err
 //}
 //
-//func parseCreatedAt(createdAt string) (time.Time, error) {
-//	return time.Parse("2006-01-02 15:04:05", createdAt)
-//}
+func parseCreatedAt(createdAt string) (time.Time, error) {
+	return time.Parse("2006-01-02 15:04:05", createdAt)
+}
+
 //
 //func (s *Storage) PostById(id int64) (model.Post, error) {
 //	var post model.Post

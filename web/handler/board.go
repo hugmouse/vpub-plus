@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gorilla/csrf"
 	"net/http"
 	"vpub/model"
@@ -42,12 +43,12 @@ func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request, user string)
 		serverError(w, err)
 		return
 	}
-	_, err := h.storage.CreateTopic(topicForm.BoardId, post)
+	id, err := h.storage.CreateTopic(topicForm.BoardId, post)
 	if err != nil {
 		serverError(w, err)
 		return
 	}
-	//http.Redirect(w, r, fmt.Sprintf("/posts/%d", id), http.StatusFound)
+	http.Redirect(w, r, fmt.Sprintf("/topics/%d", id), http.StatusFound)
 }
 
 func (h *Handler) showBoardView(w http.ResponseWriter, r *http.Request) {
@@ -61,6 +62,10 @@ func (h *Handler) showBoardView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	topics, _, err := h.storage.TopicsByBoardId(board.Id)
+	if err != nil {
+		notFound(w)
+		return
+	}
 
 	h.renderLayout(w, "board", map[string]interface{}{
 		"board":   board,
