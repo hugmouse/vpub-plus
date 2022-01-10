@@ -3,6 +3,16 @@
 package handler
 
 var TplCommonMap = map[string]string{
+	"board_form": `{{ define "board_form" }}
+<div class="field">
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name" value="{{ .Name }}" autocomplete="off" maxlength="120" required autofocus/>
+</div>
+<div class="field">
+    <label for="description">Description</label>
+    <textarea class="editor" name="description" id="description" required>{{ .Description }}</textarea>
+</div>
+{{ end }}`,
 	"layout": `{{ define "layout" }}
 <!DOCTYPE html>
 <html lang="en">

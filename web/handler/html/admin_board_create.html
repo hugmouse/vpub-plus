@@ -1,0 +1,9 @@
+{{ define "title" }}New board{{ end }}
+{{ define "content" }}
+<h2>Admin - Create board</h2>
+<form action="/admin/boards/save" method="post">
+  {{ .csrfField }}
+  {{ template "board_form" .form }}
+  <input type="submit" value="Submit">
+</form>
+{{ end }}

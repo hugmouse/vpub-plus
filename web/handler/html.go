@@ -19,6 +19,48 @@ var TplMap = map[string]string{
 </section>
 {{ end }}
 `,
+	"admin_board": `{{ define "content"}}
+<h1>Admin - Boards</h1>
+<p><a href="/admin/boards/new">New board</a></p>
+<table>
+    <thead>
+    <tr>
+        <th class="grow">Board</th>
+        <th>Edit</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ range .boards }}
+    <tr>
+        <td colspan="grow">
+            <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+        </td>
+        <td class="center"><a href="/admin/boards/{{ .Id }}/edit">Edit</a></td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+{{ end }}`,
+	"admin_board_create": `{{ define "title" }}New board{{ end }}
+{{ define "content" }}
+<h2>Admin - Create board</h2>
+<form action="/admin/boards/save" method="post">
+  {{ .csrfField }}
+  {{ template "board_form" .form }}
+  <input type="submit" value="Submit">
+</form>
+{{ end }}
+`,
+	"admin_board_edit": `{{ define "title" }}New board{{ end }}
+{{ define "content" }}
+<h2>Admin - Edit board</h2>
+<form action="/admin/boards/{{ .board.Id }}/update" method="post">
+    {{ .csrfField }}
+    {{ template "board_form" .form }}
+    <input type="submit" value="Submit">
+</form>
+{{ end }}
+`,
 	"board": `{{ define "breadcrumb" }} > {{ .board.Name }}{{ end }}
 {{ define "content" }}
 <h1>{{ .board.Name }}</h1>
@@ -41,7 +83,7 @@ var TplMap = map[string]string{
             <th class="grow">Subject</th>
             <th>Author</th>
             <th>Replies</th>
-            <th>Last Post</th>
+            <th>Updated</th>
         </tr>
         </thead>
         <tbody>
@@ -130,7 +172,7 @@ var TplMap = map[string]string{
             <th class="grow">Board</th>
             <th>Topics</th>
             <th>Posts</th>
-            <th>Last Post</th>
+            <th>Updated</th>
         </tr>
     </thead>
     <tbody>

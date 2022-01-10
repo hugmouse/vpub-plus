@@ -16,15 +16,6 @@ func (s *Storage) BoardById(id int64) (model.Board, error) {
 }
 
 func (s *Storage) Boards() ([]model.Board, error) {
-	//	var createdAtStr string
-	//	var updatedAtStr string
-	//	err := rows.Scan(&post.Id, &post.User, &post.Title, &createdAtStr, &updatedAtStr, &post.Topic)
-	//	post.CreatedAt, err = parseCreatedAt(createdAtStr)
-	//	post.UpdatedAt, err = parseCreatedAt(updatedAtStr)
-	//	if err != nil {
-	//		return post, err
-	//	}
-	//	return post, nil
 	rows, err := s.db.Query("select id, name, description, topics, posts, updated_at from boards")
 	if err != nil {
 		return nil, err
@@ -44,4 +35,20 @@ func (s *Storage) Boards() ([]model.Board, error) {
 		boards = append(boards, board)
 	}
 	return boards, nil
+}
+
+func (s *Storage) CreateBoard(board model.Board) (int64, error) {
+	var id int64
+	err := s.db.QueryRow(`INSERT INTO boards (name, description) VALUES ($1, $2) RETURNING id`,
+		board.Name, board.Description).Scan(&id)
+	return id, err
+}
+
+func (s *Storage) UpdateBoard(board model.Board) error {
+	stmt, err := s.db.Prepare(`UPDATE boards SET name = $1, description = $2 WHERE id = $3;`)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(board.Name, board.Description, board.Id)
+	return err
 }

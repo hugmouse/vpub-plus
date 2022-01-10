@@ -1,0 +1,9 @@
+{{ define "title" }}New board{{ end }}
+{{ define "content" }}
+<h2>Admin - Edit board</h2>
+<form action="/admin/boards/{{ .board.Id }}/update" method="post">
+    {{ .csrfField }}
+    {{ template "board_form" .form }}
+    <input type="submit" value="Submit">
+</form>
+{{ end }}

@@ -11,6 +11,12 @@ func (s *Storage) queryUser(q string, params ...interface{}) (user model.User, e
 	return
 }
 
+func (s *Storage) IsAdmin(name string) bool {
+	var rv bool
+	s.db.QueryRow(`SELECT true FROM users WHERE name=lower($1) and is_admin=true`, name).Scan(&rv)
+	return rv
+}
+
 func (s *Storage) UserExists(name string) bool {
 	var rv bool
 	s.db.QueryRow(`SELECT true FROM users WHERE name=lower($1)`, name).Scan(&rv)

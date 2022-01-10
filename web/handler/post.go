@@ -18,7 +18,7 @@ func (h *Handler) ParseIntQS(qs *url.URL, name string) (int64, error) {
 	return 0, errors.New("qs value not found")
 }
 
-func (h *Handler) showNewThreadView(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) showNewPostView(w http.ResponseWriter, r *http.Request, user string) {
 	id, err := h.ParseIntQS(r.URL, "topicId")
 	if err != nil {
 		notFound(w)

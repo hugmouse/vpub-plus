@@ -11,12 +11,13 @@ create table schema_version (
 create table users (
     name text primary key CHECK (name <> '' and length(name) <= 15),
     hash text not null CHECK (hash <> ''),
-    about TEXT not null DEFAULT ''
+    about TEXT not null DEFAULT '',
+    is_admin boolean default false
 );
 
 create table boards (
     id integer primary key autoincrement,
-    name text,
+    name text not null check ( name <> '' and length(name) < 120 ),
     topics integer not null default 0,
     posts integer not null default 0,
     description text,

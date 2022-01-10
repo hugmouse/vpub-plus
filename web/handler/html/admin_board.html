@@ -1,0 +1,22 @@
+{{ define "content"}}
+<h1>Admin - Boards</h1>
+<p><a href="/admin/boards/new">New board</a></p>
+<table>
+    <thead>
+    <tr>
+        <th class="grow">Board</th>
+        <th>Edit</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ range .boards }}
+    <tr>
+        <td colspan="grow">
+            <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+        </td>
+        <td class="center"><a href="/admin/boards/{{ .Id }}/edit">Edit</a></td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+{{ end }}

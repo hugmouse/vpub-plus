@@ -3,7 +3,6 @@ package config
 import (
 	"os"
 	"strconv"
-	"strings"
 )
 
 type (
@@ -16,7 +15,6 @@ type (
 		CSSFile      string
 		Title        string
 		MOTDFile     string
-		Topics       []string
 		PerPage      int
 	}
 )
@@ -31,7 +29,6 @@ func New() *Config {
 		MOTDFile:     os.Getenv("MOTD_FILE"),
 		URL:          os.Getenv("URL"),
 		Port:         os.Getenv("PORT"),
-		Topics:       strings.Split(os.Getenv("TOPICS"), ","),
 	}
 	if os.Getenv("URL") == "" {
 		cfg.URL = "http://localhost"
@@ -44,9 +41,6 @@ func New() *Config {
 	}
 	if os.Getenv("DATABASE_FILE") == "" {
 		cfg.DatabaseFile = "./vpub.sqlite"
-	}
-	if os.Getenv("TOPICS") == "" {
-		cfg.Topics = []string{}
 	}
 	perPage, _ := strconv.Atoi(os.Getenv("PER_PAGE"))
 	cfg.PerPage = perPage

@@ -67,13 +67,23 @@ func (h *Handler) protect(fn ProtectedFunc) http.HandlerFunc {
 	}
 }
 
+func (h *Handler) admin(fn ProtectedFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user, err := h.session.Get(r)
+		if err != nil || !h.storage.IsAdmin(user) {
+			forbidden(w)
+			return
+		}
+		fn(w, r, user)
+	}
+}
+
 func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Handler, error) {
 	router := mux.NewRouter()
 	h := &Handler{
 		session: s,
 		mux:     router,
 		storage: data,
-		topics:  cfg.Topics,
 		perPage: cfg.PerPage,
 		url:     cfg.URL,
 	}
@@ -108,7 +118,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	//router.HandleFunc("/boards/{boardId}/feed.atom", h.showFeedViewTopic).Methods(http.MethodGet)
 
 	// Posts
-	router.HandleFunc("/posts/new", h.protect(h.showNewThreadView)).Methods(http.MethodGet)
+	router.HandleFunc("/posts/new", h.protect(h.showNewPostView)).Methods(http.MethodGet)
 
 	// Topic
 	router.HandleFunc("/topics/{topicId}", h.showTopicView).Methods(http.MethodGet)
@@ -119,6 +129,13 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	router.HandleFunc("/posts/{postId}/update", h.protect(h.updatePost)).Methods(http.MethodPost)
 	router.HandleFunc("/posts/{postId}/remove", h.protect(h.handleRemovePost))
 	//router.HandleFunc("/posts/{postId}/reply", h.protect(h.savePostReply)).Methods(http.MethodPost)
+
+	// Admin
+	router.HandleFunc("/admin/boards", h.admin(h.showAdminBoardsView)).Methods(http.MethodGet)
+	router.HandleFunc("/admin/boards/new", h.admin(h.showNewBoardView)).Methods(http.MethodGet)
+	router.HandleFunc("/admin/boards/save", h.admin(h.saveBoard)).Methods(http.MethodPost)
+	router.HandleFunc("/admin/boards/{boardId}/edit", h.admin(h.showEditBoardView)).Methods(http.MethodGet)
+	router.HandleFunc("/admin/boards/{boardId}/update", h.admin(h.updateBoard)).Methods(http.MethodPost)
 
 	// Pagination
 	//router.HandleFunc("/page/{nb}", h.showPageNumber).Methods(http.MethodGet)
