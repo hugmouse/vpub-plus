@@ -75,14 +75,19 @@ func (s *Storage) TopicById(id int64) (model.Topic, error) {
 }
 
 func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
-	rows, err := s.db.Query("select id, author, subject, content from posts where topic_id=$1;", id)
+	rows, err := s.db.Query("select id, author, subject, content, created_at from posts where topic_id=$1;", id)
 	if err != nil {
 		return nil, false, err
 	}
 	var posts []model.Post
 	for rows.Next() {
 		var post model.Post
-		err := rows.Scan(&post.Id, &post.User, &post.Title, &post.Content)
+		var createdAtStr string
+		err := rows.Scan(&post.Id, &post.User, &post.Title, &post.Content, &createdAtStr)
+		if err != nil {
+			return posts, false, err
+		}
+		post.CreatedAt, err = parseCreatedAt(createdAtStr)
 		if err != nil {
 			return posts, false, err
 		}

@@ -136,7 +136,9 @@ var TplMap = map[string]string{
     <tbody>
         {{ range .boards }}
         <tr>
-            <td colspan="grow"><a href="/boards/{{ .Id }}">{{ .Name }}</a></td>
+            <td colspan="grow">
+                <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+            </td>
             <td class="center">{{ .Topics }}</td>
             <td class="center">{{ .Posts }}</td>
             <td class="center">{{ iso8601 .UpdatedAt }}</td>
@@ -356,7 +358,8 @@ var TplMap = map[string]string{
 `,
 	"topic": `{{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
-<h1>{{ .topic.Subject }}</h1>
+<!--<h1>{{ .topic.Subject }}</h1>-->
+<br>
 <table>
     {{ range .posts }}
     <tr class="post">
@@ -365,7 +368,7 @@ var TplMap = map[string]string{
             <p>{{ timeAgo .CreatedAt }}</p>
         </td>
         <td class="post-content">
-<!--            {{ if eq $.topic.FirstPostId .Id }}<h1>{{ .Title }}</h1>{{ end }}-->
+            {{ if eq $.topic.FirstPostId .Id }}<h1>{{ .Title }}</h1>{{ end }}
             {{ gmi2html .Content }}
             {{ if hasPermission .User }}
             <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
@@ -374,16 +377,18 @@ var TplMap = map[string]string{
     </tr>
     {{ end }}
 </table>
-<h2>Reply</h2>
-<form action="/posts/save" method="post">
-    {{ .csrfField }}
-    <input type="hidden" name="topicId" value="{{ .topic.Id }}">
-    <input type="hidden" name="subject" value="Re: {{ .topic.Subject }}">
-    <div class="field">
-        <textarea name="content"></textarea>
-    </div>
-    <input type="submit" value="Reply">
-</form>
+<section style="margin-top: 1em;">
+    <form action="/posts/save" method="post">
+        {{ .csrfField }}
+        <input type="hidden" name="topicId" value="{{ .topic.Id }}">
+        <input type="hidden" name="subject" value="Re: {{ .topic.Subject }}">
+        <div class="field">
+            <label for="content">Reply to this topic</label>
+            <textarea name="content" id="content" style="height: 100px;"></textarea>
+        </div>
+        <input type="submit" value="Reply">
+    </form>
+</section>
 {{ end }}`,
 	"user_posts": `{{ define "content" }}
 <h1>{{ .user.Name }}</h1>
