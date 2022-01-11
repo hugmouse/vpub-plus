@@ -44,6 +44,6 @@ create table posts (
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     foreign key (topic_id) references topics(id),
-    foreign key (author) references users(name)
+    foreign key (author) references users(name) on update cascade
 )`,
 }

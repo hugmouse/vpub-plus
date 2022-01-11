@@ -19,8 +19,19 @@ var TplMap = map[string]string{
 </section>
 {{ end }}
 `,
-	"admin_board": `{{ define "content"}}
-<h1>Admin - Boards</h1>
+	"admin": `{{ define "breadcrumb" }} > Admin{{ end }}
+{{ define "content"}}
+<h1>Admin</h1>
+<nav>
+  <ul>
+    <li><a href="/admin/boards">Manage boards</a></li>
+    <li><a href="/admin/users">Manage users</a></li>
+  </ul>
+</nav>
+{{ end }}`,
+	"admin_board": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Boards{{ end }}
+{{ define "content"}}
+<h1>Boards</h1>
 <p><a href="/admin/boards/new">New board</a></p>
 <table>
     <thead>
@@ -41,9 +52,10 @@ var TplMap = map[string]string{
     </tbody>
 </table>
 {{ end }}`,
-	"admin_board_create": `{{ define "title" }}New board{{ end }}
+	"admin_board_create": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a>{{ end }}
+{{ define "title" }}New board{{ end }}
 {{ define "content" }}
-<h2>Admin - Create board</h2>
+<h2>Create board</h2>
 <form action="/admin/boards/save" method="post">
   {{ .csrfField }}
   {{ template "board_form" .form }}
@@ -51,12 +63,53 @@ var TplMap = map[string]string{
 </form>
 {{ end }}
 `,
-	"admin_board_edit": `{{ define "title" }}New board{{ end }}
+	"admin_board_edit": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a>{{ end }}
+{{ define "title" }}Edit board{{ end }}
 {{ define "content" }}
-<h2>Admin - Edit board</h2>
+<h2>Edit board</h2>
 <form action="/admin/boards/{{ .board.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "board_form" .form }}
+    <input type="submit" value="Submit">
+</form>
+{{ end }}
+`,
+	"admin_user": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Users{{ end }}
+{{ define "content"}}
+<h1>Users</h1>
+<table>
+    <thead>
+    <tr>
+        <th class="grow">User</th>
+        <th>Edit</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ range .users }}
+    <tr>
+        <td colspan="grow">
+            <a href="/~{{ . }}">{{ . }}</a>
+        </td>
+        <td class="center"><a href="/admin/users/{{ . }}/edit">Edit</a></td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+{{ end }}`,
+	"admin_user_edit": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/users">Users</a>{{ end }}
+{{ define "title" }}Edit user{{ end }}
+{{ define "content" }}
+<h2>Edit user</h2>
+<form action="/admin/users/{{ .user.Name }}/update" method="post">
+    {{ .csrfField }}
+    <div class="field">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" value="{{ .form.Username }}" autocomplete="off" maxlength="120" required autofocus/>
+    </div>
+    <div class="field">
+        <label for="about">About</label>
+        <textarea class="editor" name="about" id="about">{{ .form.About }}</textarea>
+    </div>
     <input type="submit" value="Submit">
 </form>
 {{ end }}

@@ -131,11 +131,15 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	//router.HandleFunc("/posts/{postId}/reply", h.protect(h.savePostReply)).Methods(http.MethodPost)
 
 	// Admin
+	router.HandleFunc("/admin", h.admin(h.showAdminView)).Methods(http.MethodGet)
 	router.HandleFunc("/admin/boards", h.admin(h.showAdminBoardsView)).Methods(http.MethodGet)
 	router.HandleFunc("/admin/boards/new", h.admin(h.showNewBoardView)).Methods(http.MethodGet)
 	router.HandleFunc("/admin/boards/save", h.admin(h.saveBoard)).Methods(http.MethodPost)
 	router.HandleFunc("/admin/boards/{boardId}/edit", h.admin(h.showEditBoardView)).Methods(http.MethodGet)
 	router.HandleFunc("/admin/boards/{boardId}/update", h.admin(h.updateBoard)).Methods(http.MethodPost)
+	router.HandleFunc("/admin/users", h.admin(h.showAdminUsersView)).Methods(http.MethodGet)
+	router.HandleFunc("/admin/users/{name}/edit", h.admin(h.showEditUserView)).Methods(http.MethodGet)
+	router.HandleFunc("/admin/users/{name}/update", h.admin(h.updateUserAdmin)).Methods(http.MethodPost)
 
 	// Pagination
 	//router.HandleFunc("/page/{nb}", h.showPageNumber).Methods(http.MethodGet)

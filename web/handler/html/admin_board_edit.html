@@ -1,6 +1,7 @@
-{{ define "title" }}New board{{ end }}
+{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a>{{ end }}
+{{ define "title" }}Edit board{{ end }}
 {{ define "content" }}
-<h2>Admin - Edit board</h2>
+<h2>Edit board</h2>
 <form action="/admin/boards/{{ .board.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "board_form" .form }}

@@ -2,10 +2,42 @@ package handler
 
 import (
 	"github.com/gorilla/csrf"
+	"github.com/gorilla/mux"
 	"net/http"
 	"vpub/model"
 	"vpub/web/handler/form"
 )
+
+func (h *Handler) showAdminView(w http.ResponseWriter, r *http.Request, user string) {
+	h.renderLayout(w, "admin", nil, user)
+}
+
+func (h *Handler) showEditUserView(w http.ResponseWriter, r *http.Request, user string) {
+	u, err := h.storage.UserByName(mux.Vars(r)["name"])
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	h.renderLayout(w, "admin_user_edit", map[string]interface{}{
+		"user": u,
+		"form": form.AdminUserForm{
+			Username: u.Name,
+			About:    u.About,
+		},
+		csrf.TemplateTag: csrf.TemplateField(r),
+	}, user)
+}
+
+func (h *Handler) showAdminUsersView(w http.ResponseWriter, r *http.Request, user string) {
+	users, err := h.storage.Users()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	h.renderLayout(w, "admin_user", map[string]interface{}{
+		"users": users,
+	}, user)
+}
 
 func (h *Handler) showAdminBoardsView(w http.ResponseWriter, r *http.Request, user string) {
 	boards, err := h.storage.Boards()
@@ -58,6 +90,19 @@ func (h *Handler) updateBoard(w http.ResponseWriter, r *http.Request, user strin
 		return
 	}
 	http.Redirect(w, r, "/admin/boards", http.StatusFound)
+}
+
+func (h *Handler) updateUserAdmin(w http.ResponseWriter, r *http.Request, name string) {
+	userForm := form.NewAdminUserForm(r)
+	user := model.User{
+		Name:  userForm.Username,
+		About: userForm.About,
+	}
+	if err := h.storage.UpdateUser(name, user); err != nil {
+		serverError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/users", http.StatusFound)
 }
 
 func (h *Handler) saveBoard(w http.ResponseWriter, r *http.Request, user string) {

@@ -69,23 +69,6 @@ func (s *Storage) Users() ([]string, error) {
 	return users, nil
 }
 
-func (s *Storage) RandomUsers(n int) ([]string, error) {
-	rows, err := s.db.Query("select author from posts group by author order by random() limit $1", n)
-	if err != nil {
-		return nil, err
-	}
-	var users []string
-	for rows.Next() {
-		var user string
-		err := rows.Scan(&user)
-		if err != nil {
-			return users, err
-		}
-		users = append(users, user)
-	}
-	return users, nil
-}
-
 func (s *Storage) UpdateTheme(username, name string) error {
 	stmt, err := s.db.Prepare(`UPDATE users SET theme = $1 WHERE name = $2;`)
 	if err != nil {
@@ -104,8 +87,11 @@ func (s *Storage) UpdateAbout(username, about string) error {
 	return err
 }
 
-func (s *Storage) ThemeByUsername(name string) string {
-	var rv string
-	s.db.QueryRow(`SELECT theme FROM users WHERE name=$1`, name).Scan(&rv)
-	return rv
+func (s *Storage) UpdateUser(name string, user model.User) error {
+	stmt, err := s.db.Prepare(`UPDATE users SET name=$1, about = $2 WHERE name = $3;`)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(user.Name, user.About, name)
+	return err
 }
