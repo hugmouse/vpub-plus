@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gorilla/sessions"
 	"net/http"
+	"vpub/model"
 	"vpub/storage"
 )
 
@@ -36,23 +37,24 @@ func (s *Session) Delete(w http.ResponseWriter, r *http.Request) error {
 	return err
 }
 
-func (s *Session) Save(r *http.Request, w http.ResponseWriter, name string) error {
+func (s *Session) Save(r *http.Request, w http.ResponseWriter, id int64) error {
 	session, _ := s.Store.Get(r, cookieName)
-	session.Values["name"] = name
+	session.Values["id"] = id
 	return session.Save(r, w)
 }
 
-func (s *Session) Get(r *http.Request) (string, error) {
+func (s *Session) Get(r *http.Request) (model.User, error) {
 	session, err := s.Store.Get(r, cookieName)
 	if err != nil {
-		return "", err
+		return model.User{}, err
 	}
-	name, ok := session.Values["name"].(string)
-	if name == "" || !ok {
-		return "", errors.New("error extracting session")
+	id, ok := session.Values["id"].(int64)
+	if id == 0 || !ok {
+		return model.User{}, errors.New("error extracting session")
 	}
-	if ok = s.Storage.UserExists(name); !ok {
-		return "", errors.New("username not found")
+	user, err := s.Storage.UserById(id)
+	if err != nil {
+		return model.User{}, errors.New("user not found")
 	}
-	return name, nil
+	return user, nil
 }

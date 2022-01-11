@@ -7,7 +7,7 @@ import (
 
 type Post struct {
 	Id        int64
-	User      string
+	User      User
 	Title     string
 	Content   string
 	TopicId   int64

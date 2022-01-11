@@ -8,11 +8,11 @@ import (
 	"vpub/web/handler/form"
 )
 
-func (h *Handler) showAdminView(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) showAdminView(w http.ResponseWriter, r *http.Request, user model.User) {
 	h.renderLayout(w, "admin", nil, user)
 }
 
-func (h *Handler) showEditUserView(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) showEditUserView(w http.ResponseWriter, r *http.Request, user model.User) {
 	u, err := h.storage.UserByName(mux.Vars(r)["name"])
 	if err != nil {
 		serverError(w, err)
@@ -28,7 +28,7 @@ func (h *Handler) showEditUserView(w http.ResponseWriter, r *http.Request, user 
 	}, user)
 }
 
-func (h *Handler) showAdminUsersView(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) showAdminUsersView(w http.ResponseWriter, r *http.Request, user model.User) {
 	users, err := h.storage.Users()
 	if err != nil {
 		serverError(w, err)
@@ -39,7 +39,7 @@ func (h *Handler) showAdminUsersView(w http.ResponseWriter, r *http.Request, use
 	}, user)
 }
 
-func (h *Handler) showAdminBoardsView(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) showAdminBoardsView(w http.ResponseWriter, r *http.Request, user model.User) {
 	boards, err := h.storage.Boards()
 	if err != nil {
 		serverError(w, err)
@@ -50,7 +50,7 @@ func (h *Handler) showAdminBoardsView(w http.ResponseWriter, r *http.Request, us
 	}, user)
 }
 
-func (h *Handler) showNewBoardView(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) showNewBoardView(w http.ResponseWriter, r *http.Request, user model.User) {
 	boardForm := form.BoardForm{}
 	h.renderLayout(w, "admin_board_create", map[string]interface{}{
 		"form":           boardForm,
@@ -58,7 +58,7 @@ func (h *Handler) showNewBoardView(w http.ResponseWriter, r *http.Request, user 
 	}, user)
 }
 
-func (h *Handler) showEditBoardView(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) showEditBoardView(w http.ResponseWriter, r *http.Request, user model.User) {
 	board, err := h.storage.BoardById(RouteInt64Param(r, "boardId"))
 	if err != nil {
 		serverError(w, err)
@@ -75,7 +75,7 @@ func (h *Handler) showEditBoardView(w http.ResponseWriter, r *http.Request, user
 	}, user)
 }
 
-func (h *Handler) updateBoard(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) updateBoard(w http.ResponseWriter, r *http.Request, user model.User) {
 	id := RouteInt64Param(r, "boardId")
 	board, err := h.storage.BoardById(id)
 	if err != nil {
@@ -92,20 +92,20 @@ func (h *Handler) updateBoard(w http.ResponseWriter, r *http.Request, user strin
 	http.Redirect(w, r, "/admin/boards", http.StatusFound)
 }
 
-func (h *Handler) updateUserAdmin(w http.ResponseWriter, r *http.Request, name string) {
+func (h *Handler) updateUserAdmin(w http.ResponseWriter, r *http.Request, name model.User) {
 	userForm := form.NewAdminUserForm(r)
 	user := model.User{
 		Name:  userForm.Username,
 		About: userForm.About,
 	}
-	if err := h.storage.UpdateUser(name, user); err != nil {
+	if err := h.storage.UpdateUser(user); err != nil {
 		serverError(w, err)
 		return
 	}
 	http.Redirect(w, r, "/admin/users", http.StatusFound)
 }
 
-func (h *Handler) saveBoard(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) saveBoard(w http.ResponseWriter, r *http.Request, user model.User) {
 	boardForm := form.NewBoardForm(r)
 	board := model.Board{
 		Name:        boardForm.Name,

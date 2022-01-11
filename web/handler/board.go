@@ -17,7 +17,7 @@ func contains(list []string, val string) bool {
 	return false
 }
 
-func (h *Handler) showNewTopicView(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) showNewTopicView(w http.ResponseWriter, r *http.Request, user model.User) {
 	id := RouteInt64Param(r, "boardId")
 	board, err := h.storage.BoardById(id)
 	if err != nil {
@@ -32,7 +32,7 @@ func (h *Handler) showNewTopicView(w http.ResponseWriter, r *http.Request, user 
 	}, user)
 }
 
-func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request, user model.User) {
 	topicForm := form.NewTopicForm(r)
 	post := model.Post{
 		User:    user,

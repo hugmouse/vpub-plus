@@ -143,7 +143,7 @@ var TplMap = map[string]string{
         {{ range .topics }}
         <tr>
             <td colspan="grow"><a href="/topics/{{ .Id }}">{{ .Subject }}</a></td>
-            <td class="center"><a href="/~{{ .Author }}">{{ .Author }}</a></td>
+            <td class="center"><a href="/~{{ .User.Id }}">{{ .User.Name }}</a></td>
             <td class="center">{{ .Replies }}</td>
             <td class="center">{{ iso8601 .UpdatedAt }}</td>
         </tr>
@@ -459,13 +459,13 @@ var TplMap = map[string]string{
     {{ range .posts }}
     <tr class="post">
         <td class="post-aside">
-            <p>{{ .User }}</p>
+            <p>{{ .User.Name }}</p>
             <p>{{ timeAgo .CreatedAt }}</p>
         </td>
         <td class="post-content">
             {{ if eq $.topic.FirstPostId .Id }}<h1>{{ .Title }}</h1>{{ end }}
             {{ gmi2html .Content }}
-            {{ if hasPermission .User }}
+            {{ if hasPermission .User.Name }}
             <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
             {{ end }}
         </td>

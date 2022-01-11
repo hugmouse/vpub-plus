@@ -18,7 +18,7 @@ func (h *Handler) ParseIntQS(qs *url.URL, name string) (int64, error) {
 	return 0, errors.New("qs value not found")
 }
 
-func (h *Handler) showNewPostView(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) showNewPostView(w http.ResponseWriter, r *http.Request, user model.User) {
 	id, err := h.ParseIntQS(r.URL, "topicId")
 	if err != nil {
 		notFound(w)
@@ -38,7 +38,7 @@ func (h *Handler) showNewPostView(w http.ResponseWriter, r *http.Request, user s
 	}, user)
 }
 
-func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user model.User) {
 	postForm := form.NewPostForm(r)
 	post := model.Post{
 		User:    user,
@@ -82,13 +82,13 @@ func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user string) 
 //	}, user)
 //}
 
-func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user model.User) {
 	post, err := h.storage.PostById(RouteInt64Param(r, "postId"))
 	if err != nil {
 		serverError(w, err)
 		return
 	}
-	if user != post.User {
+	if user.Name != post.User.Name {
 		forbidden(w)
 		return
 	}
@@ -104,15 +104,11 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user 
 	}, user)
 }
 
-func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user model.User) {
 	id := RouteInt64Param(r, "postId")
 	post, err := h.storage.PostById(id)
 	if err != nil {
 		serverError(w, err)
-		return
-	}
-	if user != post.User {
-		forbidden(w)
 		return
 	}
 	postForm := form.NewPostForm(r)
@@ -129,17 +125,13 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user string
 	http.Redirect(w, r, fmt.Sprintf("/topics/%d", post.TopicId), http.StatusFound)
 }
 
-func (h *Handler) handleRemovePost(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) handleRemovePost(w http.ResponseWriter, r *http.Request, user model.User) {
 	switch r.Method {
 	case "GET":
 		id := RouteInt64Param(r, "postId")
 		post, err := h.storage.PostById(id)
 		if err != nil {
 			serverError(w, err)
-			return
-		}
-		if user != post.User {
-			forbidden(w)
 			return
 		}
 		h.renderLayout(w, "confirm_remove_post", map[string]interface{}{
@@ -150,10 +142,6 @@ func (h *Handler) handleRemovePost(w http.ResponseWriter, r *http.Request, user 
 		post, err := h.storage.PostById(RouteInt64Param(r, "postId"))
 		if err != nil {
 			serverError(w, err)
-			return
-		}
-		if user != post.User {
-			forbidden(w)
 			return
 		}
 		err = h.storage.DeletePostById(post.Id)

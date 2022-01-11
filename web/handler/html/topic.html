@@ -6,13 +6,13 @@
     {{ range .posts }}
     <tr class="post">
         <td class="post-aside">
-            <p>{{ .User }}</p>
+            <p>{{ .User.Name }}</p>
             <p>{{ timeAgo .CreatedAt }}</p>
         </td>
         <td class="post-content">
             {{ if eq $.topic.FirstPostId .Id }}<h1>{{ .Title }}</h1>{{ end }}
             {{ gmi2html .Content }}
-            {{ if hasPermission .User }}
+            {{ if hasPermission .User.Name }}
             <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
             {{ end }}
         </td>

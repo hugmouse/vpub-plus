@@ -6,6 +6,7 @@ import (
 	"io"
 	"time"
 	"vpub/gmi2html"
+	"vpub/model"
 )
 
 var views = make(map[string]*template.Template)
@@ -62,24 +63,21 @@ func (h *Handler) initTpl() {
 	}
 }
 
-func (h *Handler) renderLayout(w io.Writer, view string, params map[string]interface{}, user string) {
+func (h *Handler) renderLayout(w io.Writer, view string, params map[string]interface{}, user model.User) {
 	data := make(map[string]interface{})
 	if params != nil {
 		for k, v := range params {
 			data[k] = v
 		}
 	}
-	if user != "" {
-		//data["hasNotifications"] = h.storage.UserHasNotifications(user)
-	}
 	data["logged"] = user
 	data["boardTitle"] = h.title
 	if err := views[view].Funcs(template.FuncMap{
 		"hasPermission": func(name string) bool {
-			return user == name
+			return user.Name == name
 		},
 		"logged": func() bool {
-			return user != ""
+			return user.Name != ""
 		},
 	}).ExecuteTemplate(w, "layout", data); err != nil {
 		fmt.Println(err)

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"github.com/gorilla/csrf"
 	"net/http"
 	"vpub/model"
@@ -11,7 +10,7 @@ import (
 func (h *Handler) showRegisterView(w http.ResponseWriter, r *http.Request) {
 	h.renderLayout(w, "register", map[string]interface{}{
 		csrf.TemplateTag: csrf.TemplateField(r),
-	}, "")
+	}, model.User{})
 }
 
 func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
@@ -21,27 +20,27 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 		Password: userForm.Password,
 	}
 	showError := func(err error) {
-		h.renderLayout(w, "register", map[string]interface{}{"form": *userForm, "error": err.Error(), csrf.TemplateTag: csrf.TemplateField(r)}, "")
+		h.renderLayout(w, "register", map[string]interface{}{"form": *userForm, "error": err.Error(), csrf.TemplateTag: csrf.TemplateField(r)}, model.User{})
 		return
 	}
 	if err := userForm.Validate(); err != nil {
 		showError(err)
 		return
 	}
-	if h.storage.UserExists(user.Name) {
-		serverError(w, errors.New("username already exists"))
-		return
-	}
+	//if h.storage.UserExists(user.Name) {
+	//	serverError(w, errors.New("username already exists"))
+	//	return
+	//}
 	//if ok := key.Unlock(r.FormValue("key")); !ok {
 	//	forbidden(w)
 	//	return
 	//}
-	err := h.storage.CreateUser(user)
+	id, err := h.storage.CreateUser(user)
 	if err != nil {
 		serverError(w, err)
 		return
 	}
-	if err := h.session.Save(r, w, r.FormValue("name")); err != nil {
+	if err := h.session.Save(r, w, id); err != nil {
 		serverError(w, err)
 		return
 	}

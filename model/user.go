@@ -6,13 +6,13 @@ import (
 	"regexp"
 )
 
-const UserDir = "users"
-
 type User struct {
+	Id       int64
 	Name     string
 	Password string
 	Hash     []byte
 	About    string
+	IsAdmin  bool
 }
 
 func (u User) Validate() error {

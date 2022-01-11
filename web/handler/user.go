@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
+	"vpub/model"
 	"vpub/web/handler/form"
 )
 
@@ -37,8 +38,8 @@ func (h *Handler) showUserPostsView(w http.ResponseWriter, r *http.Request) {
 	}, logged)
 }
 
-func (h *Handler) showAccountView(w http.ResponseWriter, r *http.Request, user string) {
-	u, err := h.storage.UserByName(user)
+func (h *Handler) showAccountView(w http.ResponseWriter, r *http.Request, user model.User) {
+	u, err := h.storage.UserByName(user.Name)
 	if err != nil {
 		forbidden(w)
 		return
@@ -50,11 +51,11 @@ func (h *Handler) showAccountView(w http.ResponseWriter, r *http.Request, user s
 	}, user)
 }
 
-func (h *Handler) saveAbout(w http.ResponseWriter, r *http.Request, user string) {
+func (h *Handler) saveAbout(w http.ResponseWriter, r *http.Request, user model.User) {
 	aboutForm := form.NewAboutForm(r)
-	if err := h.storage.UpdateAbout(user, aboutForm.About); err != nil {
+	if err := h.storage.UpdateAbout(user.Id, aboutForm.About); err != nil {
 		serverError(w, err)
 		return
 	}
-	http.Redirect(w, r, "/~"+user, http.StatusFound)
+	http.Redirect(w, r, "/~"+user.Name, http.StatusFound)
 }

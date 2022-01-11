@@ -10,7 +10,7 @@ import (
 func (h *Handler) showLoginView(w http.ResponseWriter, r *http.Request) {
 	h.renderLayout(w, "login", map[string]interface{}{
 		csrf.TemplateTag: csrf.TemplateField(r),
-	}, "")
+	}, model.User{})
 }
 
 func (h *Handler) checkLogin(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +23,7 @@ func (h *Handler) checkLogin(w http.ResponseWriter, r *http.Request) {
 		forbidden(w)
 		return
 	}
-	if err := h.session.Save(r, w, user.Name); err != nil {
+	if err := h.session.Save(r, w, user.Id); err != nil {
 		serverError(w, err)
 		return
 	}

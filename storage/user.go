@@ -4,18 +4,18 @@ import (
 	"vpub/model"
 )
 
-const queryFindName = `SELECT name, hash, about FROM users WHERE name=lower($1);`
+const queryFindName = `SELECT id, name, hash, about, is_admin FROM users WHERE name=lower($1);`
 
 func (s *Storage) queryUser(q string, params ...interface{}) (user model.User, err error) {
-	err = s.db.QueryRow(q, params...).Scan(&user.Name, &user.Hash, &user.About)
+	err = s.db.QueryRow(q, params...).Scan(&user.Id, &user.Name, &user.Hash, &user.About, &user.IsAdmin)
 	return
 }
 
-func (s *Storage) IsAdmin(name string) bool {
-	var rv bool
-	s.db.QueryRow(`SELECT true FROM users WHERE name=lower($1) and is_admin=true`, name).Scan(&rv)
-	return rv
-}
+//func (s *Storage) IsAdmin(name string) bool {
+//	var rv bool
+//	s.db.QueryRow(`SELECT true FROM users WHERE name=lower($1) and is_admin=true`, name).Scan(&rv)
+//	return rv
+//}
 
 func (s *Storage) UserExists(name string) bool {
 	var rv bool
@@ -38,18 +38,27 @@ func (s *Storage) UserByName(name string) (model.User, error) {
 	return s.queryUser(queryFindName, name)
 }
 
-func (s *Storage) CreateUser(user model.User) error {
+func (s *Storage) UserById(id int64) (model.User, error) {
+	return s.queryUser(`SELECT id, name, hash, about, is_admin FROM users WHERE id=$1;`, id)
+}
+
+func (s *Storage) CreateUser(user model.User) (int64, error) {
+	var id int64
 	hash, err := user.HashPassword()
 	if err != nil {
-		return err
+		return id, err
 	}
 	insertUser := `INSERT INTO users (name, hash) VALUES (lower($1), $2)`
 	statement, err := s.db.Prepare(insertUser)
 	if err != nil {
-		return err
+		return id, err
 	}
 	_, err = statement.Exec(user.Name, hash)
-	return err
+	if err != nil {
+		return id, err
+	}
+	u, err := s.UserByName(user.Name)
+	return u.Id, err
 }
 
 func (s *Storage) Users() ([]string, error) {
@@ -69,29 +78,20 @@ func (s *Storage) Users() ([]string, error) {
 	return users, nil
 }
 
-func (s *Storage) UpdateTheme(username, name string) error {
-	stmt, err := s.db.Prepare(`UPDATE users SET theme = $1 WHERE name = $2;`)
+func (s *Storage) UpdateAbout(id int64, about string) error {
+	stmt, err := s.db.Prepare(`UPDATE users SET about = $1 WHERE id = $2;`)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(name, username)
+	_, err = stmt.Exec(about, id)
 	return err
 }
 
-func (s *Storage) UpdateAbout(username, about string) error {
-	stmt, err := s.db.Prepare(`UPDATE users SET about = $1 WHERE name = $2;`)
+func (s *Storage) UpdateUser(user model.User) error {
+	stmt, err := s.db.Prepare(`UPDATE users SET name=$1, about = $2 WHERE id = $3;`)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(about, username)
-	return err
-}
-
-func (s *Storage) UpdateUser(name string, user model.User) error {
-	stmt, err := s.db.Prepare(`UPDATE users SET name=$1, about = $2 WHERE name = $3;`)
-	if err != nil {
-		return err
-	}
-	_, err = stmt.Exec(user.Name, user.About, name)
+	_, err = stmt.Exec(user.Name, user.About, user.Id)
 	return err
 }

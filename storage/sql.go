@@ -9,7 +9,8 @@ create table schema_version (
 );
 
 create table users (
-    name text primary key CHECK (name <> '' and length(name) <= 15),
+    id integer primary key autoincrement,
+    name text unique CHECK (name <> '' and length(name) <= 15),
     hash text not null CHECK (hash <> ''),
     about TEXT not null DEFAULT '',
     is_admin boolean default false
@@ -37,13 +38,13 @@ create table topics (
 
 create table posts (
     id integer primary key autoincrement,
-    author text not null,
+    user_id text not null,
     subject text not null check ( length(subject) <= 120 ),
     content text not null check ( length(content) <= 50000 ),
     topic_id integer,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     foreign key (topic_id) references topics(id),
-    foreign key (author) references users(name) on update cascade
-)`,
+    foreign key (user_id) references users(id)
+);`,
 }

@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"vpub/assets"
 	"vpub/config"
+	"vpub/model"
 	"vpub/storage"
 	"vpub/web/session"
 )
@@ -41,7 +42,7 @@ func serverError(w http.ResponseWriter, err error) {
 	http.Error(w, fmt.Sprintf("server error: %s", err), http.StatusInternalServerError)
 }
 
-type ProtectedFunc func(http.ResponseWriter, *http.Request, string)
+type ProtectedFunc func(http.ResponseWriter, *http.Request, model.User)
 
 type Handler struct {
 	session *session.Session
@@ -59,7 +60,7 @@ type Handler struct {
 func (h *Handler) protect(fn ProtectedFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, err := h.session.Get(r)
-		if err != nil || user == "" {
+		if err != nil || user.Name == "" {
 			forbidden(w)
 			return
 		}
@@ -70,7 +71,7 @@ func (h *Handler) protect(fn ProtectedFunc) http.HandlerFunc {
 func (h *Handler) admin(fn ProtectedFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, err := h.session.Get(r)
-		if err != nil || !h.storage.IsAdmin(user) {
+		if err != nil || !user.IsAdmin {
 			forbidden(w)
 			return
 		}
