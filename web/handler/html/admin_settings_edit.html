@@ -1,0 +1,17 @@
+{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Settings{{ end }}
+{{ define "content"}}
+<h2>Edit Settings</h2>
+<form action="/admin/settings/update" method="post">
+    {{ .csrfField }}
+    <div class="field">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" value="{{ .form.Name }}" autocomplete="off" maxlength="120" required autofocus/>
+    </div>
+    <div class="field">
+        <label for="css">CSS</label>
+        <textarea class="editor" name="css" id="css">{{ .form.Css }}</textarea>
+    </div>
+    <input type="submit" value="Submit">
+</form>
+</table>
+{{ end }}

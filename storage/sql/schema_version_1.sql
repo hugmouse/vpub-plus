@@ -11,6 +11,13 @@ create table users (
     is_admin boolean default false
 );
 
+create table settings (
+    name text not null,
+    css text not null default ''
+);
+
+insert into settings (name) values ('vpub');
+
 create table boards (
     id integer primary key autoincrement,
     name text not null check ( name <> '' and length(name) < 120 ),

@@ -50,6 +50,34 @@ func (h *Handler) showAdminBoardsView(w http.ResponseWriter, r *http.Request, us
 	}, user)
 }
 
+func (h *Handler) showAdminSettingsView(w http.ResponseWriter, r *http.Request, user model.User) {
+	settings, err := h.storage.Settings()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	settingsForm := form.SettingsForm{
+		Name: settings.Name,
+		Css:  settings.Css,
+	}
+	h.renderLayout(w, "admin_settings_edit", map[string]interface{}{
+		"form":           settingsForm,
+		csrf.TemplateTag: csrf.TemplateField(r),
+	}, user)
+}
+
+func (h *Handler) updateSettingsAdmin(w http.ResponseWriter, r *http.Request, user model.User) {
+	settingsForm := form.NewSettingsForm(r)
+	var settings model.Settings
+	settings.Name = settingsForm.Name
+	settings.Css = settingsForm.Css
+	if err := h.storage.UpdateSettings(settings); err != nil {
+		serverError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin", http.StatusFound)
+}
+
 func (h *Handler) showNewBoardView(w http.ResponseWriter, r *http.Request, user model.User) {
 	boardForm := form.BoardForm{}
 	h.renderLayout(w, "admin_board_create", map[string]interface{}{
@@ -92,12 +120,10 @@ func (h *Handler) updateBoard(w http.ResponseWriter, r *http.Request, user model
 	http.Redirect(w, r, "/admin/boards", http.StatusFound)
 }
 
-func (h *Handler) updateUserAdmin(w http.ResponseWriter, r *http.Request, name model.User) {
+func (h *Handler) updateUserAdmin(w http.ResponseWriter, r *http.Request, user model.User) {
 	userForm := form.NewAdminUserForm(r)
-	user := model.User{
-		Name:  userForm.Username,
-		About: userForm.About,
-	}
+	user.Name = userForm.Username
+	user.About = userForm.About
 	if err := h.storage.UpdateUser(user); err != nil {
 		serverError(w, err)
 		return

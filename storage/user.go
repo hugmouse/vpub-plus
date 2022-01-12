@@ -11,11 +11,11 @@ func (s *Storage) queryUser(q string, params ...interface{}) (user model.User, e
 	return
 }
 
-//func (s *Storage) IsAdmin(name string) bool {
-//	var rv bool
-//	s.db.QueryRow(`SELECT true FROM users WHERE name=lower($1) and is_admin=true`, name).Scan(&rv)
-//	return rv
-//}
+func (s *Storage) HasAdmin() bool {
+	var rv bool
+	s.db.QueryRow(`SELECT true FROM users WHERE is_admin=true limit 1`).Scan(&rv)
+	return rv
+}
 
 func (s *Storage) UserExists(name string) bool {
 	var rv bool
@@ -48,12 +48,12 @@ func (s *Storage) CreateUser(user model.User) (int64, error) {
 	if err != nil {
 		return id, err
 	}
-	insertUser := `INSERT INTO users (name, hash) VALUES (lower($1), $2)`
+	insertUser := `INSERT INTO users (name, hash, is_admin) VALUES (lower($1), $2, $3)`
 	statement, err := s.db.Prepare(insertUser)
 	if err != nil {
 		return id, err
 	}
-	_, err = statement.Exec(user.Name, hash)
+	_, err = statement.Exec(user.Name, hash, user.IsAdmin)
 	if err != nil {
 		return id, err
 	}
