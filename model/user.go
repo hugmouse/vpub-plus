@@ -10,7 +10,7 @@ type User struct {
 	Id       int64
 	Name     string
 	Password string
-	Hash     []byte
+	Hash     string
 	About    string
 	IsAdmin  bool
 }
@@ -33,6 +33,6 @@ func (u User) HashPassword() ([]byte, error) {
 	return bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.MinCost)
 }
 
-func (u User) CompareHashToPassword(hash []byte) error {
-	return bcrypt.CompareHashAndPassword(hash, []byte(u.Password))
+func (u User) CompareHashToPassword(hash string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(u.Password))
 }

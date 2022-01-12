@@ -6,15 +6,17 @@
     <tr>
         <th class="grow">User</th>
         <th>Edit</th>
+        <th>Password</th>
     </tr>
     </thead>
     <tbody>
     {{ range .users }}
     <tr>
         <td colspan="grow">
-            <a href="/~{{ . }}">{{ . }}</a>
+            <a href="/~{{ .Name }}">{{ .Name }}</a>
         </td>
-        <td class="center"><a href="/admin/users/{{ . }}/edit">Edit</a></td>
+        <td class="center"><a href="/admin/users/{{ .Name }}/edit">Edit</a></td>
+        <td class="center"><a href="/reset-password?hash={{ .Hash }}">Reset</a></td>
     </tr>
     {{ end }}
     </tbody>

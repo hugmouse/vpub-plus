@@ -18,6 +18,12 @@ func (s *Storage) HasAdmin() bool {
 	return rv
 }
 
+func (s *Storage) UserHashExists(hash string) bool {
+	var rv bool
+	s.db.QueryRow(`SELECT true FROM users WHERE hash=$1`, hash).Scan(&rv)
+	return rv
+}
+
 func (s *Storage) UserExists(name string) bool {
 	var rv bool
 	s.db.QueryRow(`SELECT true FROM users WHERE name=lower($1)`, name).Scan(&rv)
@@ -57,7 +63,7 @@ func (s *Storage) CreateUser(user model.User, key string) (int64, error) {
 		return userId, err
 	}
 
-	if err := tx.QueryRowContext(ctx, `insert into users (name, hash, is_admin, key_id) values (lower($1), $2, $3, $4) returning id`, user.Name, hash, user.IsAdmin, keyId).Scan(&userId); err != nil {
+	if err := tx.QueryRowContext(ctx, `insert into users (name, hash, is_admin, key_id) values (lower($1), $2, $3, $4) returning id`, user.Name, string(hash), user.IsAdmin, keyId).Scan(&userId); err != nil {
 		tx.Rollback()
 		return userId, err
 	}
@@ -69,15 +75,15 @@ func (s *Storage) CreateUser(user model.User, key string) (int64, error) {
 	return userId, err
 }
 
-func (s *Storage) Users() ([]string, error) {
-	rows, err := s.db.Query("select name from users")
+func (s *Storage) Users() ([]model.User, error) {
+	rows, err := s.db.Query("select name, hash from users")
 	if err != nil {
 		return nil, err
 	}
-	var users []string
+	var users []model.User
 	for rows.Next() {
-		var user string
-		err := rows.Scan(&user)
+		var user model.User
+		err := rows.Scan(&user.Name, &user.Hash)
 		if err != nil {
 			return users, err
 		}
@@ -101,5 +107,15 @@ func (s *Storage) UpdateUser(user model.User) error {
 		return err
 	}
 	_, err = stmt.Exec(user.Name, user.About, user.Id)
+	return err
+}
+
+func (s *Storage) UpdatePassword(hash string, user model.User) error {
+	newHash, err := user.HashPassword()
+	stmt, err := s.db.Prepare(`UPDATE users SET hash=$1 where hash=$2;`)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(newHash, hash)
 	return err
 }

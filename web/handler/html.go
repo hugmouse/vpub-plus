@@ -128,15 +128,17 @@ var TplMap = map[string]string{
     <tr>
         <th class="grow">User</th>
         <th>Edit</th>
+        <th>Password</th>
     </tr>
     </thead>
     <tbody>
     {{ range .users }}
     <tr>
         <td colspan="grow">
-            <a href="/~{{ . }}">{{ . }}</a>
+            <a href="/~{{ .Name }}">{{ .Name }}</a>
         </td>
-        <td class="center"><a href="/admin/users/{{ . }}/edit">Edit</a></td>
+        <td class="center"><a href="/admin/users/{{ .Name }}/edit">Edit</a></td>
+        <td class="center"><a href="/reset-password?hash={{ .Hash }}">Reset</a></td>
     </tr>
     {{ end }}
     </tbody>
@@ -497,6 +499,27 @@ var TplMap = map[string]string{
     </section>
 {{ end }}
 `,
+	"reset_password": `{{ define "title" }}Reset password{{ end }}
+
+{{ define "content" }}
+<h2>Reset password</h2>
+{{ if .error }}
+<p class="error">{{ .error }}</p>
+{{ end }}
+<form action="/reset-password" method="post" class="auth-form">
+    {{ .csrfField }}
+    <input name="hash" type="hidden" value="{{ .hash }}">
+    <div class="field">
+        <label for="password">New password</label>
+        <input type="password" id="password" name="password"/>
+    </div>
+    <div class="field">
+        <label for="confirm">Confirm password</label>
+        <input type="password" id="confirm" name="confirm" required/>
+    </div>
+    <input type="submit" value="Submit">
+</form>
+{{ end }}`,
 	"topic": `{{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
 <!--<h1>{{ .topic.Subject }}</h1>-->
