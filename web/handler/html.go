@@ -259,7 +259,7 @@ var TplMap = map[string]string{
 {{ end }}
 `,
 	"index": `{{ define "content"}}
-<h1>{{ .boardTitle }}</h1>
+<h1>{{ .title }}</h1>
 
 <!--<nav class="actions">-->
 <!--    <p>-->

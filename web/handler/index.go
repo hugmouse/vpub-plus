@@ -7,6 +7,11 @@ import (
 
 func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 	user, _ := h.session.Get(r)
+	settings, err := h.storage.Settings()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
 	boards, err := h.storage.Boards()
 	if err != nil {
 		serverError(w, err)
@@ -18,6 +23,6 @@ func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 		"boards":           boards,
 		"motd":             template.HTML(h.motd),
 		"logged":           user,
-		"boardTitle":       h.title,
+		"title":            settings.Name,
 	}, user)
 }

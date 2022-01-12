@@ -148,6 +148,8 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	router.HandleFunc("/reset-password", h.showResetPasswordView).Methods(http.MethodGet)
 	router.HandleFunc("/reset-password", h.updatePassword).Methods(http.MethodPost)
 
+	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)
+
 	// Pagination
 	//router.HandleFunc("/page/{nb}", h.showPageNumber).Methods(http.MethodGet)
 
