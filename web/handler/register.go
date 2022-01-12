@@ -27,15 +27,7 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 		showError(err)
 		return
 	}
-	//if h.storage.UserExists(user.Name) {
-	//	serverError(w, errors.New("username already exists"))
-	//	return
-	//}
-	//if ok := key.Unlock(r.FormValue("key")); !ok {
-	//	forbidden(w)
-	//	return
-	//}
-	id, err := h.storage.CreateUser(user)
+	id, err := h.storage.CreateUser(user, userForm.Key)
 	if err != nil {
 		serverError(w, err)
 		return

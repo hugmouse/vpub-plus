@@ -3,20 +3,28 @@ create table schema_version (
     version text not null
 );
 
+create table keys (
+    id integer primary key autoincrement,
+    key text unique check (key <> '' and length(key) <= 20),
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    user_id integer unique,
+    foreign key (user_id) references users(id)
+);
+
 create table users (
     id integer primary key autoincrement,
     name text unique CHECK (name <> '' and length(name) <= 15),
     hash text not null CHECK (hash <> ''),
     about TEXT not null DEFAULT '',
-    is_admin boolean default false
+    is_admin boolean default false,
+    key_id integer not null unique,
+    foreign key (key_id) references keys(id)
 );
 
 create table settings (
     name text not null,
     css text not null default ''
 );
-
-insert into settings (name) values ('vpub');
 
 create table boards (
     id integer primary key autoincrement,
@@ -49,3 +57,6 @@ create table posts (
     foreign key (topic_id) references topics(id),
     foreign key (user_id) references users(id)
 );
+
+insert into settings (name) values ('vpub');
+insert into keys (key) values ('admin');

@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"vpub/model"
 )
 
@@ -42,23 +43,30 @@ func (s *Storage) UserById(id int64) (model.User, error) {
 	return s.queryUser(`SELECT id, name, hash, about, is_admin FROM users WHERE id=$1;`, id)
 }
 
-func (s *Storage) CreateUser(user model.User) (int64, error) {
-	var id int64
+func (s *Storage) CreateUser(user model.User, key string) (int64, error) {
+	var userId int64
 	hash, err := user.HashPassword()
+	ctx := context.Background()
+	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return id, err
+		return userId, err
 	}
-	insertUser := `INSERT INTO users (name, hash, is_admin) VALUES (lower($1), $2, $3)`
-	statement, err := s.db.Prepare(insertUser)
-	if err != nil {
-		return id, err
+	var keyId int64
+	if err := tx.QueryRowContext(ctx, `select id from keys where key=$1`, key).Scan(&keyId); err != nil {
+		tx.Rollback()
+		return userId, err
 	}
-	_, err = statement.Exec(user.Name, hash, user.IsAdmin)
-	if err != nil {
-		return id, err
+
+	if err := tx.QueryRowContext(ctx, `insert into users (name, hash, is_admin, key_id) values (lower($1), $2, $3, $4) returning id`, user.Name, hash, user.IsAdmin, keyId).Scan(&userId); err != nil {
+		tx.Rollback()
+		return userId, err
 	}
-	u, err := s.UserByName(user.Name)
-	return u.Id, err
+	if _, err := tx.ExecContext(ctx, `update keys set user_id=$1 where id=$2`, userId, keyId); err != nil {
+		tx.Rollback()
+		return userId, err
+	}
+	err = tx.Commit()
+	return userId, err
 }
 
 func (s *Storage) Users() ([]string, error) {

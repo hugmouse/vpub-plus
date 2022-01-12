@@ -25,6 +25,7 @@ var TplMap = map[string]string{
 <nav>
   <ul>
     <li><a href="/admin/settings/edit">Edit settings</a></li>
+    <li><a href="/admin/keys">Manage keys</a></li>
     <li><a href="/admin/boards">Manage boards</a></li>
     <li><a href="/admin/users">Manage users</a></li>
   </ul>
@@ -73,6 +74,33 @@ var TplMap = map[string]string{
     {{ template "board_form" .form }}
     <input type="submit" value="Submit">
 </form>
+{{ end }}
+`,
+	"admin_keys": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Keys{{ end }}
+{{ define "title" }}Keys{{ end }}
+{{ define "content" }}
+<h1>Keys</h1>
+<form action="/admin/keys/save" method="post">
+    {{ .csrfField }}
+    <input type="submit" value="Create key">
+</form>
+
+<table>
+    <thead>
+    <tr>
+        <th class="grow">Key</th>
+        <th>Created</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ range .keys }}
+    <tr>
+        <td colspan="grow">{{ .Key }}</td>
+        <td class="center">{{ iso8601 .CreatedAt }}</td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
 {{ end }}
 `,
 	"admin_settings_edit": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Settings{{ end }}
@@ -434,10 +462,10 @@ var TplMap = map[string]string{
             <label for="confirm">Confirm password</label>
             <input type="password" id="confirm" name="confirm" required/>
         </div>
-<!--        <div class="field">-->
-<!--            <label for="key">Key</label>-->
-<!--            <input type="text" id="key" name="key"/>-->
-<!--        </div>-->
+        <div class="field">
+            <label for="key">Key</label>
+            <input type="text" id="key" name="key"/>
+        </div>
         <input type="submit" value="Submit">
     </form>
 {{ end }}

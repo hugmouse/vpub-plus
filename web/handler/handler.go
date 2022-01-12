@@ -143,6 +143,8 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	router.HandleFunc("/admin/users/{name}/update", h.admin(h.updateUserAdmin)).Methods(http.MethodPost)
 	router.HandleFunc("/admin/settings/edit", h.admin(h.showAdminSettingsView)).Methods(http.MethodGet)
 	router.HandleFunc("/admin/settings/update", h.admin(h.updateSettingsAdmin)).Methods(http.MethodPost)
+	router.HandleFunc("/admin/keys", h.admin(h.showKeysView)).Methods(http.MethodGet)
+	router.HandleFunc("/admin/keys/save", h.admin(h.saveKey)).Methods(http.MethodPost)
 
 	// Pagination
 	//router.HandleFunc("/page/{nb}", h.showPageNumber).Methods(http.MethodGet)

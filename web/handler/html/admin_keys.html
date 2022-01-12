@@ -1,0 +1,26 @@
+{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Keys{{ end }}
+{{ define "title" }}Keys{{ end }}
+{{ define "content" }}
+<h1>Keys</h1>
+<form action="/admin/keys/save" method="post">
+    {{ .csrfField }}
+    <input type="submit" value="Create key">
+</form>
+
+<table>
+    <thead>
+    <tr>
+        <th class="grow">Key</th>
+        <th>Created</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ range .keys }}
+    <tr>
+        <td colspan="grow">{{ .Key }}</td>
+        <td class="center">{{ iso8601 .CreatedAt }}</td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+{{ end }}

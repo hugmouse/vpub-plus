@@ -50,6 +50,18 @@ func (h *Handler) showAdminBoardsView(w http.ResponseWriter, r *http.Request, us
 	}, user)
 }
 
+func (h *Handler) showKeysView(w http.ResponseWriter, r *http.Request, user model.User) {
+	keys, err := h.storage.Keys()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	h.renderLayout(w, "admin_keys", map[string]interface{}{
+		"keys":           keys,
+		csrf.TemplateTag: csrf.TemplateField(r),
+	}, user)
+}
+
 func (h *Handler) showAdminSettingsView(w http.ResponseWriter, r *http.Request, user model.User) {
 	settings, err := h.storage.Settings()
 	if err != nil {
@@ -143,4 +155,12 @@ func (h *Handler) saveBoard(w http.ResponseWriter, r *http.Request, user model.U
 		return
 	}
 	http.Redirect(w, r, "/admin/boards", http.StatusFound)
+}
+
+func (h *Handler) saveKey(w http.ResponseWriter, r *http.Request, user model.User) {
+	if err := h.storage.CreateKey(); err != nil {
+		serverError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/keys", http.StatusFound)
 }
