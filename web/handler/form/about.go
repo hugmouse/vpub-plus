@@ -2,12 +2,14 @@ package form
 
 import "net/http"
 
-type AboutForm struct {
-	About string
+type AccountForm struct {
+	Picture string
+	About   string
 }
 
-func NewAboutForm(r *http.Request) *AboutForm {
-	return &AboutForm{
-		About: r.FormValue("about"),
+func NewAccountForm(r *http.Request) *AccountForm {
+	return &AccountForm{
+		Picture: r.FormValue("picture"),
+		About:   r.FormValue("about"),
 	}
 }

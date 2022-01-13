@@ -8,11 +8,15 @@ var TplMap = map[string]string{
 {{ define "content" }}
 <h1>Account</h1>
 
-<form action="/save-about" method="post">
+<form action="/save-account" method="post">
     {{ .csrfField }}
     <div class="field">
+        <label for="picture">Picture</label>
+        <input type="url" name="picture" id="picture" value="{{ .user.Picture }}">
+    </div>
+    <div class="field">
         <label for="about">About</label>
-        <textarea name="about" id="about" autofocus>{{ .about }}</textarea>
+        <textarea name="about" id="about" autofocus>{{ .user.About }}</textarea>
     </div>
     <input type="submit" value="Submit">
 </form>
@@ -529,6 +533,9 @@ var TplMap = map[string]string{
     <tr class="post">
         <td class="post-aside">
             <p>{{ .User.Name }}</p>
+            {{ if .User.Picture }}
+            <img width="100" src="{{ .User.Picture }}">
+            {{ end }}
             <p>{{ timeAgo .CreatedAt }}</p>
         </td>
         <td class="post-content">

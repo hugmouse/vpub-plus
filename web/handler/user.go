@@ -39,21 +39,17 @@ func (h *Handler) showUserPostsView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) showAccountView(w http.ResponseWriter, r *http.Request, user model.User) {
-	u, err := h.storage.UserByName(user.Name)
-	if err != nil {
-		forbidden(w)
-		return
-	}
-
 	h.renderLayout(w, "account", map[string]interface{}{
-		"about":          u.About,
+		"user":           user,
 		csrf.TemplateTag: csrf.TemplateField(r),
 	}, user)
 }
 
-func (h *Handler) saveAbout(w http.ResponseWriter, r *http.Request, user model.User) {
-	aboutForm := form.NewAboutForm(r)
-	if err := h.storage.UpdateAbout(user.Id, aboutForm.About); err != nil {
+func (h *Handler) saveAccount(w http.ResponseWriter, r *http.Request, user model.User) {
+	accountForm := form.NewAccountForm(r)
+	user.About = accountForm.About
+	user.Picture = accountForm.Picture
+	if err := h.storage.UpdateUser(user); err != nil {
 		serverError(w, err)
 		return
 	}

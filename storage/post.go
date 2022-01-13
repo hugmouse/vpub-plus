@@ -6,7 +6,7 @@ import (
 	"vpub/model"
 )
 
-const postQuery = "select p.id, p.subject, p.content, p.created_at, p.topic_id, u.id, u.name from posts p left join users u on p.user_id = u.id "
+const postQuery = "select p.id, p.subject, p.content, p.created_at, p.topic_id, u.id, u.name, u.picture from posts p left join users u on p.user_id = u.id "
 
 func parseCreatedAt(createdAt string) (time.Time, error) {
 	return time.Parse("2006-01-02 15:04:05", createdAt)
@@ -21,7 +21,7 @@ func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
 	for rows.Next() {
 		var post model.Post
 		var createdAtStr string
-		err := rows.Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &post.TopicId, &post.User.Id, &post.User.Name)
+		err := rows.Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &post.TopicId, &post.User.Id, &post.User.Name, &post.User.Picture)
 		if err != nil {
 			return posts, false, err
 		}
@@ -61,7 +61,7 @@ func (s *Storage) CreatePost(post model.Post) (int64, error) {
 func (s *Storage) PostById(id int64) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
-	err := s.db.QueryRow(postQuery+"where p.id=$1", id).Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &post.TopicId, &post.User.Id, &post.User.Name)
+	err := s.db.QueryRow(postQuery+"where p.id=$1", id).Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &post.TopicId, &post.User.Id, &post.User.Name, &post.User.Picture)
 	post.CreatedAt, err = parseCreatedAt(createdAtStr)
 	return post, err
 }

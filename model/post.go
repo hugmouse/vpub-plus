@@ -20,6 +20,9 @@ func (p Post) Validate() error {
 	if len(p.Title) == 0 {
 		return errors.New("title is empty")
 	}
+	if len(p.Title) > 120 {
+		return errors.New("title has a max length of 120 characters")
+	}
 	if len(p.Content) == 0 {
 		return errors.New("content is empty")
 	}

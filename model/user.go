@@ -12,6 +12,7 @@ type User struct {
 	Password string
 	Hash     string
 	About    string
+	Picture  string
 	IsAdmin  bool
 }
 

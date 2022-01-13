@@ -92,21 +92,12 @@ func (s *Storage) Users() ([]model.User, error) {
 	return users, nil
 }
 
-func (s *Storage) UpdateAbout(id int64, about string) error {
-	stmt, err := s.db.Prepare(`UPDATE users SET about = $1 WHERE id = $2;`)
-	if err != nil {
-		return err
-	}
-	_, err = stmt.Exec(about, id)
-	return err
-}
-
 func (s *Storage) UpdateUser(user model.User) error {
-	stmt, err := s.db.Prepare(`UPDATE users SET name=$1, about = $2 WHERE id = $3;`)
+	stmt, err := s.db.Prepare(`UPDATE users SET name=$1, about=$2, picture=$3 WHERE id = $4;`)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(user.Name, user.About, user.Id)
+	_, err = stmt.Exec(user.Name, user.About, user.Picture, user.Id)
 	return err
 }
 

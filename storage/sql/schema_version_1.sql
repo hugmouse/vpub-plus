@@ -16,6 +16,7 @@ create table users (
     name text unique CHECK (name <> '' and length(name) <= 15),
     hash text not null CHECK (hash <> ''),
     about TEXT not null DEFAULT '',
+    picture text not null default '',
     is_admin boolean default false,
     key_id integer not null unique,
     foreign key (key_id) references keys(id)

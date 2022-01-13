@@ -45,7 +45,7 @@ var TplCommonMap = map[string]string{
 <input type="hidden" name="topicId" value="{{ .TopicId }}">
 <div class="field">
     <label for="subject">Subject</label>
-    <input type="text" name="subject" id="subject" value="{{ .Subject }}" autocomplete="off" maxlength="120" required autofocus/>
+    <input type="text" name="subject" id="subject" value="{{ .Subject }}" autocomplete="off" maxlength="115" required autofocus/>
 </div>
 <div class="field">
     <label for="content">Content</label>

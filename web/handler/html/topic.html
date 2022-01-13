@@ -7,6 +7,9 @@
     <tr class="post">
         <td class="post-aside">
             <p>{{ .User.Name }}</p>
+            {{ if .User.Picture }}
+            <img width="100" src="{{ .User.Picture }}">
+            {{ end }}
             <p>{{ timeAgo .CreatedAt }}</p>
         </td>
         <td class="post-content">

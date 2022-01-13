@@ -168,7 +168,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	// User
 	router.HandleFunc("/~{userId}", h.showUserPostsView).Methods(http.MethodGet)
 	router.HandleFunc("/account", h.protect(h.showAccountView)).Methods(http.MethodGet)
-	router.HandleFunc("/save-about", h.protect(h.saveAbout)).Methods(http.MethodPost)
+	router.HandleFunc("/save-account", h.protect(h.saveAccount)).Methods(http.MethodPost)
 
 	// Index
 	router.HandleFunc("/", h.showIndexView).Name("index").Methods(http.MethodGet)
