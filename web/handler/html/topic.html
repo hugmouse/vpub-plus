@@ -2,9 +2,29 @@
 {{ define "content"}}
 <!--<h1>{{ .topic.Subject }}</h1>-->
 <br>
+
+<!--{{ range .posts }}-->
+<!--<article id="{{ .Id }}">-->
+<!--    <div class="post-aside">-->
+<!--        <p>{{ .User.Name }}</p>-->
+<!--        {{ if .User.Picture }}-->
+<!--        <img width="100" src="{{ .User.Picture }}">-->
+<!--        {{ end }}-->
+<!--        <p>{{ timeAgo .CreatedAt }}</p>-->
+<!--    </div>-->
+<!--    <div class="post-content">-->
+<!--        {{ if eq $.topic.FirstPostId .Id }}<h1>{{ .Title }}</h1>{{ end }}-->
+<!--        {{ gmi2html .Content }}-->
+<!--        {{ if hasPermission .User.Name }}-->
+<!--        <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>-->
+<!--        {{ end }}-->
+<!--    </div>-->
+<!--</article>-->
+<!--{{ end }}-->
+
 <table>
     {{ range .posts }}
-    <tr class="post">
+    <tr class="post" id="{{ .Id }}">
         <td class="post-aside">
             <p>{{ .User.Name }}</p>
             {{ if .User.Picture }}
@@ -21,6 +41,26 @@
         </td>
     </tr>
     {{ end }}
+<!--    <tr class="post">-->
+<!--        <td class="post-aside">-->
+<!--            <p>{{ .logged.Name }}</p>-->
+<!--            {{ if .logged.Picture }}-->
+<!--            <img width="100" src="{{ .logged.Picture }}">-->
+<!--            {{ end }}-->
+<!--        </td>-->
+<!--        <td class="post-content">-->
+<!--            <form action="/posts/save" method="post">-->
+<!--                {{ .csrfField }}-->
+<!--                <input type="hidden" name="topicId" value="{{ .topic.Id }}">-->
+<!--                <input type="hidden" name="subject" value="Re: {{ .topic.Subject }}">-->
+<!--                <div class="field">-->
+<!--                    <label for="content">Reply to this topic</label>-->
+<!--                    <textarea name="content" id="content" style="height: 150px;"></textarea>-->
+<!--                </div>-->
+<!--                <input type="submit" value="Reply">-->
+<!--            </form>-->
+<!--        </td>-->
+<!--    </tr>-->
 </table>
 <section style="margin-top: 1em;">
     <form action="/posts/save" method="post">
@@ -29,7 +69,7 @@
         <input type="hidden" name="subject" value="Re: {{ .topic.Subject }}">
         <div class="field">
             <label for="content">Reply to this topic</label>
-            <textarea name="content" id="content" style="height: 100px;"></textarea>
+            <textarea name="content" id="content" style="height: 150px;"></textarea>
         </div>
         <input type="submit" value="Reply">
     </form>

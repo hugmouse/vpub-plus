@@ -71,7 +71,11 @@ func (h *Handler) renderLayout(w io.Writer, view string, params map[string]inter
 		}
 	}
 	data["logged"] = user
-	data["boardTitle"] = h.title
+	settings, err := h.storage.Settings()
+	if err != nil {
+		fmt.Println(err)
+	}
+	data["settings"] = settings
 	if err := views[view].Funcs(template.FuncMap{
 		"hasPermission": func(name string) bool {
 			return user.Name == name

@@ -5,10 +5,10 @@ import (
 	"vpub/model"
 )
 
-const queryFindName = `SELECT id, name, hash, about, is_admin FROM users WHERE name=lower($1);`
+const queryFindName = `SELECT id, name, hash, about, is_admin, picture FROM users WHERE name=lower($1);`
 
 func (s *Storage) queryUser(q string, params ...interface{}) (user model.User, err error) {
-	err = s.db.QueryRow(q, params...).Scan(&user.Id, &user.Name, &user.Hash, &user.About, &user.IsAdmin)
+	err = s.db.QueryRow(q, params...).Scan(&user.Id, &user.Name, &user.Hash, &user.About, &user.IsAdmin, &user.Picture)
 	return
 }
 
@@ -46,7 +46,7 @@ func (s *Storage) UserByName(name string) (model.User, error) {
 }
 
 func (s *Storage) UserById(id int64) (model.User, error) {
-	return s.queryUser(`SELECT id, name, hash, about, is_admin FROM users WHERE id=$1;`, id)
+	return s.queryUser(`SELECT id, name, hash, about, is_admin, picture FROM users WHERE id=$1;`, id)
 }
 
 func (s *Storage) CreateUser(user model.User, key string) (int64, error) {

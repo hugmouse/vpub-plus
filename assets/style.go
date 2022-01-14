@@ -5,8 +5,8 @@ package assets
 var AssetsMap = map[string]string{
 	"style": `body {
 	max-width: 800px;
-	margin: auto;
-	padding: 5px;
+	/*margin: auto;*/
+	/*padding: 5px;*/
 }
 
 /* Lists ************************************************************/
@@ -23,6 +23,35 @@ ol.replies > li:not(:last-child) {
 
 /* Posts ************************************************************/
 
+/* Start post */
+/* With a table */
+.post-aside {
+	text-align: center;
+	width: 150px;
+	/*float: left;*/
+}
+/* With articles */
+/*article {*/
+/*	padding: 5px;*/
+/*	border: 1px solid;*/
+/*	margin-bottom: 1em;*/
+/*}*/
+/*article:after {*/
+/*	clear: both;*/
+/*	content: "";*/
+/*	display: block;*/
+/*	visibility: hidden;*/
+/*}*/
+/*.post-aside {*/
+/*	text-align: center;*/
+/*	width: 150px;*/
+/*	float: left;*/
+/*}*/
+/*.post-content {*/
+/*	max-width: 650px;*/
+/*	margin-left: 150px;*/
+/*}*/
+/* End */
 table {
 	border-collapse: collapse;
 	border: 1px solid;
@@ -33,10 +62,7 @@ tr, td, th {
 	border: 1px solid;
 	padding: .5em;
 }
-.post-aside {
-	text-align: center;
-	width: 150px;
-}
+
 
 .content h1 { font-size: 1.5em; }
 .content h2 { font-size: 1.2em; }
@@ -49,12 +75,12 @@ header > nav {
 	float: right;
 }
 
-body > footer {
-	margin-top: 1em;
-	border-top: 1px solid lightgrey;
-	color: grey;
-	text-align: center;
-}
+/*body > footer {*/
+/*	margin-top: 1em;*/
+/*	border-top: 1px solid lightgrey;*/
+/*	color: grey;*/
+/*	text-align: center;*/
+/*}*/
 
 /* Forms ************************************************************/
 

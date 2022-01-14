@@ -50,12 +50,12 @@ func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user model.Us
 		serverError(w, err)
 		return
 	}
-	_, err := h.storage.CreatePost(post)
+	id, err := h.storage.CreatePost(post)
 	if err != nil {
 		serverError(w, err)
 		return
 	}
-	http.Redirect(w, r, fmt.Sprintf("/topics/%d", postForm.TopicId), http.StatusFound)
+	http.Redirect(w, r, fmt.Sprintf("/topics/%d#%d", postForm.TopicId, id), http.StatusFound)
 }
 
 //
