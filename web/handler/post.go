@@ -18,26 +18,6 @@ func (h *Handler) ParseIntQS(qs *url.URL, name string) (int64, error) {
 	return 0, errors.New("qs value not found")
 }
 
-func (h *Handler) showNewPostView(w http.ResponseWriter, r *http.Request, user model.User) {
-	id, err := h.ParseIntQS(r.URL, "topicId")
-	if err != nil {
-		notFound(w)
-		return
-	}
-	topic, err := h.storage.BoardById(id)
-	if err != nil {
-		notFound(w)
-		return
-	}
-	postForm := form.ThreadForm{
-		Topic: topic,
-	}
-	h.renderLayout(w, "create_post", map[string]interface{}{
-		"form":           postForm,
-		csrf.TemplateTag: csrf.TemplateField(r),
-	}, user)
-}
-
 func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user model.User) {
 	postForm := form.NewPostForm(r)
 	post := model.Post{
@@ -45,6 +25,7 @@ func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user model.Us
 		Title:   postForm.Subject,
 		Content: postForm.Content,
 		TopicId: postForm.TopicId,
+		BoardId: postForm.BoardId,
 	}
 	if err := post.Validate(); err != nil {
 		serverError(w, err)
@@ -57,30 +38,6 @@ func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user model.Us
 	}
 	http.Redirect(w, r, fmt.Sprintf("/topics/%d#%d", postForm.TopicId, id), http.StatusFound)
 }
-
-//
-//func (h *Handler) showPostView(w http.ResponseWriter, r *http.Request) {
-//	user, _ := h.session.Get(r)
-//
-//	post, err := h.storage.PostById(RouteInt64Param(r, "postId"))
-//	if err != nil {
-//		notFound(w)
-//		return
-//	}
-//
-//	replies, err := h.storage.RepliesByPostId(post.Id)
-//	if err != nil {
-//		serverError(w, err)
-//		return
-//	}
-//
-//	h.renderLayout(w, "post", map[string]interface{}{
-//		"post":           post,
-//		"content":        post.Content,
-//		"replies":        replies,
-//		csrf.TemplateTag: csrf.TemplateField(r),
-//	}, user)
-//}
 
 func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user model.User) {
 	post, err := h.storage.PostById(RouteInt64Param(r, "postId"))
@@ -96,6 +53,7 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user 
 		Subject: post.Title,
 		Content: post.Content,
 		TopicId: post.TopicId,
+		BoardId: post.BoardId,
 	}
 	h.renderLayout(w, "edit_post", map[string]interface{}{
 		"form":           postForm,

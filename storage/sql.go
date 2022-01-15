@@ -63,7 +63,7 @@ create view topics as
              left join posts r on r.topic_id = t.id
              left join users u on t.user_id = u.id
     where t.topic_id is null
-    group by t.id order by r.updated_at desc;
+    group by t.id order by updated_at desc;
 
 create view boardStats as
     select
@@ -82,6 +82,7 @@ create view postUsers as
         p.content,
         p.created_at,
         p.topic_id,
+        p.board_id,
         u.id as user_id,
         u.name,
         u.picture

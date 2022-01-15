@@ -559,7 +559,7 @@ var TplMap = map[string]string{
             <p>{{ timeAgo .CreatedAt }}</p>
         </td>
         <td class="post-content">
-            {{ if eq $.topic.FirstPostId .Id }}<h1>{{ .Title }}</h1>{{ end }}
+            {{ if eq $.topic.Id .Id }}<h1>{{ .Title }}</h1>{{ end }}
             {{ gmi2html .Content }}
             {{ if hasPermission .User.Name }}
             <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
@@ -592,6 +592,7 @@ var TplMap = map[string]string{
     <form action="/posts/save" method="post">
         {{ .csrfField }}
         <input type="hidden" name="topicId" value="{{ .topic.Id }}">
+        <input type="hidden" name="boardId" value="{{ .board.Id }}">
         <input type="hidden" name="subject" value="Re: {{ .topic.Subject }}">
         <div class="field">
             <label for="content">Reply to this topic</label>

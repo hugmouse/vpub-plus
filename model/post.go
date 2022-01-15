@@ -12,6 +12,7 @@ type Post struct {
 	Content   string
 	TopicId   int64
 	Replies   int
+	BoardId   int64
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

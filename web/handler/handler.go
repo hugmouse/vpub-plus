@@ -118,9 +118,6 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	router.HandleFunc("/boards/{boardId}/save-topic", h.protect(h.saveTopic)).Methods(http.MethodPost)
 	//router.HandleFunc("/boards/{boardId}/feed.atom", h.showFeedViewTopic).Methods(http.MethodGet)
 
-	// Posts
-	router.HandleFunc("/posts/new", h.protect(h.showNewPostView)).Methods(http.MethodGet)
-
 	// Topic
 	router.HandleFunc("/topics/{topicId}", h.showTopicView).Methods(http.MethodGet)
 

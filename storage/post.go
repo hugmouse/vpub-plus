@@ -22,7 +22,7 @@ func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
 		var post model.Post
 		var createdAtStr string
 		var topicId *int64
-		err := rows.Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &topicId, &post.User.Id, &post.User.Name, &post.User.Picture)
+		err := rows.Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &topicId, &post.BoardId, &post.User.Id, &post.User.Name, &post.User.Picture)
 		if err != nil {
 			return posts, false, err
 		}
@@ -36,34 +36,22 @@ func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
 }
 
 func (s *Storage) CreatePost(post model.Post) (int64, error) {
-	ctx := context.Background()
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return post.Id, err
-	}
-	if err := tx.QueryRowContext(ctx, `INSERT INTO posts (user_id, subject, content, topic_id) VALUES ($1, $2, $3, $4) RETURNING id`,
-		post.User.Id, post.Title, post.Content, post.TopicId).Scan(&post.Id); err != nil {
-		tx.Rollback()
-		return post.Id, err
-	}
-	var boardId int64
-	if err := tx.QueryRowContext(ctx, `update topics set updated_at=datetime('now'), replies=replies + 1 where id=$1 returning board_id`, post.TopicId).Scan(&boardId); err != nil {
-		tx.Rollback()
-		return post.Id, err
-	}
-	if _, err := tx.ExecContext(ctx, `update boards set posts=posts+1, updated_at=datetime('now') where id=$1`, boardId); err != nil {
-		tx.Rollback()
-		return post.Id, err
-	}
-	err = tx.Commit()
-	return post.Id, err
+	var id int64
+	err := s.db.QueryRow(`INSERT INTO posts (subject, content, user_id, topic_id, board_id) VALUES ($1, $2, $3, $4, $5) returning id`, post.Title, post.Content, post.User.Id, post.TopicId, post.BoardId).Scan(&id)
+	return id, err
 }
 
 func (s *Storage) PostById(id int64) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
-	err := s.db.QueryRow(postQuery+"where p.id=$1", id).Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &post.TopicId, &post.User.Id, &post.User.Name, &post.User.Picture)
+	var topicId *int64
+	err := s.db.QueryRow("select * from postUsers where post_id=$1", id).Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &topicId, &post.BoardId, &post.User.Id, &post.User.Name, &post.User.Picture)
 	post.CreatedAt, err = parseCreatedAt(createdAtStr)
+	if topicId != nil {
+		post.TopicId = *topicId
+	} else {
+		post.TopicId = post.Id
+	}
 	return post, err
 }
 
