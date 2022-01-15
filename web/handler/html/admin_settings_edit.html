@@ -1,6 +1,6 @@
 {{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Settings{{ end }}
 {{ define "content"}}
-<h2>Edit Settings</h2>
+<h1><a href="/admin">Admin</a> > Edit Settings</h1>
 <form action="/admin/settings/update" method="post">
     {{ .csrfField }}
     <div class="field">

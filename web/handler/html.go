@@ -37,7 +37,7 @@ var TplMap = map[string]string{
 {{ end }}`,
 	"admin_board": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Boards{{ end }}
 {{ define "content"}}
-<h1>Boards</h1>
+<h1><a href="/admin">Admin</a> > Boards</h1>
 <p><a href="/admin/boards/new">New board</a></p>
 <table>
     <thead>
@@ -83,7 +83,7 @@ var TplMap = map[string]string{
 	"admin_keys": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Keys{{ end }}
 {{ define "title" }}Keys{{ end }}
 {{ define "content" }}
-<h1>Keys</h1>
+<h1><a href="/admin">Admin</a> > Keys</h1>
 <form action="/admin/keys/save" method="post">
     {{ .csrfField }}
     <input type="submit" value="Create key">
@@ -109,7 +109,7 @@ var TplMap = map[string]string{
 `,
 	"admin_settings_edit": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Settings{{ end }}
 {{ define "content"}}
-<h2>Edit Settings</h2>
+<h1><a href="/admin">Admin</a> > Edit Settings</h1>
 <form action="/admin/settings/update" method="post">
     {{ .csrfField }}
     <div class="field">
@@ -126,7 +126,7 @@ var TplMap = map[string]string{
 {{ end }}`,
 	"admin_user": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Users{{ end }}
 {{ define "content"}}
-<h1>Users</h1>
+<h1><a href="/admin">Admin</a> > Users</h1>
 <table>
     <thead>
     <tr>
@@ -166,9 +166,9 @@ var TplMap = map[string]string{
 </form>
 {{ end }}
 `,
-	"board": `{{ define "breadcrumb" }} > {{ .board.Name }}{{ end }}
+	"board": `{{ define "breadcrumb" }}<a href="/">boards</a> > {{ .board.Name }}{{ end }}
 {{ define "content" }}
-<h1>{{ .board.Name }}</h1>
+<h1><a href="/">boards</a> > {{ .board.Name }}</h1>
 
 <!--<p>{{ .board.Description }}</p>-->
 
@@ -262,8 +262,9 @@ var TplMap = map[string]string{
     </form>
 {{ end }}
 `,
-	"index": `{{ define "content"}}
-<h1>{{ .title }}</h1>
+	"index": `{{ define "breadcrumb" }}boards{{ end }}
+{{ define "content"}}
+<h1>Boards</h1>
 
 <!--<nav class="actions">-->
 <!--    <p>-->
@@ -524,10 +525,9 @@ var TplMap = map[string]string{
     <input type="submit" value="Submit">
 </form>
 {{ end }}`,
-	"topic": `{{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
+	"topic": `{{ define "breadcrumb" }}<a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
-<!--<h1>{{ .topic.Subject }}</h1>-->
-<br>
+<h1><a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a></h1>
 
 <!--{{ range .posts }}-->
 <!--<article id="{{ .Id }}">-->

@@ -1,7 +1,6 @@
-{{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
+{{ define "breadcrumb" }}<a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
-<!--<h1>{{ .topic.Subject }}</h1>-->
-<br>
+<h1><a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a></h1>
 
 <!--{{ range .posts }}-->
 <!--<article id="{{ .Id }}">-->

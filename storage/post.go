@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"context"
 	"time"
 	"vpub/model"
 )
@@ -56,39 +55,11 @@ func (s *Storage) PostById(id int64) (model.Post, error) {
 }
 
 func (s *Storage) DeletePostById(id int64) error {
-	ctx := context.Background()
-	tx, err := s.db.BeginTx(ctx, nil)
+	stmt, err := s.db.Prepare(`delete from posts where id=$1`)
 	if err != nil {
 		return err
 	}
-	var isFirstPost bool
-	if err := tx.QueryRowContext(ctx, `select true from topics where first_post_id=$1`, id).Scan(&isFirstPost); err != nil {
-		tx.Rollback()
-		return err
-	}
-	if isFirstPost {
-		if _, err := tx.ExecContext(ctx, `DELETE from posts WHERE id = $1`, id); err != nil {
-			tx.Rollback()
-			return err
-		}
-		return tx.Commit()
-	}
-
-	var topicId int64
-	if err := tx.QueryRowContext(ctx, `DELETE from posts WHERE id = $1 returning topic_id`, id).Scan(&topicId); err != nil {
-		tx.Rollback()
-		return err
-	}
-	var boardId int64
-	if err := tx.QueryRowContext(ctx, `update topics set replies=replies - 1 where id=$1 returning board_id`, topicId).Scan(&boardId); err != nil {
-		tx.Rollback()
-		return err
-	}
-	if _, err := tx.ExecContext(ctx, `update boards set posts=posts - 1 where id=$1`, boardId); err != nil {
-		tx.Rollback()
-		return err
-	}
-	err = tx.Commit()
+	_, err = stmt.Exec(id)
 	return err
 }
 
