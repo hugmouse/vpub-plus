@@ -13,7 +13,7 @@ func parseCreatedAt(createdAt string) (time.Time, error) {
 }
 
 func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
-	rows, err := s.db.Query(postQuery+"where topic_id=$1;", id)
+	rows, err := s.db.Query("select * from postUsers where topic_id=$1 or post_id=$1", id)
 	if err != nil {
 		return nil, false, err
 	}
@@ -21,7 +21,8 @@ func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
 	for rows.Next() {
 		var post model.Post
 		var createdAtStr string
-		err := rows.Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &post.TopicId, &post.User.Id, &post.User.Name, &post.User.Picture)
+		var topicId *int64
+		err := rows.Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &topicId, &post.User.Id, &post.User.Name, &post.User.Picture)
 		if err != nil {
 			return posts, false, err
 		}

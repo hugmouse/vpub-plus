@@ -35,34 +35,58 @@ create table settings (
 create table boards (
     id integer primary key autoincrement,
     name text not null check ( name <> '' and length(name) < 120 ),
-    topics integer not null default 0,
-    posts integer not null default 0,
-    description text,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
-);
-
-create table topics (
-    id integer primary key autoincrement,
-    board_id integer,
-    first_post_id integer not null,
-    replies integer not null default 0,
-    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    foreign key (first_post_id) references posts(id) on delete cascade,
-    foreign key (board_id) references boards(id)
+    description text
 );
 
 create table posts (
     id integer primary key autoincrement,
-    user_id text not null,
     subject text not null check ( length(subject) <= 120 ),
     content text not null check ( length(content) <= 50000 ),
-    topic_id integer,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    foreign key (topic_id) references topics(id),
-    foreign key (user_id) references users(id)
+    topic_id integer references posts(id),
+    board_id integer references boards(id),
+    user_id integer references users(id)
 );
+
+create view topics as
+    select
+        t.id,
+        t.user_id,
+        u.name,
+        t.board_id,
+        t.subject,
+        count(r.topic_id) replies,
+        t.created_at,
+        ifnull(r.updated_at, t.updated_at) updated_at
+    from posts t
+             left join posts r on r.topic_id = t.id
+             left join users u on t.user_id = u.id
+    where t.topic_id is null
+    group by t.id order by r.updated_at desc;
+
+create view boardStats as
+    select
+        b.id,
+        b.name,
+        b.description,
+        count(p.id) as posts,
+        sum(case when (p.topic_id is null and p.id is not null) then 1 else 0 end) topics
+    from boards b left join posts p on b.id = p.board_id
+    group by p.board_id;
+
+create view postUsers as
+    select
+        p.id as post_id,
+        p.subject,
+        p.content,
+        p.created_at,
+        p.topic_id,
+        u.id as user_id,
+        u.name,
+        u.picture
+    from posts p
+         left join users u on p.user_id = u.id;
 
 insert into settings (name) values ('vpub');
 insert into keys (key) values ('admin');`,

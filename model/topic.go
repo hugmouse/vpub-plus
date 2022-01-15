@@ -10,4 +10,5 @@ type Topic struct {
 	FirstPostId int64
 	Replies     int64
 	UpdatedAt   time.Time
+	CreatedAt   time.Time
 }

@@ -5,30 +5,28 @@ import "vpub/model"
 func (s *Storage) BoardById(id int64) (model.Board, error) {
 	var board model.Board
 	err := s.db.QueryRow(
-		`SELECT id, name, description, topics, posts from boards WHERE id=$1`, id).Scan(
+		`SELECT id, name, description from boards WHERE id=$1`, id).Scan(
 		&board.Id,
 		&board.Name,
 		&board.Description,
-		&board.Topics,
-		&board.Posts,
 	)
 	return board, err
 }
 
 func (s *Storage) Boards() ([]model.Board, error) {
-	rows, err := s.db.Query("select id, name, description, topics, posts, updated_at from boards")
+	rows, err := s.db.Query("select id, name, description, topics, posts from boardStats")
 	if err != nil {
 		return nil, err
 	}
 	var boards []model.Board
 	for rows.Next() {
 		var board model.Board
-		var updatedAtStr string
-		err := rows.Scan(&board.Id, &board.Name, &board.Description, &board.Topics, &board.Posts, &updatedAtStr)
+		//var updatedAtStr string
+		err := rows.Scan(&board.Id, &board.Name, &board.Description, &board.Topics, &board.Posts)
 		if err != nil {
 			return boards, err
 		}
-		board.UpdatedAt, err = parseCreatedAt(updatedAtStr)
+		//board.UpdatedAt, err = parseCreatedAt(updatedAtStr)
 		if err != nil {
 			return boards, err
 		}
