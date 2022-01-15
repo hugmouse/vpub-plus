@@ -107,6 +107,7 @@ func (h *Handler) showEditBoardView(w http.ResponseWriter, r *http.Request, user
 	boardForm := form.BoardForm{
 		Name:        board.Name,
 		Description: board.Description,
+		Position:    board.Position,
 	}
 	h.renderLayout(w, "admin_board_edit", map[string]interface{}{
 		"form":           boardForm,
@@ -125,6 +126,7 @@ func (h *Handler) updateBoard(w http.ResponseWriter, r *http.Request, user model
 	boardForm := form.NewBoardForm(r)
 	board.Name = boardForm.Name
 	board.Description = boardForm.Description
+	board.Position = boardForm.Position
 	if err := h.storage.UpdateBoard(board); err != nil {
 		serverError(w, err)
 		return
@@ -148,6 +150,7 @@ func (h *Handler) saveBoard(w http.ResponseWriter, r *http.Request, user model.U
 	board := model.Board{
 		Name:        boardForm.Name,
 		Description: boardForm.Description,
+		Position:    boardForm.Position,
 	}
 	_, err := h.storage.CreateBoard(board)
 	if err != nil {

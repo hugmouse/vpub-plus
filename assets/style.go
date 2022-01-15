@@ -7,6 +7,7 @@ var AssetsMap = map[string]string{
 	max-width: 800px;
 	margin: auto;
 	padding: 5px;
+	font: 18px/1.4 system-ui, sans-serif;
 }
 
 /* Lists ************************************************************/

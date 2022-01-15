@@ -64,7 +64,7 @@ func (s *Storage) DeletePostById(id int64) error {
 }
 
 func (s *Storage) UpdatePost(post model.Post) error {
-	stmt, err := s.db.Prepare(`UPDATE posts SET subject = $1, content = $2 WHERE id = $3;`)
+	stmt, err := s.db.Prepare(`UPDATE posts SET subject = $1, content = $2, updated_at = datetime('now') WHERE id = $3;`)
 	if err != nil {
 		return err
 	}

@@ -9,4 +9,5 @@ type Board struct {
 	Topics      int64
 	Posts       int64
 	UpdatedAt   time.Time
+	Position    int64
 }
