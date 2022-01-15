@@ -43,7 +43,7 @@ create table topics (
     replies integer not null default 0,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    foreign key (first_post_id) references posts(id),
+    foreign key (first_post_id) references posts(id) on delete cascade,
     foreign key (board_id) references boards(id)
 );
 

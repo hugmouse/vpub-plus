@@ -5,8 +5,8 @@ package assets
 var AssetsMap = map[string]string{
 	"style": `body {
 	max-width: 800px;
-	/*margin: auto;*/
-	/*padding: 5px;*/
+	margin: auto;
+	padding: 5px;
 }
 
 /* Lists ************************************************************/
@@ -61,6 +61,9 @@ tr, td, th {
 	vertical-align: top;
 	border: 1px solid;
 	padding: .5em;
+}
+thead {
+	background-color: paleturquoise;
 }
 
 

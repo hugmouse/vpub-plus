@@ -72,6 +72,19 @@ func (s *Storage) DeletePostById(id int64) error {
 	if err != nil {
 		return err
 	}
+	var isFirstPost bool
+	if err := tx.QueryRowContext(ctx, `select true from topics where first_post_id=$1`, id).Scan(&isFirstPost); err != nil {
+		tx.Rollback()
+		return err
+	}
+	if isFirstPost {
+		if _, err := tx.ExecContext(ctx, `DELETE from posts WHERE id = $1`, id); err != nil {
+			tx.Rollback()
+			return err
+		}
+		return tx.Commit()
+	}
+
 	var topicId int64
 	if err := tx.QueryRowContext(ctx, `DELETE from posts WHERE id = $1 returning topic_id`, id).Scan(&topicId); err != nil {
 		tx.Rollback()

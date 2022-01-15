@@ -35,7 +35,6 @@ var TplCommonMap = map[string]string{
         </nav>
     </header>
     {{ template "content" . }}
-    <footer><p>Powered by vpub</p></footer>
 </body>
 </html>
 {{ end }}
