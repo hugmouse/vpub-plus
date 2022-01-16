@@ -192,12 +192,18 @@ var TplMap = map[string]string{
         </tr>
         </thead>
         <tbody>
+        {{ if .topics }}
         {{ range .topics }}
         <tr>
             <td colspan="grow"><a href="/topics/{{ .Id }}">{{ .Subject }}</a></td>
             <td class="center"><a href="/~{{ .User.Id }}">{{ .User.Name }}</a></td>
             <td class="center">{{ .Replies }}</td>
             <td class="center">{{ iso8601 .UpdatedAt }}</td>
+        </tr>
+        {{ end }}
+        {{ else }}
+        <tr>
+            <td colspan="4">No topics yet.</td>
         </tr>
         {{ end }}
         </tbody>

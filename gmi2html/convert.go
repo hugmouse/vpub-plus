@@ -15,6 +15,10 @@ var blockquoteRegexp = regexp.MustCompile("^> (.*)$")
 var preRegexp = regexp.MustCompile("^```.*$")
 var bulletRegexp = regexp.MustCompile(`^\* ?(.*)$`)
 var urlRegexp = regexp.MustCompile(`https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)`)
+var imgRegexp = regexp.MustCompile(`!\[(.*?)\]\((.*?)\)`)
+var linkRegexp = regexp.MustCompile(`\[(.*?)\]\((.*?)\)`)
+
+// [Duck Duck Go](https://duckduckgo.com)
 
 func clearLinkMode(linkMode *bool, rv *[]string) {
 	//if *linkMode {
@@ -105,10 +109,32 @@ func Convert(gmi string) string {
 				clearUlMode(&ulMode, &rv)
 				clearLinkMode(&linkMode, &rv)
 				sane := sanitize(l)
-				if urlRegexp.MatchString(sane) {
+				//if urlRegexp.MatchString(sane) {
+				//	matches := urlRegexp.FindAllStringSubmatch(l, -1)
+				//	for _, m := range matches {
+				//		url := m[0]
+				//		ext := strings.ToLower(filepath.Ext(url))
+				//		if ext == ".gif" || ext == ".jpg" || ext == ".jpeg" || ext == ".png" {
+				//			sane = strings.Replace(sane, url, fmt.Sprintf("<img src=\"%s\"/>", url), 1)
+				//		} else {
+				//			sane = strings.Replace(sane, url, fmt.Sprintf("<a href=\"%s\" target=\"_blank\">%s</a>", url, url), 1)
+				//		}
+				//	}
+				//}
+				if imgRegexp.MatchString(sane) || linkRegexp.MatchString(sane) {
+					matches := imgRegexp.FindAllStringSubmatch(sane, -1)
+					for _, m := range matches {
+						sane = strings.Replace(sane, m[0], fmt.Sprintf("<img src=\"%s\" alt=\"%s\"/>", m[2], m[1]), 1)
+					}
+					matches = linkRegexp.FindAllStringSubmatch(sane, -1)
+					for _, m := range matches {
+						sane = strings.Replace(sane, m[0], fmt.Sprintf("<a href=\"%s\" target=\"_blank\">%s</a>", m[2], m[1]), 1)
+					}
+				} else if urlRegexp.MatchString(sane) {
 					matches := urlRegexp.FindAllStringSubmatch(l, -1)
 					for _, m := range matches {
-						sane = strings.Replace(sane, m[0], fmt.Sprintf("<a href=\"%s\" target=\"_blank\">%s</a>", m[0], m[0]), 1)
+						url := m[0]
+						sane = strings.Replace(sane, url, fmt.Sprintf("<a href=\"%s\" target=\"_blank\">%s</a>", url, url), 1)
 					}
 				}
 				if len(sane) != 0 {
