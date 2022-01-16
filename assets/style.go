@@ -29,7 +29,7 @@ ol.replies > li:not(:last-child) {
 .post-aside {
 	text-align: center;
 	width: 150px;
-	/*float: left;*/
+	background-color: paleturquoise;
 }
 /* With articles */
 /*article {*/

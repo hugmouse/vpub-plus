@@ -548,7 +548,7 @@ var TplMap = map[string]string{
 <!--</article>-->
 <!--{{ end }}-->
 
-<table>
+<table class="posts">
     {{ range .posts }}
     <tr class="post" id="{{ .Id }}">
         <td class="post-aside">
@@ -561,7 +561,7 @@ var TplMap = map[string]string{
         <td class="post-content">
             {{ if eq $.topic.Id .Id }}<h1>{{ .Title }}</h1>{{ end }}
             {{ gmi2html .Content }}
-            {{ if hasPermission .User.Name }}
+            {{ if or (hasPermission .User.Name) $.logged.IsAdmin}}
             <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
             {{ end }}
         </td>

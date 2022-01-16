@@ -54,20 +54,20 @@ func (s *Storage) PostById(id int64) (model.Post, error) {
 	return post, err
 }
 
-func (s *Storage) DeletePostById(id int64) error {
-	stmt, err := s.db.Prepare(`delete from posts where id=$1`)
+func (s *Storage) DeletePost(post model.Post) error {
+	stmt, err := s.db.Prepare(`delete from posts where id=$1 and (user_id = $2 or (select is_admin from users where id=$2))`)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(id)
+	_, err = stmt.Exec(post.Id, post.User.Id)
 	return err
 }
 
 func (s *Storage) UpdatePost(post model.Post) error {
-	stmt, err := s.db.Prepare(`UPDATE posts SET subject = $1, content = $2, updated_at = datetime('now') WHERE id = $3;`)
+	stmt, err := s.db.Prepare(`UPDATE posts SET subject = $1, content = $2, updated_at = datetime('now') WHERE id = $3 and (user_id = $4 or (select is_admin from users where id=$4));`)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(post.Title, post.Content, post.Id)
+	_, err = stmt.Exec(post.Title, post.Content, post.Id, post.User.Id)
 	return err
 }

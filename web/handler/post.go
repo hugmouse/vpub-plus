@@ -45,10 +45,6 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user 
 		serverError(w, err)
 		return
 	}
-	if user.Name != post.User.Name {
-		forbidden(w)
-		return
-	}
 	postForm := form.PostForm{
 		Subject: post.Title,
 		Content: post.Content,
@@ -72,6 +68,7 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user model.
 	postForm := form.NewPostForm(r)
 	post.Title = postForm.Subject
 	post.Content = postForm.Content
+	post.User = user
 	if err := post.Validate(); err != nil {
 		serverError(w, err)
 		return
@@ -102,7 +99,8 @@ func (h *Handler) handleRemovePost(w http.ResponseWriter, r *http.Request, user 
 			serverError(w, err)
 			return
 		}
-		err = h.storage.DeletePostById(post.Id)
+		post.User = user
+		err = h.storage.DeletePost(post)
 		if err != nil {
 			serverError(w, err)
 			return
