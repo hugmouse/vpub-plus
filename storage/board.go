@@ -15,7 +15,7 @@ func (s *Storage) BoardById(id int64) (model.Board, error) {
 }
 
 func (s *Storage) Boards() ([]model.Board, error) {
-	rows, err := s.db.Query("select id, name, description, topics, posts, updated_at from boardStats")
+	rows, err := s.db.Query("select id, forum_name, name, description, topics, posts, updated_at from boardStats")
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func (s *Storage) Boards() ([]model.Board, error) {
 	for rows.Next() {
 		var board model.Board
 		var updatedAtStr string
-		err := rows.Scan(&board.Id, &board.Name, &board.Description, &board.Topics, &board.Posts, &updatedAtStr)
+		err := rows.Scan(&board.Id, &board.Forum.Name, &board.Name, &board.Description, &board.Topics, &board.Posts, &updatedAtStr)
 		if err != nil {
 			return boards, err
 		}

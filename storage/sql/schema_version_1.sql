@@ -32,15 +32,15 @@ create table boards (
     name text not null check ( name <> '' and length(name) < 120 ),
     position int not null,
     description text,
-    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
---     forum_id not null references forums(id)
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    forum_id references forums(id)
 );
 
--- create table forums (
---     id integer primary key autoincrement,
---     name text not null check ( name <> '' and length(name) < 120 ),
---     position int not null
--- );
+create table forums (
+    id integer primary key autoincrement,
+    name text not null check ( name <> '' and length(name) < 120 ),
+    position int not null
+);
 
 create table posts (
     id integer primary key autoincrement,
@@ -74,14 +74,17 @@ create view topics as
 create view boardStats as
     select
         b.id,
+        f.name forum_name,
         b.name,
         b.description,
         count(p.id) as posts,
         sum(case when (p.topic_id is null and p.id is not null) then 1 else 0 end) topics,
         ifnull(max(p.updated_at), b.created_at) updated_at
-    from boards b left join posts p on b.id = p.board_id
+    from boards b
+        left join posts p on b.id = p.board_id
+        left join forums f on b.forum_id = f.id
     group by b.id
-    order by b.position;
+    order by f.position, b.position;
 
 create view postUsers as
     select

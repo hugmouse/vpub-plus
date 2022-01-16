@@ -288,8 +288,12 @@ var TplMap = map[string]string{
         </tr>
     </thead>
     <tbody>
-        {{ if .boards }}
-        {{ range .boards }}
+        {{ if .forums }}
+        {{ range .forums }}
+        <tr class="forum">
+            <td colspan="4">{{ .Name }}</td>
+        </tr>
+        {{ range .Boards }}
         <tr>
             <td colspan="grow">
                 <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
@@ -298,6 +302,7 @@ var TplMap = map[string]string{
             <td class="center">{{ .Posts }}</td>
             <td class="center">{{ iso8601 .UpdatedAt }}</td>
         </tr>
+        {{ end }}
         {{ end }}
         {{ else }}
         <tr>
