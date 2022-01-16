@@ -6,6 +6,21 @@ import (
 	"vpub/model"
 )
 
+func forumFromBoards(boards []model.Board) []model.Forum {
+	var forums []model.Forum
+	var forum model.Forum
+	for i, board := range boards {
+		if i == 0 {
+			forum.Name = board.Forum.Name
+		} else if board.Forum.Name != forum.Name {
+			forums = append(forums, forum)
+			forum = model.Forum{Name: board.Forum.Name}
+		}
+		forum.Boards = append(forum.Boards, board)
+	}
+	return append(forums, forum)
+}
+
 func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 	user, _ := h.session.Get(r)
 	settings, err := h.storage.Settings()
@@ -18,18 +33,7 @@ func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 		serverError(w, err)
 		return
 	}
-	var forums []model.Forum
-	var forum model.Forum
-	for i, board := range boards {
-		if i == 0 {
-			forum.Name = board.Forum.Name
-		} else if board.Forum.Name != forum.Name {
-			forums = append(forums, forum)
-			forum = model.Forum{Name: board.Forum.Name}
-		}
-		forum.Boards = append(forum.Boards, board)
-	}
-	forums = append(forums, forum)
+	forums := forumFromBoards(boards)
 	h.renderLayout(w, "index", map[string]interface{}{
 		"posts":            "",
 		"hasNotifications": false,

@@ -145,6 +145,12 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	router.HandleFunc("/reset-password", h.showResetPasswordView).Methods(http.MethodGet)
 	router.HandleFunc("/reset-password", h.updatePassword).Methods(http.MethodPost)
 
+	router.HandleFunc("/admin/forums", h.admin(h.showAdminForumsView)).Methods(http.MethodGet)
+	router.HandleFunc("/admin/forums/new", h.admin(h.showNewForumView)).Methods(http.MethodGet)
+	router.HandleFunc("/admin/forums/save", h.admin(h.saveForum)).Methods(http.MethodPost)
+	router.HandleFunc("/admin/forums/{forumId}/edit", h.admin(h.showEditForumView)).Methods(http.MethodGet)
+	router.HandleFunc("/admin/forums/{forumId}/update", h.admin(h.updateForum)).Methods(http.MethodPost)
+
 	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)
 
 	// Pagination

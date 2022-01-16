@@ -1,0 +1,10 @@
+{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a>{{ end }}
+{{ define "title" }}New forum{{ end }}
+{{ define "content" }}
+<h2>Create forum</h2>
+<form action="/admin/forums/save" method="post">
+    {{ .csrfField }}
+    {{ template "forum_form" .form }}
+    <input type="submit" value="Submit">
+</form>
+{{ end }}

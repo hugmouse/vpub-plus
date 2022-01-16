@@ -1,6 +1,8 @@
 package model
 
 type Forum struct {
-	Name   string
-	Boards []Board
+	Id       int64
+	Name     string
+	Boards   []Board
+	Position int64
 }

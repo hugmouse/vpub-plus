@@ -1,4 +1,3 @@
-{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Boards{{ end }}
 {{ define "content"}}
 <h1><a href="/admin">Admin</a> > Boards</h1>
 <p><a href="/admin/boards/new">New board</a></p>
@@ -10,12 +9,23 @@
     </tr>
     </thead>
     <tbody>
-    {{ range .boards }}
+    {{ if .forums }}
+    {{ range .forums }}
+    <tr class="forum">
+        <td colspan="4">{{ .Name }}</td>
+    </tr>
+    {{ range .Boards }}
     <tr>
         <td colspan="grow">
             <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
         </td>
         <td class="center"><a href="/admin/boards/{{ .Id }}/edit">Edit</a></td>
+    </tr>
+    {{ end }}
+    {{ end }}
+    {{ else }}
+    <tr>
+        <td colspan="2">No boards yet.</td>
     </tr>
     {{ end }}
     </tbody>

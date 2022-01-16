@@ -7,7 +7,8 @@ var AssetsMap = map[string]string{
 	max-width: 800px;
 	margin: auto;
 	padding: 5px;
-	font: 18px/1.4 system-ui, sans-serif;
+	font: 16px/1.4 system-ui, sans-serif;
+	background-color: mintcream;
 }
 
 /* Lists ************************************************************/
@@ -67,6 +68,9 @@ tr, td, th {
 }
 thead {
 	background-color: paleturquoise;
+}
+tbody {
+	background-color: white;
 }
 
 

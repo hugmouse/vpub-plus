@@ -1,0 +1,28 @@
+{{ define "content"}}
+<h1><a href="/admin">Admin</a> > Forums</h1>
+<p><a href="/admin/forums/new">New forum</a></p>
+<table>
+    <thead>
+    <tr>
+        <th class="grow">Forum</th>
+        <th>Edit</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ if .forums }}
+    {{ range .forums }}
+    <tr>
+        <td colspan="grow">
+            {{ .Name }}
+        </td>
+        <td class="center"><a href="/admin/forums/{{ .Id }}/edit">Edit</a></td>
+    </tr>
+    {{ end }}
+    {{ else }}
+    <tr>
+        <td colspan="2">No boards yet.</td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+{{ end }}

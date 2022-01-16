@@ -31,12 +31,12 @@ var TplMap = map[string]string{
     <li><a href="/admin/settings/edit">Edit settings</a></li>
     <li><a href="/admin/keys">Manage keys</a></li>
     <li><a href="/admin/boards">Manage boards</a></li>
+    <li><a href="/admin/forums">Manage forums</a></li>
     <li><a href="/admin/users">Manage users</a></li>
   </ul>
 </nav>
 {{ end }}`,
-	"admin_board": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Boards{{ end }}
-{{ define "content"}}
+	"admin_board": `{{ define "content"}}
 <h1><a href="/admin">Admin</a> > Boards</h1>
 <p><a href="/admin/boards/new">New board</a></p>
 <table>
@@ -47,12 +47,23 @@ var TplMap = map[string]string{
     </tr>
     </thead>
     <tbody>
-    {{ range .boards }}
+    {{ if .forums }}
+    {{ range .forums }}
+    <tr class="forum">
+        <td colspan="4">{{ .Name }}</td>
+    </tr>
+    {{ range .Boards }}
     <tr>
         <td colspan="grow">
             <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
         </td>
         <td class="center"><a href="/admin/boards/{{ .Id }}/edit">Edit</a></td>
+    </tr>
+    {{ end }}
+    {{ end }}
+    {{ else }}
+    <tr>
+        <td colspan="2">No boards yet.</td>
     </tr>
     {{ end }}
     </tbody>
@@ -76,6 +87,55 @@ var TplMap = map[string]string{
 <form action="/admin/boards/{{ .board.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "board_form" .form }}
+    <input type="submit" value="Submit">
+</form>
+{{ end }}
+`,
+	"admin_forum": `{{ define "content"}}
+<h1><a href="/admin">Admin</a> > Forums</h1>
+<p><a href="/admin/forums/new">New forum</a></p>
+<table>
+    <thead>
+    <tr>
+        <th class="grow">Forum</th>
+        <th>Edit</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ if .forums }}
+    {{ range .forums }}
+    <tr>
+        <td colspan="grow">
+            {{ .Name }}
+        </td>
+        <td class="center"><a href="/admin/forums/{{ .Id }}/edit">Edit</a></td>
+    </tr>
+    {{ end }}
+    {{ else }}
+    <tr>
+        <td colspan="2">No boards yet.</td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+{{ end }}`,
+	"admin_forum_create": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a>{{ end }}
+{{ define "title" }}New forum{{ end }}
+{{ define "content" }}
+<h2>Create forum</h2>
+<form action="/admin/forums/save" method="post">
+    {{ .csrfField }}
+    {{ template "forum_form" .form }}
+    <input type="submit" value="Submit">
+</form>
+{{ end }}
+`,
+	"admin_forum_edit": `{{ define "title" }}Edit forum{{ end }}
+{{ define "content" }}
+<h2>Edit forum</h2>
+<form action="/admin/forums/{{ .forum.Id }}/update" method="post">
+    {{ .csrfField }}
+    {{ template "forum_form" .form }}
     <input type="submit" value="Submit">
 </form>
 {{ end }}

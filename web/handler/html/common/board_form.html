@@ -1,5 +1,13 @@
 {{ define "board_form" }}
 <div class="field">
+    <label for="forumId">Forum</label>
+    <select name="forumId" id="forumId">
+        {{ range .Forums }}
+        <option value="{{ .Id }}" {{ if eq .Id $.ForumId }}selected{{ end }}>{{ .Name }}</option>
+        {{ end }}
+    </select>
+</div>
+<div class="field">
     <label for="name">Name</label>
     <input type="text" name="name" id="name" value="{{ .Name }}" autocomplete="off" maxlength="120" required autofocus/>
 </div>

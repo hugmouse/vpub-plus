@@ -1,0 +1,9 @@
+{{ define "title" }}Edit forum{{ end }}
+{{ define "content" }}
+<h2>Edit forum</h2>
+<form action="/admin/forums/{{ .forum.Id }}/update" method="post">
+    {{ .csrfField }}
+    {{ template "forum_form" .form }}
+    <input type="submit" value="Submit">
+</form>
+{{ end }}

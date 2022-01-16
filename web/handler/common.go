@@ -5,6 +5,14 @@ package handler
 var TplCommonMap = map[string]string{
 	"board_form": `{{ define "board_form" }}
 <div class="field">
+    <label for="forumId">Forum</label>
+    <select name="forumId" id="forumId">
+        {{ range .Forums }}
+        <option value="{{ .Id }}" {{ if eq .Id $.ForumId }}selected{{ end }}>{{ .Name }}</option>
+        {{ end }}
+    </select>
+</div>
+<div class="field">
     <label for="name">Name</label>
     <input type="text" name="name" id="name" value="{{ .Name }}" autocomplete="off" maxlength="120" required autofocus/>
 </div>
@@ -15,6 +23,16 @@ var TplCommonMap = map[string]string{
 <div class="field">
     <label for="name">Position</label>
     <input type="number" name="position" id="position" value="{{ .Position }}" autocomplete="off" required/>
+</div>
+{{ end }}`,
+	"forum_form": `{{ define "forum_form" }}
+<div class="field">
+  <label for="name">Name</label>
+  <input type="text" name="name" id="name" value="{{ .Name }}" autocomplete="off" maxlength="120" required autofocus/>
+</div>
+<div class="field">
+  <label for="name">Position</label>
+  <input type="number" name="position" id="position" value="{{ .Position }}" autocomplete="off" required/>
 </div>
 {{ end }}`,
 	"layout": `{{ define "layout" }}

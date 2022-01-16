@@ -1,0 +1,10 @@
+{{ define "forum_form" }}
+<div class="field">
+  <label for="name">Name</label>
+  <input type="text" name="name" id="name" value="{{ .Name }}" autocomplete="off" maxlength="120" required autofocus/>
+</div>
+<div class="field">
+  <label for="name">Position</label>
+  <input type="number" name="position" id="position" value="{{ .Position }}" autocomplete="off" required/>
+</div>
+{{ end }}

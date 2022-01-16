@@ -45,8 +45,20 @@ func (h *Handler) showAdminBoardsView(w http.ResponseWriter, r *http.Request, us
 		serverError(w, err)
 		return
 	}
+	forums := forumFromBoards(boards)
 	h.renderLayout(w, "admin_board", map[string]interface{}{
-		"boards": boards,
+		"forums": forums,
+	}, user)
+}
+
+func (h *Handler) showAdminForumsView(w http.ResponseWriter, r *http.Request, user model.User) {
+	forums, err := h.storage.Forums()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	h.renderLayout(w, "admin_forum", map[string]interface{}{
+		"forums": forums,
 	}, user)
 }
 
@@ -91,9 +103,24 @@ func (h *Handler) updateSettingsAdmin(w http.ResponseWriter, r *http.Request, us
 }
 
 func (h *Handler) showNewBoardView(w http.ResponseWriter, r *http.Request, user model.User) {
-	boardForm := form.BoardForm{}
+	forums, err := h.storage.Forums()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	boardForm := form.BoardForm{
+		Forums: forums,
+	}
 	h.renderLayout(w, "admin_board_create", map[string]interface{}{
 		"form":           boardForm,
+		csrf.TemplateTag: csrf.TemplateField(r),
+	}, user)
+}
+
+func (h *Handler) showNewForumView(w http.ResponseWriter, r *http.Request, user model.User) {
+	forumForm := form.ForumForm{}
+	h.renderLayout(w, "admin_forum_create", map[string]interface{}{
+		"form":           forumForm,
 		csrf.TemplateTag: csrf.TemplateField(r),
 	}, user)
 }
@@ -104,16 +131,57 @@ func (h *Handler) showEditBoardView(w http.ResponseWriter, r *http.Request, user
 		serverError(w, err)
 		return
 	}
+	forums, err := h.storage.Forums()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
 	boardForm := form.BoardForm{
 		Name:        board.Name,
 		Description: board.Description,
 		Position:    board.Position,
+		ForumId:     board.Forum.Id,
+		Forums:      forums,
 	}
 	h.renderLayout(w, "admin_board_edit", map[string]interface{}{
 		"form":           boardForm,
 		"board":          board,
 		csrf.TemplateTag: csrf.TemplateField(r),
 	}, user)
+}
+
+func (h *Handler) showEditForumView(w http.ResponseWriter, r *http.Request, user model.User) {
+	forum, err := h.storage.ForumById(RouteInt64Param(r, "forumId"))
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	forumForm := form.ForumForm{
+		Name:     forum.Name,
+		Position: forum.Position,
+	}
+	h.renderLayout(w, "admin_forum_edit", map[string]interface{}{
+		"forum":          forum,
+		"form":           forumForm,
+		csrf.TemplateTag: csrf.TemplateField(r),
+	}, user)
+}
+
+func (h *Handler) updateForum(w http.ResponseWriter, r *http.Request, user model.User) {
+	id := RouteInt64Param(r, "forumId")
+	forum, err := h.storage.ForumById(id)
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	forumForm := form.NewForumForm(r)
+	forum.Name = forumForm.Name
+	forum.Position = forumForm.Position
+	if err := h.storage.UpdateForum(forum); err != nil {
+		serverError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/forums", http.StatusFound)
 }
 
 func (h *Handler) updateBoard(w http.ResponseWriter, r *http.Request, user model.User) {
@@ -127,6 +195,7 @@ func (h *Handler) updateBoard(w http.ResponseWriter, r *http.Request, user model
 	board.Name = boardForm.Name
 	board.Description = boardForm.Description
 	board.Position = boardForm.Position
+	board.Forum.Id = boardForm.ForumId
 	if err := h.storage.UpdateBoard(board); err != nil {
 		serverError(w, err)
 		return
@@ -151,8 +220,23 @@ func (h *Handler) saveBoard(w http.ResponseWriter, r *http.Request, user model.U
 		Name:        boardForm.Name,
 		Description: boardForm.Description,
 		Position:    boardForm.Position,
+		Forum:       model.Forum{Id: boardForm.ForumId},
 	}
 	_, err := h.storage.CreateBoard(board)
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	http.Redirect(w, r, "/admin/boards", http.StatusFound)
+}
+
+func (h *Handler) saveForum(w http.ResponseWriter, r *http.Request, user model.User) {
+	forumForm := form.NewForumForm(r)
+	forum := model.Forum{
+		Name:     forumForm.Name,
+		Position: forumForm.Position,
+	}
+	_, err := h.storage.CreateForum(forum)
 	if err != nil {
 		serverError(w, err)
 		return
