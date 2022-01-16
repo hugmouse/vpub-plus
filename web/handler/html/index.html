@@ -18,6 +18,7 @@
         </tr>
     </thead>
     <tbody>
+        {{ if .boards }}
         {{ range .boards }}
         <tr>
             <td colspan="grow">
@@ -26,6 +27,11 @@
             <td class="center">{{ .Topics }}</td>
             <td class="center">{{ .Posts }}</td>
             <td class="center">{{ iso8601 .UpdatedAt }}</td>
+        </tr>
+        {{ end }}
+        {{ else }}
+        <tr>
+            <td colspan="4">No boards yet.</td>
         </tr>
         {{ end }}
     </tbody>

@@ -21,7 +21,7 @@ func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
 		var post model.Post
 		var createdAtStr string
 		var topicId *int64
-		err := rows.Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &topicId, &post.BoardId, &post.User.Id, &post.User.Name, &post.User.Picture)
+		err := rows.Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &topicId, &post.BoardId, &post.IsSticky, &post.User.Id, &post.User.Name, &post.User.Picture)
 		if err != nil {
 			return posts, false, err
 		}
@@ -44,7 +44,7 @@ func (s *Storage) PostById(id int64) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
 	var topicId *int64
-	err := s.db.QueryRow("select * from postUsers where post_id=$1", id).Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &topicId, &post.BoardId, &post.User.Id, &post.User.Name, &post.User.Picture)
+	err := s.db.QueryRow("select * from postUsers where post_id=$1", id).Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &topicId, &post.BoardId, &post.IsSticky, &post.User.Id, &post.User.Name, &post.User.Picture)
 	post.CreatedAt, err = parseCreatedAt(createdAtStr)
 	if topicId != nil {
 		post.TopicId = *topicId
@@ -64,10 +64,10 @@ func (s *Storage) DeletePost(post model.Post) error {
 }
 
 func (s *Storage) UpdatePost(post model.Post) error {
-	stmt, err := s.db.Prepare(`UPDATE posts SET subject = $1, content = $2, updated_at = datetime('now') WHERE id = $3 and (user_id = $4 or (select is_admin from users where id=$4));`)
+	stmt, err := s.db.Prepare(`UPDATE posts SET subject=$1, content=$2, updated_at=datetime('now'), is_sticky=$3 WHERE id=$4 and (user_id=$5 or (select is_admin from users where id=$5));`)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(post.Title, post.Content, post.Id, post.User.Id)
+	_, err = stmt.Exec(post.Title, post.Content, post.IsSticky, post.Id, post.User.Id)
 	return err
 }

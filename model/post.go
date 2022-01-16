@@ -13,6 +13,7 @@ type Post struct {
 	TopicId   int64
 	Replies   int
 	BoardId   int64
+	IsSticky  bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

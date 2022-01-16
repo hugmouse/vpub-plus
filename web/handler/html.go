@@ -194,7 +194,7 @@ var TplMap = map[string]string{
         <tbody>
         {{ if .topics }}
         {{ range .topics }}
-        <tr>
+        <tr{{ if .IsSticky }} class="sticky"{{ end }}>
             <td colspan="grow"><a href="/topics/{{ .Id }}">{{ .Subject }}</a></td>
             <td class="center"><a href="/~{{ .User.Id }}">{{ .User.Name }}</a></td>
             <td class="center">{{ .Replies }}</td>
@@ -288,6 +288,7 @@ var TplMap = map[string]string{
         </tr>
     </thead>
     <tbody>
+        {{ if .boards }}
         {{ range .boards }}
         <tr>
             <td colspan="grow">
@@ -296,6 +297,11 @@ var TplMap = map[string]string{
             <td class="center">{{ .Topics }}</td>
             <td class="center">{{ .Posts }}</td>
             <td class="center">{{ iso8601 .UpdatedAt }}</td>
+        </tr>
+        {{ end }}
+        {{ else }}
+        <tr>
+            <td colspan="4">No boards yet.</td>
         </tr>
         {{ end }}
     </tbody>
@@ -534,25 +540,6 @@ var TplMap = map[string]string{
 	"topic": `{{ define "breadcrumb" }}<a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
 <h1><a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a></h1>
-
-<!--{{ range .posts }}-->
-<!--<article id="{{ .Id }}">-->
-<!--    <div class="post-aside">-->
-<!--        <p>{{ .User.Name }}</p>-->
-<!--        {{ if .User.Picture }}-->
-<!--        <img width="100" src="{{ .User.Picture }}">-->
-<!--        {{ end }}-->
-<!--        <p>{{ timeAgo .CreatedAt }}</p>-->
-<!--    </div>-->
-<!--    <div class="post-content">-->
-<!--        {{ if eq $.topic.FirstPostId .Id }}<h1>{{ .Title }}</h1>{{ end }}-->
-<!--        {{ gmi2html .Content }}-->
-<!--        {{ if hasPermission .User.Name }}-->
-<!--        <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>-->
-<!--        {{ end }}-->
-<!--    </div>-->
-<!--</article>-->
-<!--{{ end }}-->
 
 <table class="posts">
     {{ range .posts }}

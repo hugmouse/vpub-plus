@@ -55,6 +55,18 @@ var TplCommonMap = map[string]string{
     <label for="content">Content</label>
     <textarea class="editor" name="content" id="content" required>{{ .Content }}</textarea>
 </div>
+{{ if .IsAdmin }}
+<details>
+    <summary>Admin options</summary>
+    <div class="field">
+        <label for="sticky">Sticky</label>
+        <select name="sticky" id="sticky">
+            <option value="false">false</option>
+            <option value="true" {{ if .IsSticky }}selected{{ end }}>true</option>
+        </select>
+    </div>
+</details>
+{{ end }}
 {{ end }}`,
 	"posts": `{{ define "posts" }}
 <!--{{ if . }}-->

@@ -24,6 +24,8 @@ ol.replies > li:not(:last-child) {
 
 /* Posts ************************************************************/
 
+.sticky { background-color: cornsilk; }
+
 /* Start post */
 /* With a table */
 .post-aside {

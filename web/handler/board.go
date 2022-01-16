@@ -24,7 +24,9 @@ func (h *Handler) showNewTopicView(w http.ResponseWriter, r *http.Request, user 
 		notFound(w)
 		return
 	}
-	topicForm := form.TopicForm{}
+	topicForm := form.TopicForm{
+		PostForm: form.PostForm{IsAdmin: user.IsAdmin},
+	}
 	h.renderLayout(w, "create_topic", map[string]interface{}{
 		"form":           topicForm,
 		"board":          board,
@@ -35,15 +37,17 @@ func (h *Handler) showNewTopicView(w http.ResponseWriter, r *http.Request, user 
 func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request, user model.User) {
 	topicForm := form.NewTopicForm(r)
 	post := model.Post{
-		User:    user,
-		Title:   topicForm.PostForm.Subject,
-		Content: topicForm.PostForm.Content,
+		User:     user,
+		Title:    topicForm.PostForm.Subject,
+		Content:  topicForm.PostForm.Content,
+		IsSticky: topicForm.PostForm.IsSticky,
+		BoardId:  topicForm.BoardId,
 	}
 	if err := post.Validate(); err != nil {
 		serverError(w, err)
 		return
 	}
-	id, err := h.storage.CreateTopic(topicForm.BoardId, post)
+	id, err := h.storage.CreateTopic(post)
 	if err != nil {
 		serverError(w, err)
 		return

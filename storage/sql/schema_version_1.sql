@@ -17,7 +17,7 @@ create table users (
     hash text not null CHECK (hash <> ''),
     about TEXT not null DEFAULT '',
     picture text not null default '',
-    is_admin boolean default false,
+    is_admin boolean not null default false,
     key_id integer not null unique,
     foreign key (key_id) references keys(id)
 );
@@ -46,6 +46,7 @@ create table posts (
     id integer primary key autoincrement,
     subject text not null check ( length(subject) <= 120 ),
     content text not null check ( length(content) <= 50000 ),
+    is_sticky boolean not null default false,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     topic_id integer references posts(id),
@@ -62,12 +63,13 @@ create view topics as
         t.subject,
         count(r.topic_id) replies,
         t.created_at,
-        ifnull(r.updated_at, t.updated_at) updated_at
+        max(ifnull(r.updated_at, t.updated_at)) updated_at,
+        t.is_sticky
     from posts t
              left join posts r on r.topic_id = t.id
              left join users u on t.user_id = u.id
     where t.topic_id is null
-    group by t.id order by updated_at desc;
+    group by t.id order by t.is_sticky desc, updated_at desc;
 
 create view boardStats as
     select
@@ -89,6 +91,7 @@ create view postUsers as
         p.created_at,
         p.topic_id,
         p.board_id,
+        p.is_sticky,
         u.id as user_id,
         u.name,
         u.picture

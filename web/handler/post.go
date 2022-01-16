@@ -46,10 +46,12 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user 
 		return
 	}
 	postForm := form.PostForm{
-		Subject: post.Title,
-		Content: post.Content,
-		TopicId: post.TopicId,
-		BoardId: post.BoardId,
+		Subject:  post.Title,
+		Content:  post.Content,
+		TopicId:  post.TopicId,
+		BoardId:  post.BoardId,
+		IsSticky: post.IsSticky,
+		IsAdmin:  user.IsAdmin,
 	}
 	h.renderLayout(w, "edit_post", map[string]interface{}{
 		"form":           postForm,
@@ -68,6 +70,7 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user model.
 	postForm := form.NewPostForm(r)
 	post.Title = postForm.Subject
 	post.Content = postForm.Content
+	post.IsSticky = postForm.IsSticky
 	post.User = user
 	if err := post.Validate(); err != nil {
 		serverError(w, err)
