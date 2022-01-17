@@ -38,7 +38,13 @@ var TplMap = map[string]string{
 {{ end }}`,
 	"admin_board": `{{ define "content"}}
 <h1><a href="/admin">Admin</a> > Boards</h1>
-<p><a href="/admin/boards/new">New board</a></p>
+<p>
+    {{ if .hasForums }}
+    <a href="/admin/boards/new">New board</a>
+    {{ else }}
+    <a href="/admin/forums">Create a forum</a> to create boards
+    {{ end }}
+</p>
 <table>
     <thead>
     <tr>
@@ -72,7 +78,7 @@ var TplMap = map[string]string{
 	"admin_board_create": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a>{{ end }}
 {{ define "title" }}New board{{ end }}
 {{ define "content" }}
-<h2>Create board</h2>
+<h1><a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a> > Create board</h1>
 <form action="/admin/boards/save" method="post">
   {{ .csrfField }}
   {{ template "board_form" .form }}
@@ -83,7 +89,7 @@ var TplMap = map[string]string{
 	"admin_board_edit": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a>{{ end }}
 {{ define "title" }}Edit board{{ end }}
 {{ define "content" }}
-<h2>Edit board</h2>
+<h1><a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a> > Edit board</h1>
 <form action="/admin/boards/{{ .board.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "board_form" .form }}
@@ -122,7 +128,7 @@ var TplMap = map[string]string{
 	"admin_forum_create": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a>{{ end }}
 {{ define "title" }}New forum{{ end }}
 {{ define "content" }}
-<h2>Create forum</h2>
+<h1><a href="/admin">Admin</a> > <a href="/admin/forums">Forums</a> > Create forum</h1>
 <form action="/admin/forums/save" method="post">
     {{ .csrfField }}
     {{ template "forum_form" .form }}
@@ -132,7 +138,7 @@ var TplMap = map[string]string{
 `,
 	"admin_forum_edit": `{{ define "title" }}Edit forum{{ end }}
 {{ define "content" }}
-<h2>Edit forum</h2>
+<h1><a href="/admin">Admin</a> > <a href="/admin/forums">Forums</a> > Edit forum</h1>
 <form action="/admin/forums/{{ .forum.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "forum_form" .form }}
@@ -328,16 +334,8 @@ var TplMap = map[string]string{
     </form>
 {{ end }}
 `,
-	"index": `{{ define "breadcrumb" }}boards{{ end }}
-{{ define "content"}}
+	"index": `{{ define "content"}}
 <h1>Boards</h1>
-
-<!--<nav class="actions">-->
-<!--    <p>-->
-<!--        <a href="/feed.atom">follow</a>-->
-<!--    </p>-->
-<!--</nav>-->
-
 <table>
     <thead>
         <tr>
@@ -447,7 +445,7 @@ var TplMap = map[string]string{
 <!--    </div>-->
 <!--    <input type="submit" value="Reply">-->
 <!--</form>-->
-<h1>{{ .post.Title }}</h1>
+<h1>{{ .post.Subject }}</h1>
 <!--<ol class="thread">-->
 <!--    <li class="post">-->
 <!--        <table>-->
@@ -554,33 +552,6 @@ var TplMap = map[string]string{
     </form>
 {{ end }}
 `,
-	"reply": `{{ define "content" }}
-    <h1>Reply</h1>
-    <article>
-        <div class="meta">
-            <ul class="key-value">
-                <li><span class="key">From: </span><span class="value"><a href="/~{{ .reply.User }}">{{ .reply.User }}</a></span></li>
-                <li><span class="key">On: </span><span class="value">{{ .post.Date }}</span></li>
-                <li><span class="key">Post: </span><span class="value"><a href="/posts/{{ .post.Id }}">{{ .post.Title }}</a></span></li>
-                <li><span class="key">Parent: </span><span class="value">
-                    {{ if .reply.ParentId }}<a href="/replies/{{ .reply.ParentId }}">view</a>{{ else }}view{{end}}
-                </span></li>
-            </ul>
-        </div>
-        <div class="content">{{ gmi2html .reply.Content }}</div>
-    </article>
-    <section>
-        <form action="/replies/{{ .reply.Id }}/save" method="post">
-            {{ .csrfField }}
-            <div class="field">
-                <textarea name="reply" autofocus></textarea>
-            </div>
-            <input type="submit" value="Submit">
-        </form>
-        {{ template "reply" .reply.Thread }}
-    </section>
-{{ end }}
-`,
 	"reset_password": `{{ define "title" }}Reset password{{ end }}
 
 {{ define "content" }}
@@ -606,46 +577,43 @@ var TplMap = map[string]string{
 {{ define "content"}}
 <h1><a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a></h1>
 
-<table class="posts">
-    {{ range .posts }}
-    <tr class="post" id="{{ .Id }}">
-        <td class="post-aside">
-            <p>{{ .User.Name }}</p>
-            {{ if .User.Picture }}
-            <img width="100" src="{{ .User.Picture }}">
-            {{ end }}
-            <p>{{ timeAgo .CreatedAt }}</p>
-        </td>
-        <td class="post-content">
-            {{ if eq $.topic.Id .Id }}<h1>{{ .Title }}</h1>{{ end }}
-            {{ gmi2html .Content }}
-            {{ if or (hasPermission .User.Name) $.logged.IsAdmin}}
-            <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
-            {{ end }}
-        </td>
-    </tr>
-    {{ end }}
-<!--    <tr class="post">-->
+{{ range .posts }}
+<article id="{{ .Id }}">
+    <header>
+        {{ .User.Name }}
+        {{ timeAgo .CreatedAt }}
+    </header>
+    <div>
+        {{ if eq $.topic.Id .Id }}<h1>{{ .Subject }}</h1>{{ end }}
+        {{ gmi2html .Content }}
+        {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
+        <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
+        {{ end }}
+    </div>
+</article>
+{{ end }}
+
+<!--<table class="posts">-->
+<!--    {{ range .posts }}-->
+<!--    <tr class="post" id="{{ .Id }}">-->
 <!--        <td class="post-aside">-->
-<!--            <p>{{ .logged.Name }}</p>-->
-<!--            {{ if .logged.Picture }}-->
-<!--            <img width="100" src="{{ .logged.Picture }}">-->
+<!--            <p>{{ .User.Name }}</p>-->
+<!--            {{ if .User.Picture }}-->
+<!--            <img width="100" src="{{ .User.Picture }}">-->
 <!--            {{ end }}-->
+<!--            <p>{{ timeAgo .CreatedAt }}</p>-->
 <!--        </td>-->
 <!--        <td class="post-content">-->
-<!--            <form action="/posts/save" method="post">-->
-<!--                {{ .csrfField }}-->
-<!--                <input type="hidden" name="topicId" value="{{ .topic.Id }}">-->
-<!--                <input type="hidden" name="subject" value="Re: {{ .topic.Subject }}">-->
-<!--                <div class="field">-->
-<!--                    <label for="content">Reply to this topic</label>-->
-<!--                    <textarea name="content" id="content" style="height: 150px;"></textarea>-->
-<!--                </div>-->
-<!--                <input type="submit" value="Reply">-->
-<!--            </form>-->
+<!--            {{ if eq $.topic.Id .Id }}<h1>{{ .Subject }}</h1>{{ end }}-->
+<!--            {{ gmi2html .Content }}-->
+<!--            {{ if or (hasPermission .User.Name) $.logged.IsAdmin}}-->
+<!--            <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>-->
+<!--            {{ end }}-->
 <!--        </td>-->
 <!--    </tr>-->
-</table>
+<!--    {{ end }}-->
+<!--</table>-->
+{{ if not .topic.IsLocked }}
 <section style="margin-top: 1em;">
     <form action="/posts/save" method="post">
         {{ .csrfField }}
@@ -659,6 +627,7 @@ var TplMap = map[string]string{
         <input type="submit" value="Reply">
     </form>
 </section>
+{{ end }}
 {{ end }}`,
 	"user_posts": `{{ define "content" }}
 <h1>{{ .user.Name }}</h1>

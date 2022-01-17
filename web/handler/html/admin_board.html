@@ -1,6 +1,12 @@
 {{ define "content"}}
 <h1><a href="/admin">Admin</a> > Boards</h1>
-<p><a href="/admin/boards/new">New board</a></p>
+<p>
+    {{ if .hasForums }}
+    <a href="/admin/boards/new">New board</a>
+    {{ else }}
+    <a href="/admin/forums">Create a forum</a> to create boards
+    {{ end }}
+</p>
 <table>
     <thead>
     <tr>

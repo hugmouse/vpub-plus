@@ -1,6 +1,6 @@
 {{ define "title" }}Edit forum{{ end }}
 {{ define "content" }}
-<h2>Edit forum</h2>
+<h1><a href="/admin">Admin</a> > <a href="/admin/forums">Forums</a> > Edit forum</h1>
 <form action="/admin/forums/{{ .forum.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "forum_form" .form }}

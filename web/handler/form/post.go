@@ -13,6 +13,7 @@ type PostForm struct {
 	BoardId  int64
 	IsAdmin  bool
 	IsSticky bool
+	IsLocked bool
 }
 
 func NewPostForm(r *http.Request) PostForm {
@@ -24,5 +25,6 @@ func NewPostForm(r *http.Request) PostForm {
 		TopicId:  TopicId,
 		BoardId:  BoardId,
 		IsSticky: r.FormValue("sticky") == "true",
+		IsLocked: r.FormValue("locked") == "true",
 	}
 }

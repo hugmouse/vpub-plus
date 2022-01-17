@@ -6,7 +6,7 @@ import (
 
 func (s *Storage) CreateTopic(post model.Post) (int64, error) {
 	var id int64
-	err := s.db.QueryRow(`INSERT INTO posts (subject, content, board_id, is_sticky, user_id) VALUES ($1, $2, $3, $4, $5) returning id`, post.Title, post.Content, post.BoardId, post.IsSticky, post.User.Id).Scan(&id)
+	err := s.db.QueryRow(`INSERT INTO posts (subject, content, board_id, is_sticky, is_locked, user_id) VALUES ($1, $2, $3, $4, $5, $6) returning id`, post.Subject, post.Content, post.BoardId, post.IsSticky, post.IsLocked, post.User.Id).Scan(&id)
 	return id, err
 }
 
@@ -20,7 +20,7 @@ func (s *Storage) TopicsByBoardId(boardId int64) ([]model.Topic, bool, error) {
 	var createdAt string
 	for rows.Next() {
 		var topic model.Topic
-		err := rows.Scan(&topic.Id, &topic.User.Id, &topic.User.Name, &topic.BoardId, &topic.Subject, &topic.Replies, &createdAt, &updatedAt, &topic.IsSticky)
+		err := rows.Scan(&topic.Id, &topic.User.Id, &topic.User.Name, &topic.BoardId, &topic.Subject, &topic.Replies, &createdAt, &updatedAt, &topic.IsSticky, &topic.IsLocked)
 		topic.CreatedAt, err = parseCreatedAt(createdAt)
 		if err != nil {
 			return topics, false, err
@@ -38,7 +38,7 @@ func (s *Storage) TopicById(id int64) (model.Topic, error) {
 	var topic model.Topic
 	var updatedAt string
 	var createdAt string
-	err := s.db.QueryRow(`select * from topics where id=$1`, id).Scan(&topic.Id, &topic.User.Id, &topic.User.Name, &topic.BoardId, &topic.Subject, &topic.Replies, &createdAt, &updatedAt, &topic.IsSticky)
+	err := s.db.QueryRow(`select * from topics where id=$1`, id).Scan(&topic.Id, &topic.User.Id, &topic.User.Name, &topic.BoardId, &topic.Subject, &topic.Replies, &createdAt, &updatedAt, &topic.IsSticky, &topic.IsLocked)
 	topic.CreatedAt, err = parseCreatedAt(createdAt)
 	if err != nil {
 		return topic, err

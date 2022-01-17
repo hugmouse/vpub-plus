@@ -8,21 +8,22 @@ import (
 type Post struct {
 	Id        int64
 	User      User
-	Title     string
+	Subject   string
 	Content   string
 	TopicId   int64
 	Replies   int
 	BoardId   int64
 	IsSticky  bool
+	IsLocked  bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
 func (p Post) Validate() error {
-	if len(p.Title) == 0 {
+	if len(p.Subject) == 0 {
 		return errors.New("title is empty")
 	}
-	if len(p.Title) > 120 {
+	if len(p.Subject) > 120 {
 		return errors.New("title has a max length of 120 characters")
 	}
 	if len(p.Content) == 0 {

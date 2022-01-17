@@ -16,7 +16,7 @@ package handler
 //
 //type Feed struct {
 //	XMLName  xml.Name `xml:"http://www.w3.org/2005/Atom feed"`
-//	Title    string   `xml:"title"`
+//	Subject    string   `xml:"title"`
 //	ID       string   `xml:"id"`
 //	Link     []Link   `xml:"link"`
 //	Updated  TimeStr  `xml:"updated"`
@@ -28,7 +28,7 @@ package handler
 //}
 //
 //type Entry struct {
-//	Title     string  `xml:"title"`
+//	Subject     string  `xml:"title"`
 //	ID        string  `xml:"id"`
 //	Link      []Link  `xml:"link"`
 //	Published TimeStr `xml:"published"`
@@ -43,7 +43,7 @@ package handler
 //	Href     string `xml:"href,attr"`
 //	Type     string `xml:"type,attr,omitempty"`
 //	HrefLang string `xml:"hreflang,attr,omitempty"`
-//	Title    string `xml:"title,attr,omitempty"`
+//	Subject    string `xml:"title,attr,omitempty"`
 //	Length   uint   `xml:"length,attr,omitempty"`
 //}
 //
@@ -66,7 +66,7 @@ package handler
 //func createAtomEntryFromPost(post model.Post, u string) *Entry {
 //	postLink := u + "/posts/" + strconv.FormatInt(post.Id, 10)
 //	return &Entry{
-//		Title: post.Title,
+//		Subject: post.Subject,
 //		ID:    postLink,
 //		Link: []Link{
 //			{
@@ -91,7 +91,7 @@ package handler
 //func (h *Handler) showFeedView(w http.ResponseWriter, r *http.Request) {
 //	u := path.Clean(h.url)
 //	feed := Feed{
-//		Title:   h.title,
+//		Subject:   h.title,
 //		ID:      h.url,
 //		Updated: Time(time.Now()),
 //		Link: []Link{
@@ -130,7 +130,7 @@ package handler
 //	}
 //	u := path.Clean(h.url)
 //	feed := Feed{
-//		Title:   h.title + " - " + topic,
+//		Subject:   h.title + " - " + topic,
 //		ID:      u + "/topics/" + topic,
 //		Updated: Time(time.Now()),
 //		Link: []Link{

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"html/template"
 	"net/http"
 	"vpub/model"
 )
@@ -18,16 +17,14 @@ func forumFromBoards(boards []model.Board) []model.Forum {
 		}
 		forum.Boards = append(forum.Boards, board)
 	}
-	return append(forums, forum)
+	if len(forum.Boards) > 0 {
+		forums = append(forums, forum)
+	}
+	return forums
 }
 
 func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 	user, _ := h.session.Get(r)
-	settings, err := h.storage.Settings()
-	if err != nil {
-		serverError(w, err)
-		return
-	}
 	boards, err := h.storage.Boards()
 	if err != nil {
 		serverError(w, err)
@@ -35,12 +32,6 @@ func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 	}
 	forums := forumFromBoards(boards)
 	h.renderLayout(w, "index", map[string]interface{}{
-		"posts":            "",
-		"hasNotifications": false,
-		"boards":           boards,
-		"motd":             template.HTML(h.motd),
-		"logged":           user,
-		"title":            settings.Name,
-		"forums":           forums,
+		"forums": forums,
 	}, user)
 }

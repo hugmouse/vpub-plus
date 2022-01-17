@@ -83,6 +83,13 @@ var TplCommonMap = map[string]string{
             <option value="true" {{ if .IsSticky }}selected{{ end }}>true</option>
         </select>
     </div>
+    <div class="field">
+        <label for="locked">Locked</label>
+        <select name="locked" id="locked">
+            <option value="false">false</option>
+            <option value="true" {{ if .IsLocked }}selected{{ end }}>true</option>
+        </select>
+    </div>
 </details>
 {{ end }}
 {{ end }}`,
@@ -118,7 +125,7 @@ var TplCommonMap = map[string]string{
     {{ range . }}
     <tr>
         <td>
-            <h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2>
+            <h2><a href="/posts/{{ .Id }}">{{ .Subject }}</a></h2>
         </td>
         <td style="text-align: center;"><a href="/~{{ .User }}">{{ .User }}</a></td>
         <td style="text-align: center;">{{ .Replies }}</td>
@@ -148,7 +155,7 @@ var TplCommonMap = map[string]string{
     <tr>
         <td style="text-align: center;"><a href="/topics/{{ .Topic }}">{{ .Topic }}</a></td>
         <td>
-            <h2><a href="/posts/{{ .Id }}">{{ .Title }}</a></h2>
+            <h2><a href="/posts/{{ .Id }}">{{ .Subject }}</a></h2>
         </td>
         <td style="text-align: center;"><a href="/~{{ .User }}">{{ .User }}</a></td>
         <td style="text-align: center;">{{ .Replies }}</td>
@@ -159,41 +166,6 @@ var TplCommonMap = map[string]string{
 </table>
 {{ else }}
 <p>No post yet</p>
-{{ end }}
-{{ end }}`,
-	"reply": `{{ define "reply" }}
-    {{ if . }}
-    <ol class="replies">
-    {{ range . }}
-        <li>
-            <details class="reply" open>
-                <summary><a href="/~{{ .User }}">{{ .User }}</a> on {{ .Date }}</summary>
-                <div class="content">{{ gmi2html .Content }}</div>
-                {{ if logged }}
-                <footer>
-                    {{ if hasPermission .User }}
-                    <a href="/replies/{{ .Id }}/edit">edit</a>
-                    <a href="/replies/{{ .Id }}/remove">remove</a>
-                    {{ end }}
-                </footer>
-                {{ end }}
-            </details>
-        </li>
-    {{ end }}
-    </ol>
-    {{ end }}
-{{ end }}`,
-	"topics": `{{ define "topics" }}
-{{ if .topics }}
-<nav class="topics">
-  {{ range .topics }}
-  {{ if .Selected }}
-  <span class="selected">{{ .Name }}</span>
-  {{ else }}
-  <a href="/topics/{{ .Name }}">{{ .Name }}</a>
-  {{ end }}
-  {{ end }}
-</nav>
 {{ end }}
 {{ end }}`,
 }

@@ -5,8 +5,6 @@ import (
 	"vpub/model"
 )
 
-const postQuery = "select p.id, p.subject, p.content, p.created_at, p.topic_id, u.id, u.name, u.picture from posts p left join users u on p.user_id = u.id "
-
 func parseCreatedAt(createdAt string) (time.Time, error) {
 	return time.Parse("2006-01-02 15:04:05", createdAt)
 }
@@ -21,7 +19,7 @@ func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
 		var post model.Post
 		var createdAtStr string
 		var topicId *int64
-		err := rows.Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &topicId, &post.BoardId, &post.IsSticky, &post.User.Id, &post.User.Name, &post.User.Picture)
+		err := rows.Scan(&post.Id, &post.Subject, &post.Content, &createdAtStr, &topicId, &post.BoardId, &post.IsSticky, &post.IsLocked, &post.User.Id, &post.User.Name, &post.User.Picture)
 		if err != nil {
 			return posts, false, err
 		}
@@ -36,7 +34,7 @@ func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
 
 func (s *Storage) CreatePost(post model.Post) (int64, error) {
 	var id int64
-	err := s.db.QueryRow(`INSERT INTO posts (subject, content, user_id, topic_id, board_id) VALUES ($1, $2, $3, $4, $5) returning id`, post.Title, post.Content, post.User.Id, post.TopicId, post.BoardId).Scan(&id)
+	err := s.db.QueryRow(`INSERT INTO posts (subject, content, user_id, topic_id, board_id) VALUES ($1, $2, $3, $4, $5) returning id`, post.Subject, post.Content, post.User.Id, post.TopicId, post.BoardId).Scan(&id)
 	return id, err
 }
 
@@ -44,7 +42,7 @@ func (s *Storage) PostById(id int64) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
 	var topicId *int64
-	err := s.db.QueryRow("select * from postUsers where post_id=$1", id).Scan(&post.Id, &post.Title, &post.Content, &createdAtStr, &topicId, &post.BoardId, &post.IsSticky, &post.User.Id, &post.User.Name, &post.User.Picture)
+	err := s.db.QueryRow("select * from postUsers where post_id=$1", id).Scan(&post.Id, &post.Subject, &post.Content, &createdAtStr, &topicId, &post.BoardId, &post.IsSticky, &post.IsLocked, &post.User.Id, &post.User.Name, &post.User.Picture)
 	post.CreatedAt, err = parseCreatedAt(createdAtStr)
 	if topicId != nil {
 		post.TopicId = *topicId
@@ -64,10 +62,10 @@ func (s *Storage) DeletePost(post model.Post) error {
 }
 
 func (s *Storage) UpdatePost(post model.Post) error {
-	stmt, err := s.db.Prepare(`UPDATE posts SET subject=$1, content=$2, updated_at=datetime('now'), is_sticky=$3 WHERE id=$4 and (user_id=$5 or (select is_admin from users where id=$5));`)
+	stmt, err := s.db.Prepare(`UPDATE posts SET subject=$1, content=$2, updated_at=datetime('now'), is_sticky=$3, is_locked=$4 WHERE id=$5 and (user_id=$6 or (select is_admin from users where id=$6));`)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(post.Title, post.Content, post.IsSticky, post.Id, post.User.Id)
+	_, err = stmt.Exec(post.Subject, post.Content, post.IsSticky, post.IsLocked, post.Id, post.User.Id)
 	return err
 }

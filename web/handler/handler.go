@@ -51,8 +51,6 @@ type Handler struct {
 	css     []byte
 	mux     *mux.Router
 	storage *storage.Storage
-	title   string
-	motd    []byte
 	topics  []string
 	perPage int
 }
@@ -94,11 +92,6 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	cssFile, _ := os.Open(cfg.CSSFile)
 	b, _ := io.ReadAll(cssFile)
 	h.css = []byte(assets.AssetsMap["style"] + "\n" + string(b))
-	// Read and cache motd
-	motdFile, _ := os.Open(cfg.MOTDFile)
-	b, _ = io.ReadAll(motdFile)
-	h.motd = b
-	h.title = cfg.Title
 
 	// Static assets
 	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)

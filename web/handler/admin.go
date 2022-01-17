@@ -45,9 +45,15 @@ func (h *Handler) showAdminBoardsView(w http.ResponseWriter, r *http.Request, us
 		serverError(w, err)
 		return
 	}
+	hasForums, err := h.storage.Forums()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
 	forums := forumFromBoards(boards)
 	h.renderLayout(w, "admin_board", map[string]interface{}{
-		"forums": forums,
+		"hasForums": hasForums,
+		"forums":    forums,
 	}, user)
 }
 
@@ -241,7 +247,7 @@ func (h *Handler) saveForum(w http.ResponseWriter, r *http.Request, user model.U
 		serverError(w, err)
 		return
 	}
-	http.Redirect(w, r, "/admin/boards", http.StatusFound)
+	http.Redirect(w, r, "/admin/forums", http.StatusFound)
 }
 
 func (h *Handler) saveKey(w http.ResponseWriter, r *http.Request, user model.User) {

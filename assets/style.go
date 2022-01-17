@@ -25,6 +25,22 @@ ol.replies > li:not(:last-child) {
 
 /* Posts ************************************************************/
 
+article {
+	border: 1px solid;
+	background-color: white;
+	margin-bottom: 1em;
+}
+
+article > header {
+	background-color: paleturquoise;
+	border-bottom: 1px solid;
+	padding: 5px 1em;
+}
+
+article > div {
+	padding: 0 1em;
+}
+
 .sticky, .forum { background-color: cornsilk; }
 
 /* Start post */

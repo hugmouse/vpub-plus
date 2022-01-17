@@ -38,7 +38,7 @@ create table boards (
     position int not null,
     description text,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    forum_id references forums(id)
+    forum_id not null references forums(id)
 );
 
 create table forums (
@@ -52,6 +52,7 @@ create table posts (
     subject text not null check ( length(subject) <= 120 ),
     content text not null check ( length(content) <= 50000 ),
     is_sticky boolean not null default false,
+    is_locked boolean not null default false,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     topic_id integer references posts(id),
@@ -69,7 +70,8 @@ create view topics as
         count(r.topic_id) replies,
         t.created_at,
         max(ifnull(r.updated_at, t.updated_at)) updated_at,
-        t.is_sticky
+        t.is_sticky,
+        t.is_locked
     from posts t
              left join posts r on r.topic_id = t.id
              left join users u on t.user_id = u.id
@@ -100,11 +102,24 @@ create view postUsers as
         p.topic_id,
         p.board_id,
         p.is_sticky,
+        p.is_locked,
         u.id as user_id,
         u.name,
         u.picture
     from posts p
          left join users u on p.user_id = u.id;
+
+CREATE TRIGGER check_is_locked_before_insert
+    BEFORE INSERT ON posts
+BEGIN
+    select
+        case
+            when is_locked is true then
+                raise (abort, 'Topic is locked')
+            end
+    from posts p
+    where id=new.topic_id;
+END;
 
 insert into settings (name) values ('vpub');
 insert into keys (key) values ('admin');`,

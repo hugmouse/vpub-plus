@@ -18,6 +18,13 @@
             <option value="true" {{ if .IsSticky }}selected{{ end }}>true</option>
         </select>
     </div>
+    <div class="field">
+        <label for="locked">Locked</label>
+        <select name="locked" id="locked">
+            <option value="false">false</option>
+            <option value="true" {{ if .IsLocked }}selected{{ end }}>true</option>
+        </select>
+    </div>
 </details>
 {{ end }}
 {{ end }}

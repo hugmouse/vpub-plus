@@ -38,9 +38,10 @@ func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request, user model.U
 	topicForm := form.NewTopicForm(r)
 	post := model.Post{
 		User:     user,
-		Title:    topicForm.PostForm.Subject,
+		Subject:  topicForm.PostForm.Subject,
 		Content:  topicForm.PostForm.Content,
 		IsSticky: topicForm.PostForm.IsSticky,
+		IsLocked: topicForm.PostForm.IsLocked,
 		BoardId:  topicForm.BoardId,
 	}
 	if err := post.Validate(); err != nil {

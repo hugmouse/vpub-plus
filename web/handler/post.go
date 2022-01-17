@@ -22,7 +22,7 @@ func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user model.Us
 	postForm := form.NewPostForm(r)
 	post := model.Post{
 		User:    user,
-		Title:   postForm.Subject,
+		Subject: postForm.Subject,
 		Content: postForm.Content,
 		TopicId: postForm.TopicId,
 		BoardId: postForm.BoardId,
@@ -46,11 +46,12 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user 
 		return
 	}
 	postForm := form.PostForm{
-		Subject:  post.Title,
+		Subject:  post.Subject,
 		Content:  post.Content,
 		TopicId:  post.TopicId,
 		BoardId:  post.BoardId,
 		IsSticky: post.IsSticky,
+		IsLocked: post.IsLocked,
 		IsAdmin:  user.IsAdmin,
 	}
 	h.renderLayout(w, "edit_post", map[string]interface{}{
@@ -68,9 +69,10 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user model.
 		return
 	}
 	postForm := form.NewPostForm(r)
-	post.Title = postForm.Subject
+	post.Subject = postForm.Subject
 	post.Content = postForm.Content
 	post.IsSticky = postForm.IsSticky
+	post.IsLocked = postForm.IsLocked
 	post.User = user
 	if err := post.Validate(); err != nil {
 		serverError(w, err)

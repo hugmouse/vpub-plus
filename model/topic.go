@@ -8,6 +8,7 @@ type Topic struct {
 	Subject   string
 	User      User
 	IsSticky  bool
+	IsLocked  bool
 	Replies   int64
 	UpdatedAt time.Time
 	CreatedAt time.Time

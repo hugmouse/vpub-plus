@@ -14,7 +14,6 @@ type (
 		CSRFKey      string
 		CSSFile      string
 		Title        string
-		MOTDFile     string
 		PerPage      int
 	}
 )
@@ -26,7 +25,6 @@ func New() *Config {
 		CSRFKey:      os.Getenv("CSRF_KEY"),
 		CSSFile:      os.Getenv("CSS_FILE"),
 		Title:        os.Getenv("TITLE"),
-		MOTDFile:     os.Getenv("MOTD_FILE"),
 		URL:          os.Getenv("URL"),
 		Port:         os.Getenv("PORT"),
 	}
