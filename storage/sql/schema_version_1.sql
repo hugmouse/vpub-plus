@@ -32,6 +32,8 @@ create table boards (
     name text not null check ( name <> '' and length(name) < 120 ),
     position int not null,
     description text,
+    topics_count integer not null default 0,
+    posts_count integer not null default 0,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     forum_id not null references forums(id)
 );
@@ -46,6 +48,7 @@ create table posts (
     id integer primary key autoincrement,
     subject text not null check ( length(subject) <= 120 ),
     content text not null check ( length(content) <= 50000 ),
+    reply_count integer not null default 0,
     is_sticky boolean not null default false,
     is_locked boolean not null default false,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
@@ -115,6 +118,53 @@ BEGIN
     from posts p
     where id=new.topic_id;
 END;
+
+CREATE TRIGGER count_post_before_insert
+    BEFORE INSERT ON posts
+BEGIN
+    UPDATE
+        boards
+    SET topics_count = case when new.topic_id is null then topics_count+1 else topics_count end,
+        posts_count = posts_count+1
+    WHERE id=new.board_id;
+    UPDATE
+        posts
+    SET reply_count = reply_count+1
+    WHERE id=new.topic_id;
+END;
+
+CREATE TRIGGER count_post_before_delete
+    BEFORE DELETE ON posts
+BEGIN
+    UPDATE
+        boards
+    SET topics_count = case when old.topic_id is null then topics_count-1 else topics_count end,
+        posts_count = posts_count-1
+    WHERE id=old.board_id;
+    UPDATE
+        posts
+    SET reply_count = reply_count-1
+    WHERE id=old.topic_id;
+END;
+
+CREATE TRIGGER count_post_before_update
+    BEFORE UPDATE of board_id on posts
+BEGIN
+    UPDATE
+        posts
+    SET board_id = new.board_id
+    WHERE topic_id=new.id;
+    UPDATE
+        boards
+    SET topics_count=topics_count-1,
+        posts_count=posts_count-(old.reply_count+1)
+    WHERE id=old.board_id;
+    UPDATE
+        boards
+    SET topics_count=topics_count+1,
+        posts_count=posts_count+(new.reply_count+1)
+    WHERE id=new.board_id;
+end;
 
 insert into settings (name) values ('vpub');
 insert into keys (key) values ('admin');
