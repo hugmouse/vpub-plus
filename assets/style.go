@@ -24,6 +24,12 @@ ol.replies > li:not(:last-child) {
 }
 
 /* Posts ************************************************************/
+table.post {
+	background-color: white;
+}
+table.post .header {
+	background-color: paleturquoise;
+}
 
 article {
 	border: 1px solid;

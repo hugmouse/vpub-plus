@@ -154,6 +154,7 @@ END;
 
 CREATE TRIGGER count_post_before_update
     BEFORE UPDATE of board_id on posts
+    WHEN new.topic_id is null
 BEGIN
     UPDATE
         posts

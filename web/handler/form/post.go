@@ -4,27 +4,32 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"vpub/model"
 )
 
 type PostForm struct {
-	Subject  string
-	Content  string
-	TopicId  int64
-	BoardId  int64
-	IsAdmin  bool
-	IsSticky bool
-	IsLocked bool
+	Subject    string
+	Content    string
+	TopicId    int64
+	BoardId    int64
+	IsAdmin    bool
+	IsSticky   bool
+	IsLocked   bool
+	Boards     []model.Board
+	NewBoardId int64
 }
 
 func NewPostForm(r *http.Request) PostForm {
 	TopicId, _ := strconv.ParseInt(r.FormValue("topicId"), 10, 64)
 	BoardId, _ := strconv.ParseInt(r.FormValue("boardId"), 10, 64)
+	NewBoardId, _ := strconv.ParseInt(r.FormValue("newBoardId"), 10, 64)
 	return PostForm{
-		Subject:  strings.TrimSpace(r.FormValue("subject")),
-		Content:  r.FormValue("content"),
-		TopicId:  TopicId,
-		BoardId:  BoardId,
-		IsSticky: r.FormValue("sticky") == "true",
-		IsLocked: r.FormValue("locked") == "true",
+		Subject:    strings.TrimSpace(r.FormValue("subject")),
+		Content:    r.FormValue("content"),
+		TopicId:    TopicId,
+		BoardId:    BoardId,
+		IsSticky:   r.FormValue("sticky") == "true",
+		IsLocked:   r.FormValue("locked") == "true",
+		NewBoardId: NewBoardId,
 	}
 }

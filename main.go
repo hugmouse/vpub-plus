@@ -94,6 +94,40 @@ func main() {
 		}
 	}
 	//seedTestData(1000, 100, data)
+	//if _, err := data.ForumById(1); err != nil {
+	//	fId, _ := data.CreateForum(model.Forum{
+	//		Name: "Test Area",
+	//	})
+	//	data.CreateBoard(model.Board{
+	//		Name:        "Testing",
+	//		Description: "Main testing area",
+	//		Forum:       model.Forum{Id: fId},
+	//	})
+	//	data.CreateBoard(model.Board{
+	//		Name:        "Secondary Testing",
+	//		Description: "Not the main, but still a testing area!",
+	//		Forum:       model.Forum{Id: fId},
+	//	})
+	//}
+
+	// Let's now attempt to insert n messages at the exact same time, and see if the count increased the way it should have.
+	// At the start, topic count is 0 on the board.
+	// If two transactions are executed concurrently, then the result would be 1.
+	// That's because they'd do 0+1 each.
+	//for i := 0; i < 100; i++ {
+	//	go func() {
+	//		fmt.Println(i)
+	//		_, err := data.CreateTopic(model.Post{
+	//			User:    model.User{Id: 1},
+	//			Subject: "test",
+	//			Content: "test",
+	//			BoardId: bId1,
+	//		})
+	//		if err != nil {
+	//			fmt.Println(err)
+	//		}
+	//	}()
+	//}
 	log.Fatal(
 		web.Serve(cfg, data),
 	)

@@ -1,43 +1,22 @@
 {{ define "breadcrumb" }}<a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
 <h1><a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a></h1>
-
-{{ range .posts }}
-<article id="{{ .Id }}">
-    <header>
-        {{ .User.Name }}
-        {{ timeAgo .CreatedAt }}
-    </header>
-    <div>
-        {{ if eq $.topic.Id .Id }}<h1>{{ .Subject }}</h1>{{ end }}
-        {{ gmi2html .Content }}
-        {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
-        <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
-        {{ end }}
-    </div>
-</article>
-{{ end }}
-
-<!--<table class="posts">-->
-<!--    {{ range .posts }}-->
-<!--    <tr class="post" id="{{ .Id }}">-->
-<!--        <td class="post-aside">-->
-<!--            <p>{{ .User.Name }}</p>-->
-<!--            {{ if .User.Picture }}-->
-<!--            <img width="100" src="{{ .User.Picture }}">-->
-<!--            {{ end }}-->
-<!--            <p>{{ timeAgo .CreatedAt }}</p>-->
-<!--        </td>-->
-<!--        <td class="post-content">-->
-<!--            {{ if eq $.topic.Id .Id }}<h1>{{ .Subject }}</h1>{{ end }}-->
-<!--            {{ gmi2html .Content }}-->
-<!--            {{ if or (hasPermission .User.Name) $.logged.IsAdmin}}-->
-<!--            <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>-->
-<!--            {{ end }}-->
-<!--        </td>-->
-<!--    </tr>-->
-<!--    {{ end }}-->
-<!--</table>-->
+<table class="post">
+    {{ range .posts }}
+    <tr class="header">
+        <td>{{ .User.Name }} {{ timeAgo .CreatedAt }}</td>
+    </tr>
+    <tr>
+        <td>
+            {{ if eq $.topic.Id .Id }}<h1>{{ .Subject }}</h1>{{ end }}
+            {{ gmi2html .Content }}
+            {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
+            <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
+            {{ end }}
+        </td>
+    </tr>
+    {{ end }}
+</table>
 {{ if not .topic.IsLocked }}
 <section style="margin-top: 1em;">
     <form action="/posts/save" method="post">

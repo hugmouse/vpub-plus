@@ -62,10 +62,10 @@ func (s *Storage) DeletePost(post model.Post) error {
 }
 
 func (s *Storage) UpdatePost(post model.Post) error {
-	stmt, err := s.db.Prepare(`UPDATE posts SET subject=$1, content=$2, updated_at=datetime('now'), is_sticky=$3, is_locked=$4 WHERE id=$5 and (user_id=$6 or (select is_admin from users where id=$6));`)
+	stmt, err := s.db.Prepare(`UPDATE posts SET subject=$1, content=$2, updated_at=datetime('now'), is_sticky=$3, is_locked=$4, board_id=$5 WHERE id=$6 and (user_id=$7 or (select is_admin from users where id=$7));`)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(post.Subject, post.Content, post.IsSticky, post.IsLocked, post.Id, post.User.Id)
+	_, err = stmt.Exec(post.Subject, post.Content, post.IsSticky, post.IsLocked, post.BoardId, post.Id, post.User.Id)
 	return err
 }

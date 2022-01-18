@@ -25,7 +25,7 @@ func (h *Handler) showNewTopicView(w http.ResponseWriter, r *http.Request, user 
 		return
 	}
 	topicForm := form.TopicForm{
-		PostForm: form.PostForm{IsAdmin: user.IsAdmin},
+		PostForm: form.PostForm{IsAdmin: user.IsAdmin, BoardId: board.Id},
 	}
 	h.renderLayout(w, "create_topic", map[string]interface{}{
 		"form":           topicForm,

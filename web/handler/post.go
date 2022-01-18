@@ -54,6 +54,14 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user 
 		IsLocked: post.IsLocked,
 		IsAdmin:  user.IsAdmin,
 	}
+	if user.IsAdmin {
+		boards, err := h.storage.Boards()
+		if err != nil {
+			serverError(w, err)
+			return
+		}
+		postForm.Boards = boards
+	}
 	h.renderLayout(w, "edit_post", map[string]interface{}{
 		"form":           postForm,
 		"post":           post,
@@ -73,7 +81,11 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user model.
 	post.Content = postForm.Content
 	post.IsSticky = postForm.IsSticky
 	post.IsLocked = postForm.IsLocked
+	post.BoardId = postForm.BoardId
 	post.User = user
+	if postForm.NewBoardId != 0 {
+		post.BoardId = postForm.NewBoardId
+	}
 	if err := post.Validate(); err != nil {
 		serverError(w, err)
 		return

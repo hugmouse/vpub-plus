@@ -64,6 +64,7 @@ var TplCommonMap = map[string]string{
 {{ define "head" }}{{ end }}
 {{ define "breadcrumb" }}{{ end }}`,
 	"post_form": `{{ define "post_form" }}
+<input type="hidden" name="boardId" value="{{ .BoardId }}">
 <input type="hidden" name="topicId" value="{{ .TopicId }}">
 <div class="field">
     <label for="subject">Subject</label>
@@ -76,6 +77,14 @@ var TplCommonMap = map[string]string{
 {{ if .IsAdmin }}
 <details>
     <summary>Admin options</summary>
+    <div class="field">
+        <label for="newBoardId">Board</label>
+        <select name="newBoardId" id="newBoardId">
+            {{ range .Boards }}
+            <option value="{{ .Id }}" {{ if eq .Id $.BoardId }}selected{{ end }}>{{ .Name }}</option>
+            {{ end }}
+        </select>
+    </div>
     <div class="field">
         <label for="sticky">Sticky</label>
         <select name="sticky" id="sticky">
