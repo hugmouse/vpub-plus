@@ -12,6 +12,7 @@ type BoardForm struct {
 	Position    int64
 	Forums      []model.Forum
 	ForumId     int64
+	IsLocked    bool
 }
 
 func NewBoardForm(r *http.Request) *BoardForm {
@@ -22,5 +23,6 @@ func NewBoardForm(r *http.Request) *BoardForm {
 		Description: r.FormValue("description"),
 		Position:    position,
 		ForumId:     forumId,
+		IsLocked:    r.FormValue("locked") == "true",
 	}
 }

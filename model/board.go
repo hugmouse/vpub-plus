@@ -11,4 +11,5 @@ type Board struct {
 	UpdatedAt   time.Time
 	Position    int64
 	Forum       Forum
+	IsLocked    bool
 }

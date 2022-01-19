@@ -148,6 +148,7 @@ func (h *Handler) showEditBoardView(w http.ResponseWriter, r *http.Request, user
 		Position:    board.Position,
 		ForumId:     board.Forum.Id,
 		Forums:      forums,
+		IsLocked:    board.IsLocked,
 	}
 	h.renderLayout(w, "admin_board_edit", map[string]interface{}{
 		"form":           boardForm,
@@ -202,6 +203,7 @@ func (h *Handler) updateBoard(w http.ResponseWriter, r *http.Request, user model
 	board.Description = boardForm.Description
 	board.Position = boardForm.Position
 	board.Forum.Id = boardForm.ForumId
+	board.IsLocked = boardForm.IsLocked
 	if err := h.storage.UpdateBoard(board); err != nil {
 		serverError(w, err)
 		return

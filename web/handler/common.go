@@ -24,6 +24,13 @@ var TplCommonMap = map[string]string{
     <label for="name">Position</label>
     <input type="number" name="position" id="position" value="{{ .Position }}" autocomplete="off" required/>
 </div>
+<div class="field">
+    <label for="locked">Locked</label>
+    <select name="locked" id="locked">
+        <option value="false">false</option>
+        <option value="true" {{ if .IsLocked }}selected{{ end }}>true</option>
+    </select>
+</div>
 {{ end }}`,
 	"forum_form": `{{ define "forum_form" }}
 <div class="field">

@@ -32,6 +32,7 @@ create table boards (
     name text not null check ( name <> '' and length(name) < 120 ),
     position int not null,
     description text,
+    is_locked bool not null default false,
     topics_count integer not null default 0,
     posts_count integer not null default 0,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
@@ -76,21 +77,6 @@ create view topics as
     where t.topic_id is null
     group by t.id order by t.is_sticky desc, updated_at desc;
 
-create view boardStats as
-    select
-        b.id,
-        f.name forum_name,
-        b.name,
-        b.description,
-        count(p.id) as posts,
-        sum(case when (p.topic_id is null and p.id is not null) then 1 else 0 end) topics,
-        ifnull(max(p.updated_at), b.created_at) updated_at
-    from boards b
-        left join posts p on b.id = p.board_id
-        left join forums f on b.forum_id = f.id
-    group by b.id
-    order by f.position, b.position;
-
 create view postUsers as
     select
         p.id as post_id,
@@ -115,8 +101,15 @@ BEGIN
             when is_locked is true then
                 raise (abort, 'Topic is locked')
             end
-    from posts p
+    from posts
     where id=new.topic_id;
+    select
+        case
+            when is_locked is true then
+                raise (abort, 'Board is locked')
+            end
+    from boards
+    where id=new.board_id;
 END;
 
 CREATE TRIGGER count_post_before_insert
