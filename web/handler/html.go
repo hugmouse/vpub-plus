@@ -566,7 +566,7 @@ var TplMap = map[string]string{
 <h1><a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a></h1>
 <table class="post">
     {{ range .posts }}
-    <tr class="header">
+    <tr class="header" id="{{ .Id }}">
         <td>{{ .User.Name }} {{ timeAgo .CreatedAt }}</td>
     </tr>
     <tr>
