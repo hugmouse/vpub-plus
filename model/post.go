@@ -11,10 +11,6 @@ type Post struct {
 	Subject   string
 	Content   string
 	TopicId   int64
-	Replies   int
-	BoardId   int64
-	IsSticky  bool
-	IsLocked  bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

@@ -17,7 +17,7 @@ func (s *Storage) BoardById(id int64) (model.Board, error) {
 }
 
 func (s *Storage) Boards() ([]model.Board, error) {
-	rows, err := s.db.Query("select b.id, f.name, b.name, b.description, b.topics_count, b.posts_count, b.created_at from boards b left join forums f on f.id = forum_id order by f.position, b.position, f.id")
+	rows, err := s.db.Query("select * from forumBoards")
 	if err != nil {
 		return nil, err
 	}

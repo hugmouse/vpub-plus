@@ -23,7 +23,7 @@
         {{ .csrfField }}
         <input type="hidden" name="topicId" value="{{ .topic.Id }}">
         <input type="hidden" name="boardId" value="{{ .board.Id }}">
-        <input type="hidden" name="subject" value="Re: {{ .topic.Subject }}">
+        <input type="hidden" name="subject" value="Re: {{ .topic.Post.Subject }}">
         <div class="field">
             <label for="content">Reply to this topic</label>
             <textarea name="content" id="content" style="height: 150px;"></textarea>

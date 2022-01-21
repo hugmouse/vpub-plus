@@ -37,18 +37,18 @@ func (h *Handler) showNewTopicView(w http.ResponseWriter, r *http.Request, user 
 func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request, user model.User) {
 	topicForm := form.NewTopicForm(r)
 	post := model.Post{
-		User:     user,
-		Subject:  topicForm.PostForm.Subject,
-		Content:  topicForm.PostForm.Content,
-		IsSticky: topicForm.PostForm.IsSticky,
-		IsLocked: topicForm.PostForm.IsLocked,
-		BoardId:  topicForm.BoardId,
+		User:    user,
+		Subject: topicForm.PostForm.Subject,
+		Content: topicForm.PostForm.Content,
 	}
 	if err := post.Validate(); err != nil {
 		serverError(w, err)
 		return
 	}
-	id, err := h.storage.CreateTopic(post)
+	id, err := h.storage.CreateTopic(model.Topic{
+		BoardId: topicForm.BoardId,
+		Post:    post,
+	})
 	if err != nil {
 		serverError(w, err)
 		return

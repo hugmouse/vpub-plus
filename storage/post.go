@@ -10,7 +10,7 @@ func parseCreatedAt(createdAt string) (time.Time, error) {
 }
 
 func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
-	rows, err := s.db.Query("select * from postUsers where topic_id=$1 or post_id=$1", id)
+	rows, err := s.db.Query("select topic_id, post_id, subject, content, created_at, user_id, name, picture from postUsers where topic_id=$1", id)
 	if err != nil {
 		return nil, false, err
 	}
@@ -18,8 +18,7 @@ func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
 	for rows.Next() {
 		var post model.Post
 		var createdAtStr string
-		var topicId *int64
-		err := rows.Scan(&post.Id, &post.Subject, &post.Content, &createdAtStr, &topicId, &post.BoardId, &post.IsSticky, &post.IsLocked, &post.User.Id, &post.User.Name, &post.User.Picture)
+		err := rows.Scan(&post.TopicId, &post.Id, &post.Subject, &post.Content, &createdAtStr, &post.User.Id, &post.User.Name, &post.User.Picture)
 		if err != nil {
 			return posts, false, err
 		}
@@ -34,7 +33,7 @@ func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
 
 func (s *Storage) CreatePost(post model.Post) (int64, error) {
 	var id int64
-	err := s.db.QueryRow(`INSERT INTO posts (subject, content, user_id, topic_id, board_id) VALUES ($1, $2, $3, $4, $5) returning id`, post.Subject, post.Content, post.User.Id, post.TopicId, post.BoardId).Scan(&id)
+	err := s.db.QueryRow(`INSERT INTO posts (subject, content, user_id, topic_id) VALUES ($1, $2, $3, $4) returning id`, post.Subject, post.Content, post.User.Id, post.TopicId).Scan(&id)
 	return id, err
 }
 
@@ -42,7 +41,7 @@ func (s *Storage) PostById(id int64) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
 	var topicId *int64
-	err := s.db.QueryRow("select * from postUsers where post_id=$1", id).Scan(&post.Id, &post.Subject, &post.Content, &createdAtStr, &topicId, &post.BoardId, &post.IsSticky, &post.IsLocked, &post.User.Id, &post.User.Name, &post.User.Picture)
+	err := s.db.QueryRow("select * from postUsers where post_id=$1", id).Scan(&post.Id, &post.Subject, &post.Content, &createdAtStr, &topicId, &post.Content, &post.Content, &post.CreatedAt, &post.User.Id, &post.User.Name, &post.User.Picture)
 	post.CreatedAt, err = parseCreatedAt(createdAtStr)
 	if topicId != nil {
 		post.TopicId = *topicId
@@ -66,6 +65,6 @@ func (s *Storage) UpdatePost(post model.Post) error {
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(post.Subject, post.Content, post.IsSticky, post.IsLocked, post.BoardId, post.Id, post.User.Id)
+	_, err = stmt.Exec(post.Subject, post.Content, post.Content, post.Content, post.Content, post.Id, post.User.Id)
 	return err
 }

@@ -261,8 +261,8 @@ var TplMap = map[string]string{
         {{ if .topics }}
         {{ range .topics }}
         <tr{{ if .IsSticky }} class="sticky"{{ end }}>
-            <td colspan="grow"><a href="/topics/{{ .Id }}">{{ .Subject }}</a></td>
-            <td class="center"><a href="/~{{ .User.Id }}">{{ .User.Name }}</a></td>
+            <td colspan="grow"><a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a></td>
+            <td class="center"><a href="/~{{ .Post.User.Id }}">{{ .Post.User.Name }}</a></td>
             <td class="center">{{ .Replies }}</td>
             <td class="center">{{ iso8601 .UpdatedAt }}</td>
         </tr>
@@ -586,7 +586,7 @@ var TplMap = map[string]string{
         {{ .csrfField }}
         <input type="hidden" name="topicId" value="{{ .topic.Id }}">
         <input type="hidden" name="boardId" value="{{ .board.Id }}">
-        <input type="hidden" name="subject" value="Re: {{ .topic.Subject }}">
+        <input type="hidden" name="subject" value="Re: {{ .topic.Post.Subject }}">
         <div class="field">
             <label for="content">Reply to this topic</label>
             <textarea name="content" id="content" style="height: 150px;"></textarea>

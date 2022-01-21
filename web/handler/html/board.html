@@ -27,8 +27,8 @@
         {{ if .topics }}
         {{ range .topics }}
         <tr{{ if .IsSticky }} class="sticky"{{ end }}>
-            <td colspan="grow"><a href="/topics/{{ .Id }}">{{ .Subject }}</a></td>
-            <td class="center"><a href="/~{{ .User.Id }}">{{ .User.Name }}</a></td>
+            <td colspan="grow"><a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a></td>
+            <td class="center"><a href="/~{{ .Post.User.Id }}">{{ .Post.User.Name }}</a></td>
             <td class="center">{{ .Replies }}</td>
             <td class="center">{{ iso8601 .UpdatedAt }}</td>
         </tr>

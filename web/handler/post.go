@@ -25,7 +25,6 @@ func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user model.Us
 		Subject: postForm.Subject,
 		Content: postForm.Content,
 		TopicId: postForm.TopicId,
-		BoardId: postForm.BoardId,
 	}
 	if err := post.Validate(); err != nil {
 		serverError(w, err)
@@ -46,13 +45,10 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user 
 		return
 	}
 	postForm := form.PostForm{
-		Subject:  post.Subject,
-		Content:  post.Content,
-		TopicId:  post.TopicId,
-		BoardId:  post.BoardId,
-		IsSticky: post.IsSticky,
-		IsLocked: post.IsLocked,
-		IsAdmin:  user.IsAdmin,
+		Subject: post.Subject,
+		Content: post.Content,
+		TopicId: post.TopicId,
+		IsAdmin: user.IsAdmin,
 	}
 	if user.IsAdmin {
 		boards, err := h.storage.Boards()
@@ -79,13 +75,10 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user model.
 	postForm := form.NewPostForm(r)
 	post.Subject = postForm.Subject
 	post.Content = postForm.Content
-	post.IsSticky = postForm.IsSticky
-	post.IsLocked = postForm.IsLocked
-	post.BoardId = postForm.BoardId
 	post.User = user
-	if postForm.NewBoardId != 0 {
-		post.BoardId = postForm.NewBoardId
-	}
+	//if postForm.NewBoardId != 0 {
+	//	post.BoardId = postForm.NewBoardId
+	//}
 	if err := post.Validate(); err != nil {
 		serverError(w, err)
 		return
