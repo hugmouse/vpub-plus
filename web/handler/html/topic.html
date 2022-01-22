@@ -10,8 +10,12 @@
         <td>
             {{ if eq $.topic.Post.Id .Id }}<h1>{{ .Subject }}</h1>{{ end }}
             {{ gmi2html .Content }}
+            {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
+            <p><a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
+            {{ else }}
             {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
             <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
+            {{ end }}
             {{ end }}
         </td>
     </tr>

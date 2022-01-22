@@ -48,21 +48,76 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user 
 		Subject: post.Subject,
 		Content: post.Content,
 		TopicId: post.TopicId,
-		IsAdmin: user.IsAdmin,
-	}
-	if user.IsAdmin {
-		boards, err := h.storage.Boards()
-		if err != nil {
-			serverError(w, err)
-			return
-		}
-		postForm.Boards = boards
 	}
 	h.renderLayout(w, "edit_post", map[string]interface{}{
 		"form":           postForm,
 		"post":           post,
 		csrf.TemplateTag: csrf.TemplateField(r),
 	}, user)
+}
+
+func (h *Handler) showEditTopicView(w http.ResponseWriter, r *http.Request, user model.User) {
+	if !user.IsAdmin {
+		notFound(w)
+		return
+	}
+	topic, err := h.storage.TopicById(RouteInt64Param(r, "topicId"))
+	if err != nil {
+		notFound(w)
+		return
+	}
+	post, err := h.storage.PostById(topic.Post.Id)
+	if err != nil {
+		notFound(w)
+		return
+	}
+	boards, err := h.storage.Boards()
+	topicForm := form.TopicForm{
+		Id:       topic.Id,
+		BoardId:  topic.BoardId,
+		IsSticky: topic.IsSticky,
+		IsLocked: topic.IsLocked,
+		Boards:   boards,
+		PostForm: form.PostForm{
+			Subject: post.Subject,
+			Content: post.Content,
+			TopicId: post.TopicId,
+		},
+	}
+	h.renderLayout(w, "edit_topic", map[string]interface{}{
+		"form":           topicForm,
+		csrf.TemplateTag: csrf.TemplateField(r),
+	}, user)
+}
+
+func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request, user model.User) {
+	if !user.IsAdmin {
+		notFound(w)
+		return
+	}
+	id := RouteInt64Param(r, "topicId")
+	t, err := h.storage.TopicById(id)
+	if err != nil {
+		notFound(w)
+		return
+	}
+	topicForm := form.NewTopicForm(r)
+	topic := model.Topic{
+		Id:       id,
+		BoardId:  topicForm.BoardId,
+		IsSticky: topicForm.IsSticky,
+		IsLocked: topicForm.IsLocked,
+		Post: model.Post{
+			Id:      t.Post.Id,
+			Subject: topicForm.PostForm.Subject,
+			Content: topicForm.PostForm.Content,
+		},
+	}
+	if err := h.storage.UpdateTopic(topic); err != nil {
+		serverError(w, err)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/topics/%d", topic.Id), http.StatusFound)
 }
 
 func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user model.User) {

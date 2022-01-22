@@ -298,7 +298,11 @@ var TplMap = map[string]string{
 <h2>New topic</h2>
 <form action="/boards/{{ .board.Id }}/save-topic" method="post">
     {{ .csrfField }}
+    <input type="hidden" name="boardId" value="{{ .form.BoardId }}">
     {{ template "post_form" .form.PostForm }}
+    {{ if .logged.IsAdmin }}
+    {{ template "topic_form" .form }}
+    {{ end }}
     <input type="submit" value="Submit">
 </form>
 {{ end }}
@@ -320,6 +324,21 @@ var TplMap = map[string]string{
         <label for="reply">reply</label><textarea name="reply" id="reply">{{ .form.Content }}</textarea>
         <input type="submit" value="Submit">
     </form>
+{{ end }}
+`,
+	"edit_topic": `{{ define "title" }}Edit topic{{ end }}
+{{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
+{{ define "content" }}
+<h2>New topic</h2>
+<form action="/topics/{{ .form.Id }}/update" method="post">
+    {{ .csrfField }}
+    <input type="hidden" name="boardId" value="{{ .form.BoardId }}">
+    {{ template "post_form" .form.PostForm }}
+    {{ if .logged.IsAdmin }}
+    {{ template "topic_form" .form }}
+    {{ end }}
+    <input type="submit" value="Submit">
+</form>
 {{ end }}
 `,
 	"index": `{{ define "content"}}
@@ -573,8 +592,12 @@ var TplMap = map[string]string{
         <td>
             {{ if eq $.topic.Post.Id .Id }}<h1>{{ .Subject }}</h1>{{ end }}
             {{ gmi2html .Content }}
+            {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
+            <p><a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
+            {{ else }}
             {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
             <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
+            {{ end }}
             {{ end }}
         </td>
     </tr>

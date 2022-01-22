@@ -12,8 +12,8 @@ func (s *Storage) CreateTopic(topic model.Topic) (int64, error) {
 	if err != nil {
 		return topicId, err
 	}
-	if err := tx.QueryRowContext(ctx, `INSERT INTO topics (is_sticky, is_locked, board_id, post_id) VALUES ($1, $2, $3, -1) RETURNING id`,
-		topic.IsSticky, topic.IsLocked, topic.BoardId).Scan(&topicId); err != nil {
+	if err := tx.QueryRowContext(ctx, `INSERT INTO topics (is_sticky, is_locked, board_id, post_id, is_sticky, is_locked) VALUES ($1, $2, $3, -1, $4, $5) RETURNING id`,
+		topic.IsSticky, topic.IsLocked, topic.BoardId, topic.IsSticky, topic.IsLocked).Scan(&topicId); err != nil {
 		tx.Rollback()
 		return topicId, err
 	}
@@ -29,6 +29,24 @@ func (s *Storage) CreateTopic(topic model.Topic) (int64, error) {
 	}
 	err = tx.Commit()
 	return topicId, err
+}
+
+func (s *Storage) UpdateTopic(topic model.Topic) error {
+	ctx := context.Background()
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	if _, err := tx.ExecContext(ctx, `UPDATE topics set is_locked=$1, is_sticky=$2, board_id=$3 where id=$4`, topic.IsLocked, topic.IsSticky, topic.BoardId, topic.Id); err != nil {
+		tx.Rollback()
+		return err
+	}
+	if _, err := tx.ExecContext(ctx, `UPDATE posts set subject=$1, content=$2 where id=$3`, topic.Post.Subject, topic.Post.Content, topic.Post.Id); err != nil {
+		tx.Rollback()
+		return err
+	}
+	err = tx.Commit()
+	return err
 }
 
 func (s *Storage) TopicsByBoardId(boardId int64) ([]model.Topic, bool, error) {
@@ -53,9 +71,7 @@ func (s *Storage) TopicsByBoardId(boardId int64) ([]model.Topic, bool, error) {
 func (s *Storage) TopicById(id int64) (model.Topic, error) {
 	var topic model.Topic
 	var updatedAt string
-	//var createdAt string
 	err := s.db.QueryRow(`select * from topics where id=$1`, id).Scan(&topic.Id, &topic.Replies, &topic.IsSticky, &topic.IsLocked, &updatedAt, &topic.BoardId, &topic.Post.Id)
-	topic.UpdatedAt, err = parseCreatedAt(updatedAt)
 	if err != nil {
 		return topic, err
 	}

@@ -1,8 +1,8 @@
-{{ define "title" }}New Thread{{ end }}
+{{ define "title" }}Edit topic{{ end }}
 {{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content" }}
 <h2>New topic</h2>
-<form action="/boards/{{ .board.Id }}/save-topic" method="post">
+<form action="/topics/{{ .form.Id }}/update" method="post">
     {{ .csrfField }}
     <input type="hidden" name="boardId" value="{{ .form.BoardId }}">
     {{ template "post_form" .form.PostForm }}
