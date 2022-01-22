@@ -40,14 +40,13 @@ func (s *Storage) CreatePost(post model.Post) (int64, error) {
 func (s *Storage) PostById(id int64) (model.Post, error) {
 	var post model.Post
 	var createdAtStr string
-	var topicId *int64
-	err := s.db.QueryRow("select * from postUsers where post_id=$1", id).Scan(&post.Id, &post.Subject, &post.Content, &createdAtStr, &topicId, &post.Content, &post.Content, &post.CreatedAt, &post.User.Id, &post.User.Name, &post.User.Picture)
+	var updatedAtStr string
+	err := s.db.QueryRow("select * from postUsers where post_id=$1", id).Scan(&post.TopicId, &post.Id, &post.Subject, &post.Content, &createdAtStr, &updatedAtStr, &post.User.Id, &post.User.Name, &post.User.Picture)
 	post.CreatedAt, err = parseCreatedAt(createdAtStr)
-	if topicId != nil {
-		post.TopicId = *topicId
-	} else {
-		post.TopicId = post.Id
+	if err != nil {
+		return post, err
 	}
+	post.UpdatedAt, err = parseCreatedAt(updatedAtStr)
 	return post, err
 }
 
