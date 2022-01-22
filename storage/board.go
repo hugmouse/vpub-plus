@@ -17,7 +17,7 @@ func (s *Storage) BoardById(id int64) (model.Board, error) {
 }
 
 func (s *Storage) Boards() ([]model.Board, error) {
-	rows, err := s.db.Query("select * from forumBoards")
+	rows, err := s.db.Query("select * from forums_summary")
 	if err != nil {
 		return nil, err
 	}

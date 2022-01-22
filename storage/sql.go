@@ -39,6 +39,7 @@ create table boards (
     topics_count integer not null default 0,
     posts_count integer not null default 0,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     forum_id not null references forums(id)
 );
 
@@ -55,7 +56,7 @@ create table posts (
     content text not null check ( length(content) <= 50000 ),
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    topic_id integer not null references posts(id),
+    topic_id integer null references topics(id),
     user_id integer not null references users(id)
 );
 
@@ -64,7 +65,7 @@ create table topics (
     posts_count integer not null default 0,
     is_sticky boolean not null default false,
     is_locked boolean not null default false,
-    updated_at NOTtimestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     board_id integer not null references boards(id),
     post_id integer not null references posts(id) on delete cascade deferrable initially deferred
 );
@@ -98,7 +99,7 @@ create view boardTopics as
         left join users u on p.user_id = u.id
     order by t.updated_at desc;
 
-create view forumBoards as
+create view forums_summary as
     select
            b.id as board_id,
            f.name as forum_name,
@@ -106,7 +107,7 @@ create view forumBoards as
            b.description,
            b.topics_count,
            b.posts_count,
-           b.created_at
+           b.updated_at
     from boards b
     left join forums f on f.id = forum_id
     order by f.position, b.position, f.id;
@@ -127,11 +128,12 @@ BEGIN
     WHERE id=new.topic_id;
 END;
 
-CREATE TRIGGER decrease_topic_count_on_board
-    BEFORE DELETE ON topics
+CREATE TRIGGER decrease_count_on_board
+    AFTER DELETE ON topics
 BEGIN
     UPDATE boards
-    SET topics_count = topics_count-1
+    SET topics_count = topics_count-1,
+        posts_count  = posts_count-1
     WHERE id=old.board_id;
 END;
 
@@ -143,24 +145,32 @@ BEGIN
     WHERE id=old.topic_id;
 END;
 
--- CREATE TRIGGER count_post_on_board
---     BEFORE UPDATE of posts_count, board_id ON topics
--- BEGIN
---     UPDATE boards
---         SET posts_count = posts_count-(old.posts_count + 1)
---         WHERE id=old.board_id;
---     UPDATE boards
---         SET posts_count = posts_count+(new.posts_count + 1)
---         WHERE id=new.board_id;
--- END;
---
--- CREATE TRIGGER get_topic_updated_at
---     AFTER UPDATE of posts_count on topics
--- BEGIN
---     UPDATE topics
---     SET updated_at = (SELECT updated_at from posts where topic_id=old.id order by updated_at desc limit 1)
---     WHERE id=old.id;
--- end;
+CREATE TRIGGER count_post_on_board
+    AFTER UPDATE of posts_count, board_id ON topics
+BEGIN
+    UPDATE boards
+        SET posts_count = posts_count-(old.posts_count + 1)
+        WHERE id=old.board_id;
+    UPDATE boards
+        SET posts_count = posts_count+(new.posts_count + 1)
+        WHERE id=new.board_id;
+END;
+
+CREATE TRIGGER get_topic_updated_at
+    AFTER UPDATE of posts_count on topics
+BEGIN
+    UPDATE topics
+    SET updated_at = (SELECT updated_at from posts where topic_id=old.id order by updated_at desc limit 1)
+    WHERE id=old.id;
+end;
+
+CREATE TRIGGER get_board_updated_at
+    AFTER UPDATE of posts_count on boards
+BEGIN
+    UPDATE boards
+    SET updated_at = coalesce((SELECT updated_at from topics where board_id=old.id order by updated_at desc limit 1), boards.created_at)
+    WHERE id=old.id;
+end;
 
 insert into settings (name) values ('vpub');
 insert into keys (key) values ('admin');`,

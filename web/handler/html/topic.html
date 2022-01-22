@@ -8,7 +8,7 @@
     </tr>
     <tr>
         <td>
-            {{ if eq $.topic.Id .Id }}<h1>{{ .Subject }}</h1>{{ end }}
+            {{ if eq $.topic.Post.Id .Id }}<h1>{{ .Subject }}</h1>{{ end }}
             {{ gmi2html .Content }}
             {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
             <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
