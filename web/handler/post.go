@@ -102,9 +102,13 @@ func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request, user model
 		return
 	}
 	topicForm := form.NewTopicForm(r)
+	boardId := topicForm.NewBoardId
+	if boardId == 0 {
+		boardId = topicForm.BoardId
+	}
 	topic := model.Topic{
 		Id:       id,
-		BoardId:  topicForm.BoardId,
+		BoardId:  boardId,
 		IsSticky: topicForm.IsSticky,
 		IsLocked: topicForm.IsLocked,
 		Post: model.Post{

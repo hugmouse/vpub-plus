@@ -79,7 +79,7 @@ create view postUsers as
     from posts p
     left join users u on p.user_id = u.id;
 
-create view boardTopics as
+create view topics_summary as
     select
         t.Id as topic_id,
         p.subject,
@@ -88,11 +88,12 @@ create view boardTopics as
         t.updated_at,
         u.id as user_id,
         u.name,
-        t.board_id
+        t.board_id,
+        t.is_sticky
     from topics t
         left join posts p on t.post_id = p.id
         left join users u on p.user_id = u.id
-    order by t.updated_at desc;
+    order by t.is_sticky desc, t.updated_at desc;
 
 create view forums_summary as
     select
@@ -144,11 +145,13 @@ CREATE TRIGGER count_post_on_board
     AFTER UPDATE of posts_count, board_id ON topics
 BEGIN
     UPDATE boards
-        SET posts_count = posts_count-(old.posts_count + 1)
-        WHERE id=old.board_id;
+    SET topics_count = boards.topics_count-1,
+        posts_count = posts_count-(old.posts_count)
+    WHERE id=old.board_id;
     UPDATE boards
-        SET posts_count = posts_count+(new.posts_count + 1)
-        WHERE id=new.board_id;
+    SET topics_count = boards.topics_count+1,
+        posts_count = posts_count+(new.posts_count)
+    WHERE id=new.board_id;
 END;
 
 CREATE TRIGGER get_topic_updated_at

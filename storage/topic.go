@@ -50,7 +50,7 @@ func (s *Storage) UpdateTopic(topic model.Topic) error {
 }
 
 func (s *Storage) TopicsByBoardId(boardId int64) ([]model.Topic, bool, error) {
-	rows, err := s.db.Query("select topic_id, subject, content, posts_count, updated_at, user_id, name from boardTopics where board_id=$1", boardId)
+	rows, err := s.db.Query("select topic_id, subject, content, posts_count, updated_at, user_id, name, is_sticky from topics_summary where board_id=$1", boardId)
 	if err != nil {
 		return nil, false, err
 	}
@@ -58,7 +58,7 @@ func (s *Storage) TopicsByBoardId(boardId int64) ([]model.Topic, bool, error) {
 	var updatedAt string
 	for rows.Next() {
 		var topic model.Topic
-		err := rows.Scan(&topic.Id, &topic.Post.Subject, &topic.Post.Content, &topic.Replies, &updatedAt, &topic.Post.User.Id, &topic.Post.User.Name)
+		err := rows.Scan(&topic.Id, &topic.Post.Subject, &topic.Post.Content, &topic.Replies, &updatedAt, &topic.Post.User.Id, &topic.Post.User.Name, &topic.IsSticky)
 		topic.UpdatedAt, err = parseCreatedAt(updatedAt)
 		if err != nil {
 			return topics, false, err
