@@ -70,7 +70,7 @@ create table posts (
 
 alter table topics add foreign key (post_id) references posts(id) on delete cascade deferrable initially deferred;
 
-create view postUsers as
+create view posts_full as
     select
         p.topic_id as topic_id,
         p.id as post_id,
@@ -114,7 +114,54 @@ create view forums_summary as
     order by f.position, b.position, f.id;
 
 -- Triggers
+--
+-- Enforce topic and board lock rules
+--
+CREATE OR REPLACE FUNCTION check_is_locked() RETURNS TRIGGER AS $$
+DECLARE
+    _is_locked  bool;
+    _board_id   int;
+    _posts      int;
+BEGIN
+    SELECT board_id into _board_id from topics where id=NEW.topic_id;
+    SELECT is_locked into _is_locked from boards where id=_board_id;
+    IF (_is_locked) THEN
+        RETURN NULL;
+    end if;
+    SELECT count(id) into _posts from posts where topic_id=NEW.topic_id LIMIT 1;
+    IF (_posts = 0) THEN
+        RETURN NEW;
+    end if;
+    SELECT is_locked into _is_locked from topics where id=NEW.topic_id;
+    IF (_is_locked) THEN
+        RETURN NULL;
+    end if;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER check_is_locked_topic
+    BEFORE INSERT on posts
+    FOR EACH ROW
+    EXECUTE PROCEDURE check_is_locked();
 
+-- CREATE TRIGGER check_is_locked_before_insert
+--     BEFORE INSERT ON posts
+-- BEGIN
+-- select
+--     case
+--         when is_locked is true then
+--             raise (abort, 'Topic is locked')
+--         end
+-- from posts
+-- where id=new.topic_id;
+-- select
+--     case
+--         when is_locked is true then
+--             raise (abort, 'Board is locked')
+--         end
+-- from boards
+-- where id=new.board_id;
+-- END;
 --
 -- Increase topic and post count on boards
 --
@@ -212,14 +259,6 @@ CREATE TRIGGER get_board_updated_at
     AFTER UPDATE of posts_count on boards
     FOR EACH ROW
     EXECUTE PROCEDURE get_board_updated_at();
-
--- CREATE TRIGGER get_board_updated_at
---     AFTER UPDATE of posts_count on boards
--- BEGIN
---     UPDATE boards
---     SET updated_at = coalesce((SELECT updated_at from topics where board_id=old.id order by updated_at desc limit 1), boards.created_at)
---     WHERE id=old.id;
--- end;
 
 insert into settings (name) values ('vpub');
 insert into keys (key) values ('admin');`,

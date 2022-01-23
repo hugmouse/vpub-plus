@@ -5,7 +5,7 @@ import (
 )
 
 func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
-	rows, err := s.db.Query("select topic_id, post_id, subject, content, created_at, user_id, name, picture from postUsers where topic_id=$1", id)
+	rows, err := s.db.Query("select topic_id, post_id, subject, content, created_at, user_id, name, picture from posts_full where topic_id=$1 order by created_at", id)
 	if err != nil {
 		return nil, false, err
 	}
@@ -29,7 +29,7 @@ func (s *Storage) CreatePost(post model.Post) (int64, error) {
 
 func (s *Storage) PostById(id int64) (model.Post, error) {
 	var post model.Post
-	err := s.db.QueryRow("select * from postUsers where post_id=$1", id).Scan(&post.TopicId, &post.Id, &post.Subject, &post.Content, &post.CreatedAt, &post.UpdatedAt, &post.User.Id, &post.User.Name, &post.User.Picture)
+	err := s.db.QueryRow("select * from posts_full where post_id=$1", id).Scan(&post.TopicId, &post.Id, &post.Subject, &post.Content, &post.CreatedAt, &post.UpdatedAt, &post.User.Id, &post.User.Name, &post.User.Picture)
 	if err != nil {
 		return post, err
 	}

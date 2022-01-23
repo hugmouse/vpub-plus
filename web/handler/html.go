@@ -603,7 +603,7 @@ var TplMap = map[string]string{
     </tr>
     {{ end }}
 </table>
-{{ if not .topic.IsLocked }}
+
 <section style="margin-top: 1em;">
     <form action="/posts/save" method="post">
         {{ .csrfField }}
@@ -617,6 +617,7 @@ var TplMap = map[string]string{
         <input type="submit" value="Reply">
     </form>
 </section>
+{{ if not .topic.IsLocked }}
 {{ end }}
 {{ end }}`,
 	"user_posts": `{{ define "content" }}

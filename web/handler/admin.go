@@ -228,6 +228,7 @@ func (h *Handler) saveBoard(w http.ResponseWriter, r *http.Request, user model.U
 		Name:        boardForm.Name,
 		Description: boardForm.Description,
 		Position:    boardForm.Position,
+		IsLocked:    boardForm.IsLocked,
 		Forum:       model.Forum{Id: boardForm.ForumId},
 	}
 	_, err := h.storage.CreateBoard(board)
