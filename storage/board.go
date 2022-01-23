@@ -4,14 +4,24 @@ import "vpub/model"
 
 func (s *Storage) BoardById(id int64) (model.Board, error) {
 	var board model.Board
-	err := s.db.QueryRow(
-		`SELECT id, name, description, position, forum_id, is_locked from boards WHERE id=$1`, id).Scan(
+	err := s.db.QueryRow(`
+SELECT
+       b.id,
+       b.name,
+       description,
+       b.position,
+       forum_id,
+       is_locked,
+       f.name
+from boards b inner join forums f on f.id = b.forum_id WHERE b.id=$1
+`, id).Scan(
 		&board.Id,
 		&board.Name,
 		&board.Description,
 		&board.Position,
 		&board.Forum.Id,
 		&board.IsLocked,
+		&board.Forum.Name,
 	)
 	return board, err
 }
@@ -24,7 +34,24 @@ func (s *Storage) Boards() ([]model.Board, error) {
 	var boards []model.Board
 	for rows.Next() {
 		var board model.Board
-		err := rows.Scan(&board.Id, &board.Forum.Name, &board.Name, &board.Description, &board.Topics, &board.Posts, &board.UpdatedAt)
+		err := rows.Scan(&board.Id, &board.Forum.Id, &board.Forum.Name, &board.Name, &board.Description, &board.Topics, &board.Posts, &board.UpdatedAt)
+		if err != nil {
+			return boards, err
+		}
+		boards = append(boards, board)
+	}
+	return boards, nil
+}
+
+func (s *Storage) BoardsByForumId(id int64) ([]model.Board, error) {
+	rows, err := s.db.Query("select * from forums_summary where forum_id=$1", id)
+	if err != nil {
+		return nil, err
+	}
+	var boards []model.Board
+	for rows.Next() {
+		var board model.Board
+		err := rows.Scan(&board.Id, &board.Forum.Id, &board.Forum.Name, &board.Name, &board.Description, &board.Topics, &board.Posts, &board.UpdatedAt)
 		if err != nil {
 			return boards, err
 		}

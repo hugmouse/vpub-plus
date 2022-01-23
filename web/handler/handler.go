@@ -111,6 +111,9 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 	router.HandleFunc("/boards/{boardId}/save-topic", h.protect(h.saveTopic)).Methods(http.MethodPost)
 	//router.HandleFunc("/boards/{boardId}/feed.atom", h.showFeedViewTopic).Methods(http.MethodGet)
 
+	// Forums
+	router.HandleFunc("/forums/{forumId}", h.showForumView).Methods(http.MethodGet)
+
 	// Topic
 	router.HandleFunc("/topics/{topicId}", h.showTopicView).Methods(http.MethodGet)
 	router.HandleFunc("/topics/{topicId}/edit", h.protect(h.showEditTopicView)).Methods(http.MethodGet)

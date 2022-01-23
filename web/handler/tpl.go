@@ -31,6 +31,9 @@ func (h *Handler) initTpl() {
 			"iso8601": func(t time.Time) string {
 				return t.Format("2006-01-02")
 			},
+			"iso8601Time": func(t time.Time) string {
+				return t.Format("2006-01-02 15:04:05")
+			},
 			"timeAgo": func(t time.Time) string {
 				d := time.Since(t)
 				if d.Seconds() < 60 {

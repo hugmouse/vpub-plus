@@ -1,17 +1,29 @@
 {{ define "breadcrumb" }}<a href="/">boards</a> > {{ .board.Name }}{{ end }}
 {{ define "content" }}
-<h1><a href="/">boards</a> > {{ .board.Name }}</h1>
-
-<!--<p>{{ .board.Description }}</p>-->
-
-<nav class="actions">
-    <p>
-        {{ if .logged }}
-        <a href="/boards/{{ .board.Id }}/new-topic">new topic</a>
-        {{ end }}
-<!--        <a href="TODO">follow</a>-->
-    </p>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/">All forums</a>
+            <ul>
+                <li>
+                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                    <ul>
+                        <li>{{ .board.Name }}</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
 </nav>
+<h1>{{ .board.Name }}</h1>
+
+{{ if .logged }}
+{{ if not .board.IsLocked }}
+<form action="/boards/{{ .board.Id }}/new-topic" method="get" class="action">
+    <input type="submit" value="New topic">
+</form>
+{{ end }}
+{{ end }}
 
 <section>
     <table>

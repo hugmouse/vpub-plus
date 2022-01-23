@@ -24,6 +24,26 @@ ol.replies > li:not(:last-child) {
 }
 
 /* Posts ************************************************************/
+.action {
+	margin: 1em 1em 1em 0;
+}
+nav.breadcrumb {
+	padding: 1em;
+	border: 1px solid;
+	margin: 1em 0;
+}
+.breadcrumb ul {
+	list-style: none;
+	padding-left: 1em;
+}
+.breadcrumb > ul {
+	padding: 0;
+	margin: 0;
+}
+.col-author {
+	text-align: center;
+	width: 70px;
+}
 table.post {
 	background-color: white;
 }

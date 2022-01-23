@@ -1,9 +1,9 @@
 {{ define "content"}}
-<h1>Boards</h1>
+<h1>Forums</h1>
 <table>
     <thead>
         <tr>
-            <th class="grow">Board</th>
+            <th class="grow">Forum</th>
             <th>Topics</th>
             <th>Posts</th>
             <th>Updated</th>
@@ -13,7 +13,7 @@
         {{ if .forums }}
         {{ range .forums }}
         <tr class="forum">
-            <td colspan="4">{{ .Name }}</td>
+            <td colspan="4"><a href="/forums/{{ .Id }}">{{ .Name }}</a></td>
         </tr>
         {{ range .Boards }}
         <tr>

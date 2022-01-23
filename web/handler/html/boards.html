@@ -1,0 +1,43 @@
+{{ define "content"}}
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/">All forums</a>
+            <ul>
+                <li>
+                    {{ .forum.Name }}
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>{{ .forum.Name }}</h1>
+<table>
+    <thead>
+    <tr>
+        <th class="grow">Board</th>
+        <th>Topics</th>
+        <th>Posts</th>
+        <th>Updated</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ if .boards }}
+    {{ range .boards }}
+    <tr>
+        <td colspan="grow">
+            <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+        </td>
+        <td class="center">{{ .Topics }}</td>
+        <td class="center">{{ .Posts }}</td>
+        <td class="center">{{ iso8601 .UpdatedAt }}</td>
+    </tr>
+    {{ end }}
+    {{ else }}
+    <tr>
+        <td colspan="4">No boards yet.</td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+{{ end }}

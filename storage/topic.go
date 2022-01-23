@@ -68,8 +68,27 @@ func (s *Storage) TopicsByBoardId(boardId int64) ([]model.Topic, bool, error) {
 
 func (s *Storage) TopicById(id int64) (model.Topic, error) {
 	var topic model.Topic
-	var updatedAt string
-	err := s.db.QueryRow(`select * from topics where id=$1`, id).Scan(&topic.Id, &topic.Replies, &topic.IsSticky, &topic.IsLocked, &updatedAt, &topic.BoardId, &topic.Post.Id)
+	err := s.db.QueryRow(`
+select 
+       topic_id,
+       posts_count,
+       is_sticky,
+       is_locked,
+       updated_at,
+       board_id,
+       post_id,
+       subject
+from topics_summary where topic_id=$1
+`, id).Scan(
+		&topic.Id,
+		&topic.Replies,
+		&topic.IsSticky,
+		&topic.IsLocked,
+		&topic.UpdatedAt,
+		&topic.BoardId,
+		&topic.Post.Id,
+		&topic.Post.Subject,
+	)
 	if err != nil {
 		return topic, err
 	}

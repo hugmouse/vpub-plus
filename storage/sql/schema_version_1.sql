@@ -89,7 +89,9 @@ create view topics_summary as
         u.id as user_id,
         u.name,
         t.board_id,
-        t.is_sticky
+        t.is_sticky,
+        t.is_locked,
+        t.post_id
     from topics t
         left join posts p on t.post_id = p.id
         left join users u on p.user_id = u.id
@@ -98,6 +100,7 @@ create view topics_summary as
 create view forums_summary as
     select
            b.id as board_id,
+           f.id as forum_id,
            f.name as forum_name,
            b.name as board_name,
            b.description,

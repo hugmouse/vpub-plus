@@ -64,6 +64,28 @@ func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request, user model.U
 	http.Redirect(w, r, fmt.Sprintf("/topics/%d", id), http.StatusFound)
 }
 
+func (h *Handler) showForumView(w http.ResponseWriter, r *http.Request) {
+	user, _ := h.session.Get(r)
+
+	id := RouteInt64Param(r, "forumId")
+	forum, err := h.storage.ForumById(id)
+	if err != nil {
+		notFound(w)
+		return
+	}
+
+	boards, err := h.storage.BoardsByForumId(forum.Id)
+	if err != nil {
+		notFound(w)
+		return
+	}
+
+	h.renderLayout(w, "boards", map[string]interface{}{
+		"forum":  forum,
+		"boards": boards,
+	}, user)
+}
+
 func (h *Handler) showBoardView(w http.ResponseWriter, r *http.Request) {
 	user, _ := h.session.Get(r)
 

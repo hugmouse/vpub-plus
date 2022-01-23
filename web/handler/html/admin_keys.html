@@ -2,7 +2,7 @@
 {{ define "title" }}Keys{{ end }}
 {{ define "content" }}
 <h1><a href="/admin">Admin</a> > Keys</h1>
-<form action="/admin/keys/save" method="post">
+<form action="/admin/keys/save" method="post" class="action">
     {{ .csrfField }}
     <input type="submit" value="Create key">
 </form>

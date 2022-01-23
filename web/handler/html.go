@@ -150,7 +150,7 @@ var TplMap = map[string]string{
 {{ define "title" }}Keys{{ end }}
 {{ define "content" }}
 <h1><a href="/admin">Admin</a> > Keys</h1>
-<form action="/admin/keys/save" method="post">
+<form action="/admin/keys/save" method="post" class="action">
     {{ .csrfField }}
     <input type="submit" value="Create key">
 </form>
@@ -234,18 +234,30 @@ var TplMap = map[string]string{
 `,
 	"board": `{{ define "breadcrumb" }}<a href="/">boards</a> > {{ .board.Name }}{{ end }}
 {{ define "content" }}
-<h1><a href="/">boards</a> > {{ .board.Name }}</h1>
-
-<!--<p>{{ .board.Description }}</p>-->
-
-<nav class="actions">
-    <p>
-        {{ if .logged }}
-        <a href="/boards/{{ .board.Id }}/new-topic">new topic</a>
-        {{ end }}
-<!--        <a href="TODO">follow</a>-->
-    </p>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/">All forums</a>
+            <ul>
+                <li>
+                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                    <ul>
+                        <li>{{ .board.Name }}</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
 </nav>
+<h1>{{ .board.Name }}</h1>
+
+{{ if .logged }}
+{{ if not .board.IsLocked }}
+<form action="/boards/{{ .board.Id }}/new-topic" method="get" class="action">
+    <input type="submit" value="New topic">
+</form>
+{{ end }}
+{{ end }}
 
 <section>
     <table>
@@ -275,6 +287,49 @@ var TplMap = map[string]string{
         </tbody>
     </table>
 </section>
+{{ end }}`,
+	"boards": `{{ define "content"}}
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/">All forums</a>
+            <ul>
+                <li>
+                    {{ .forum.Name }}
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>{{ .forum.Name }}</h1>
+<table>
+    <thead>
+    <tr>
+        <th class="grow">Board</th>
+        <th>Topics</th>
+        <th>Posts</th>
+        <th>Updated</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ if .boards }}
+    {{ range .boards }}
+    <tr>
+        <td colspan="grow">
+            <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+        </td>
+        <td class="center">{{ .Topics }}</td>
+        <td class="center">{{ .Posts }}</td>
+        <td class="center">{{ iso8601 .UpdatedAt }}</td>
+    </tr>
+    {{ end }}
+    {{ else }}
+    <tr>
+        <td colspan="4">No boards yet.</td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
 {{ end }}`,
 	"confirm_remove_post": `{{ define "content" }}
     Are you sure you you want to delete the following post?
@@ -342,11 +397,11 @@ var TplMap = map[string]string{
 {{ end }}
 `,
 	"index": `{{ define "content"}}
-<h1>Boards</h1>
+<h1>Forums</h1>
 <table>
     <thead>
         <tr>
-            <th class="grow">Board</th>
+            <th class="grow">Forum</th>
             <th>Topics</th>
             <th>Posts</th>
             <th>Updated</th>
@@ -356,7 +411,7 @@ var TplMap = map[string]string{
         {{ if .forums }}
         {{ range .forums }}
         <tr class="forum">
-            <td colspan="4">{{ .Name }}</td>
+            <td colspan="4"><a href="/forums/{{ .Id }}">{{ .Name }}</a></td>
         </tr>
         {{ range .Boards }}
         <tr>
@@ -582,28 +637,59 @@ var TplMap = map[string]string{
 {{ end }}`,
 	"topic": `{{ define "breadcrumb" }}<a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
-<h1><a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a></h1>
-<table class="post">
+<!--<h1><a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a></h1>-->
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/">All forums</a>
+            <ul>
+                <li>
+                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                    <ul>
+                        <li>
+                            <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+                            <ul>
+                                <li>{{ .topic.Post.Subject }}</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>{{ .topic.Post.Subject }}</h1>
+<table>
+    <thead>
+        <th>Author</th>
+        <th>Topic</th>
+    </thead>
+    <tbody>
     {{ range .posts }}
-    <tr class="header" id="{{ .Id }}">
-        <td>{{ .User.Name }} {{ timeAgo .CreatedAt }}</td>
-    </tr>
     <tr>
+        <td class="col-author">
+            {{ .User.Name }}
+            <p><img src="{{ .User.Picture }}" width="50"/></p>
+        </td>
         <td>
-            {{ if eq $.topic.Post.Id .Id }}<h1>{{ .Subject }}</h1>{{ end }}
+            <div class="posted">
+                Posted {{ iso8601Time .CreatedAt }}
+                {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
+                <a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
+                {{ else }}
+                {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
+                <a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
+                {{ end }}
+                {{ end }}
+                <hr/>
+            </div>
             {{ gmi2html .Content }}
-            {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
-            <p><a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
-            {{ else }}
-            {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
-            <p><a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a></p>
-            {{ end }}
-            {{ end }}
         </td>
     </tr>
     {{ end }}
+    </tbody>
 </table>
-
+{{ if not .topic.IsLocked }}
 <section style="margin-top: 1em;">
     <form action="/posts/save" method="post">
         {{ .csrfField }}
@@ -617,7 +703,6 @@ var TplMap = map[string]string{
         <input type="submit" value="Reply">
     </form>
 </section>
-{{ if not .topic.IsLocked }}
 {{ end }}
 {{ end }}`,
 	"user_posts": `{{ define "content" }}

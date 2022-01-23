@@ -5,14 +5,14 @@ import (
 )
 
 func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
-	rows, err := s.db.Query("select topic_id, post_id, subject, content, created_at, user_id, name, picture from posts_full where topic_id=$1 order by created_at", id)
+	rows, err := s.db.Query("select topic_id, post_id, subject, content, created_at, updated_at, user_id, name, picture from posts_full where topic_id=$1 order by created_at", id)
 	if err != nil {
 		return nil, false, err
 	}
 	var posts []model.Post
 	for rows.Next() {
 		var post model.Post
-		err := rows.Scan(&post.TopicId, &post.Id, &post.Subject, &post.Content, &post.CreatedAt, &post.User.Id, &post.User.Name, &post.User.Picture)
+		err := rows.Scan(&post.TopicId, &post.Id, &post.Subject, &post.Content, &post.CreatedAt, &post.UpdatedAt, &post.User.Id, &post.User.Name, &post.User.Picture)
 		if err != nil {
 			return posts, false, err
 		}
