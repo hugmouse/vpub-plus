@@ -62,8 +62,7 @@ func (s *Storage) CreateUser(user model.User, key string) (int64, error) {
 		tx.Rollback()
 		return userId, err
 	}
-
-	if err := tx.QueryRowContext(ctx, `insert into users (name, hash, is_admin, key_id) values (lower($1), $2, $3, $4) returning id`, user.Name, string(hash), user.IsAdmin, keyId).Scan(&userId); err != nil {
+	if err := tx.QueryRowContext(ctx, `insert into users (name, hash, is_admin) values (lower($1), $2, $3) returning id`, user.Name, string(hash), user.IsAdmin).Scan(&userId); err != nil {
 		tx.Rollback()
 		return userId, err
 	}

@@ -7,26 +7,26 @@ import (
 
 type (
 	Config struct {
-		DatabaseFile string
-		Port         string
-		URL          string
-		SessionKey   string
-		CSRFKey      string
-		CSSFile      string
-		Title        string
-		PerPage      int
+		DatabaseURL string
+		Port        string
+		URL         string
+		SessionKey  string
+		CSRFKey     string
+		CSSFile     string
+		Title       string
+		PerPage     int
 	}
 )
 
 func New() *Config {
 	cfg := &Config{
-		DatabaseFile: os.Getenv("DATABASE_FILE"),
-		SessionKey:   os.Getenv("SESSION_KEY"),
-		CSRFKey:      os.Getenv("CSRF_KEY"),
-		CSSFile:      os.Getenv("CSS_FILE"),
-		Title:        os.Getenv("TITLE"),
-		URL:          os.Getenv("URL"),
-		Port:         os.Getenv("PORT"),
+		DatabaseURL: os.Getenv("DATABASE_URL"),
+		SessionKey:  os.Getenv("SESSION_KEY"),
+		CSRFKey:     os.Getenv("CSRF_KEY"),
+		CSSFile:     os.Getenv("CSS_FILE"),
+		Title:       os.Getenv("TITLE"),
+		URL:         os.Getenv("URL"),
+		Port:        os.Getenv("PORT"),
 	}
 	if os.Getenv("URL") == "" {
 		cfg.URL = "http://localhost"
@@ -36,9 +36,6 @@ func New() *Config {
 	}
 	if os.Getenv("TITLE") == "" {
 		cfg.Title = "vpub"
-	}
-	if os.Getenv("DATABASE_FILE") == "" {
-		cfg.DatabaseFile = "./vpub.sqlite"
 	}
 	perPage, _ := strconv.Atoi(os.Getenv("PER_PAGE"))
 	cfg.PerPage = perPage
