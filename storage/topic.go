@@ -12,8 +12,8 @@ func (s *Storage) CreateTopic(topic model.Topic) (int64, error) {
 	if err != nil {
 		return topicId, err
 	}
-	if err := tx.QueryRowContext(ctx, `INSERT INTO topics (is_sticky, is_locked, board_id, post_id, is_sticky, is_locked) VALUES ($1, $2, $3, -1, $4, $5) RETURNING id`,
-		topic.IsSticky, topic.IsLocked, topic.BoardId, topic.IsSticky, topic.IsLocked).Scan(&topicId); err != nil {
+	if err := tx.QueryRowContext(ctx, `INSERT INTO topics (is_sticky, is_locked, board_id, post_id) VALUES ($1, $2, $3, -1) RETURNING id`,
+		topic.IsSticky, topic.IsLocked, topic.BoardId).Scan(&topicId); err != nil {
 		tx.Rollback()
 		return topicId, err
 	}
@@ -55,11 +55,9 @@ func (s *Storage) TopicsByBoardId(boardId int64) ([]model.Topic, bool, error) {
 		return nil, false, err
 	}
 	var topics []model.Topic
-	var updatedAt string
 	for rows.Next() {
 		var topic model.Topic
-		err := rows.Scan(&topic.Id, &topic.Post.Subject, &topic.Post.Content, &topic.Replies, &updatedAt, &topic.Post.User.Id, &topic.Post.User.Name, &topic.IsSticky)
-		topic.UpdatedAt, err = parseCreatedAt(updatedAt)
+		err := rows.Scan(&topic.Id, &topic.Post.Subject, &topic.Post.Content, &topic.Replies, &topic.UpdatedAt, &topic.Post.User.Id, &topic.Post.User.Name, &topic.IsSticky)
 		if err != nil {
 			return topics, false, err
 		}

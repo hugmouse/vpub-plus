@@ -1,13 +1,8 @@
 package storage
 
 import (
-	"time"
 	"vpub/model"
 )
-
-func parseCreatedAt(createdAt string) (time.Time, error) {
-	return time.Parse("2006-01-02 15:04:05", createdAt)
-}
 
 func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
 	rows, err := s.db.Query("select topic_id, post_id, subject, content, created_at, user_id, name, picture from postUsers where topic_id=$1", id)
@@ -17,12 +12,7 @@ func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
 	var posts []model.Post
 	for rows.Next() {
 		var post model.Post
-		var createdAtStr string
-		err := rows.Scan(&post.TopicId, &post.Id, &post.Subject, &post.Content, &createdAtStr, &post.User.Id, &post.User.Name, &post.User.Picture)
-		if err != nil {
-			return posts, false, err
-		}
-		post.CreatedAt, err = parseCreatedAt(createdAtStr)
+		err := rows.Scan(&post.TopicId, &post.Id, &post.Subject, &post.Content, &post.CreatedAt, &post.User.Id, &post.User.Name, &post.User.Picture)
 		if err != nil {
 			return posts, false, err
 		}
@@ -39,14 +29,10 @@ func (s *Storage) CreatePost(post model.Post) (int64, error) {
 
 func (s *Storage) PostById(id int64) (model.Post, error) {
 	var post model.Post
-	var createdAtStr string
-	var updatedAtStr string
-	err := s.db.QueryRow("select * from postUsers where post_id=$1", id).Scan(&post.TopicId, &post.Id, &post.Subject, &post.Content, &createdAtStr, &updatedAtStr, &post.User.Id, &post.User.Name, &post.User.Picture)
-	post.CreatedAt, err = parseCreatedAt(createdAtStr)
+	err := s.db.QueryRow("select * from postUsers where post_id=$1", id).Scan(&post.TopicId, &post.Id, &post.Subject, &post.Content, &post.CreatedAt, &post.UpdatedAt, &post.User.Id, &post.User.Name, &post.User.Picture)
 	if err != nil {
 		return post, err
 	}
-	post.UpdatedAt, err = parseCreatedAt(updatedAtStr)
 	return post, err
 }
 

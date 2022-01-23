@@ -28,12 +28,7 @@ func (s *Storage) Keys() ([]model.Key, error) {
 	var keys []model.Key
 	for rows.Next() {
 		var key model.Key
-		var createdAtStr string
-		err := rows.Scan(&key.Key, &createdAtStr)
-		if err != nil {
-			return keys, err
-		}
-		key.CreatedAt, err = parseCreatedAt(createdAtStr)
+		err := rows.Scan(&key.Key, &key.CreatedAt)
 		if err != nil {
 			return keys, err
 		}

@@ -24,12 +24,7 @@ func (s *Storage) Boards() ([]model.Board, error) {
 	var boards []model.Board
 	for rows.Next() {
 		var board model.Board
-		var updatedAtStr string
-		err := rows.Scan(&board.Id, &board.Forum.Name, &board.Name, &board.Description, &board.Topics, &board.Posts, &updatedAtStr)
-		if err != nil {
-			return boards, err
-		}
-		board.UpdatedAt, err = parseCreatedAt(updatedAtStr)
+		err := rows.Scan(&board.Id, &board.Forum.Name, &board.Name, &board.Description, &board.Topics, &board.Posts, &board.UpdatedAt)
 		if err != nil {
 			return boards, err
 		}
