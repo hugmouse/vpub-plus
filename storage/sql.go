@@ -112,61 +112,107 @@ create view forums_summary as
     from boards b
     left join forums f on f.id = forum_id
     order by f.position, b.position, f.id;
+
+-- Triggers
+
 --
--- CREATE TRIGGER increase_topic_count_on_board
---     BEFORE INSERT ON topics
--- BEGIN
---     UPDATE boards
---     SET topics_count = topics_count+1
---     WHERE id=new.board_id;
--- END;
+-- Increase topic and post count on boards
 --
--- CREATE TRIGGER increase_post_count_on_topics
---     AFTER INSERT ON posts
--- BEGIN
---     UPDATE topics
---     SET posts_count = topics.posts_count+1
---     WHERE id=new.topic_id;
--- END;
+CREATE OR REPLACE FUNCTION count_on_board() RETURNS TRIGGER AS $$
+BEGIN
+    IF (TG_OP = 'INSERT') THEN
+        UPDATE boards
+        SET topics_count = topics_count+1
+        WHERE id=new.board_id;
+        RETURN NEW;
+    ELSIF (TG_OP = 'UPDATE') THEN
+        UPDATE boards
+        SET topics_count = boards.topics_count-1,
+            posts_count = posts_count-(OLD.posts_count)
+        WHERE id=OLD.board_id;
+        UPDATE boards
+        SET topics_count = boards.topics_count+1,
+            posts_count = posts_count+(NEW.posts_count)
+        WHERE id=NEW.board_id;
+        RETURN NEW;
+    ELSIF (TG_OP = 'DELETE') THEN
+        UPDATE boards
+        SET topics_count = topics_count-1,
+            posts_count  = posts_count-1
+        WHERE id=old.board_id;
+        RETURN OLD;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER increase_topic_count_on_board
+    AFTER INSERT ON topics
+    FOR EACH ROW
+    EXECUTE PROCEDURE count_on_board();
+CREATE TRIGGER decrease_count_on_board
+    AFTER DELETE ON topics
+    FOR EACH ROW
+    EXECUTE PROCEDURE count_on_board();
+CREATE TRIGGER update_count_on_board
+    AFTER UPDATE of posts_count, board_id ON topics
+    FOR EACH ROW
+    EXECUTE PROCEDURE count_on_board();
 --
--- CREATE TRIGGER decrease_count_on_board
---     AFTER DELETE ON topics
--- BEGIN
---     UPDATE boards
---     SET topics_count = topics_count-1,
---         posts_count  = posts_count-1
---     WHERE id=old.board_id;
--- END;
+-- Count posts on topics
 --
--- CREATE TRIGGER decrease_post_count_on_topics
---     AFTER DELETE ON posts
--- BEGIN
---     UPDATE topics
---     SET posts_count = topics.posts_count-1
---     WHERE id=old.topic_id;
--- END;
+CREATE OR REPLACE FUNCTION count_posts_on_topic() RETURNS TRIGGER AS $$
+BEGIN
+    IF (TG_OP = 'INSERT') THEN
+        UPDATE topics
+        SET posts_count = topics.posts_count+1
+        WHERE id=NEW.topic_id;
+        RETURN NEW;
+    ELSIF (TG_OP = 'DELETE') THEN
+        UPDATE topics
+        SET posts_count = topics.posts_count-1
+        WHERE id=OLD.topic_id;
+        RETURN OLD;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER increase_post_count_on_topics
+    AFTER INSERT ON posts
+    FOR EACH ROW
+    EXECUTE PROCEDURE count_posts_on_topic();
+CREATE TRIGGER decrease_post_count_on_topics
+    AFTER DELETE ON posts
+    FOR EACH ROW
+    EXECUTE PROCEDURE count_posts_on_topic();
 --
--- CREATE TRIGGER count_post_on_board
---     AFTER UPDATE of posts_count, board_id ON topics
--- BEGIN
---     UPDATE boards
---     SET topics_count = boards.topics_count-1,
---         posts_count = posts_count-(old.posts_count)
---     WHERE id=old.board_id;
---     UPDATE boards
---     SET topics_count = boards.topics_count+1,
---         posts_count = posts_count+(new.posts_count)
---     WHERE id=new.board_id;
--- END;
+-- Get last updated_at time of a topic
 --
--- CREATE TRIGGER get_topic_updated_at
---     AFTER UPDATE of posts_count on topics
--- BEGIN
---     UPDATE topics
---     SET updated_at = (SELECT updated_at from posts where topic_id=old.id order by updated_at desc limit 1)
---     WHERE id=old.id;
--- end;
+CREATE OR REPLACE FUNCTION get_topic_updated_at() RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE topics
+    SET updated_at = (SELECT updated_at from posts where topic_id=old.id order by updated_at desc limit 1)
+    WHERE id=old.id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER get_topic_updated_at
+    AFTER UPDATE of posts_count on topics
+    FOR EACH ROW
+    EXECUTE PROCEDURE get_topic_updated_at();
 --
+-- Get last updated_at time of a board
+--
+CREATE OR REPLACE FUNCTION get_board_updated_at() RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE boards
+    SET updated_at = coalesce((SELECT updated_at from topics where board_id=old.id order by updated_at desc limit 1), boards.created_at)
+    WHERE id=old.id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER get_board_updated_at
+    AFTER UPDATE of posts_count on boards
+    FOR EACH ROW
+    EXECUTE PROCEDURE get_board_updated_at();
+
 -- CREATE TRIGGER get_board_updated_at
 --     AFTER UPDATE of posts_count on boards
 -- BEGIN
