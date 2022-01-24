@@ -24,6 +24,12 @@ ol.replies > li:not(:last-child) {
 }
 
 /* Posts ************************************************************/
+tr:nth-child(2n) {
+	background-color: whitesmoke;
+}
+.signature > * {
+	margin-bottom: 0;
+}
 .action {
 	margin: 1em 1em 1em 0;
 }

@@ -1,7 +1,27 @@
-{{ define "title" }}New Thread{{ end }}
+{{ define "title" }}New topic{{ end }}
 {{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content" }}
-<h2>New topic</h2>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/">All forums</a>
+            <ul>
+                <li>
+                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                    <ul>
+                        <li>
+                            <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+                            <ul>
+                                <li>New topic</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>New topic</h1>
 <form action="/boards/{{ .board.Id }}/save-topic" method="post">
     {{ .csrfField }}
     <input type="hidden" name="boardId" value="{{ .form.BoardId }}">

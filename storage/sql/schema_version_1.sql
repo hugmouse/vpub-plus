@@ -3,7 +3,7 @@ create table schema_version (
 );
 
 create table users (
-    id serial primary key,
+    id int primary key generated always as identity,
     name text unique CHECK (name <> '' and length(name) <= 15),
     hash text not null CHECK (hash <> ''),
     about TEXT not null DEFAULT '',
@@ -12,7 +12,7 @@ create table users (
 );
 
 create table keys (
-    id serial primary key,
+    id int primary key generated always as identity,
     key text unique check (key <> '' and length(key) <= 20),
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     user_id integer unique references users(id)
@@ -24,14 +24,14 @@ create table settings (
 );
 
 create table forums (
-    id serial primary key,
+    id int primary key generated always as identity,
     name text unique not null check ( name <> '' and length(name) < 120 ),
     position int not null,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 create table boards (
-    id serial primary key,
+    id int primary key generated always as identity,
     name text unique not null check ( name <> '' and length(name) < 120 ),
     position int not null,
     description text,
@@ -44,7 +44,7 @@ create table boards (
 );
 
 create table topics (
-    id serial primary key,
+    id int primary key generated always as identity,
     posts_count integer not null default 0,
     is_sticky boolean not null default false,
     is_locked boolean not null default false,
@@ -54,7 +54,7 @@ create table topics (
 );
 
 create table posts (
-    id serial primary key,
+    id int primary key generated always as identity,
     subject text not null check ( length(subject) <= 120 ),
     content text not null check ( length(content) <= 50000 ),
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -75,7 +75,8 @@ create view posts_full as
         p.updated_at,
         u.id as user_id,
         u.name,
-        u.picture
+        u.picture,
+        u.about
     from posts p
     left join users u on p.user_id = u.id;
 

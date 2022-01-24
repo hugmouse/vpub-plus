@@ -29,7 +29,7 @@
     </thead>
     <tbody>
     {{ range .posts }}
-    <tr>
+    <tr id="{{ .Id }}">
         <td class="col-author">
             {{ .User.Name }}
             <p><img src="{{ .User.Picture }}" width="50"/></p>
@@ -47,6 +47,9 @@
                 <hr/>
             </div>
             {{ gmi2html .Content }}
+            {{ if .User.About }}
+            <div class="signature">{{ gmi2html .User.About }}</div>
+            {{ end }}
         </td>
     </tr>
     {{ end }}

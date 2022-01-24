@@ -347,10 +347,30 @@ var TplMap = map[string]string{
         <input type="submit" value="Submit">
     </form>
 {{ end }}`,
-	"create_topic": `{{ define "title" }}New Thread{{ end }}
+	"create_topic": `{{ define "title" }}New topic{{ end }}
 {{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content" }}
-<h2>New topic</h2>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/">All forums</a>
+            <ul>
+                <li>
+                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                    <ul>
+                        <li>
+                            <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+                            <ul>
+                                <li>New topic</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>New topic</h1>
 <form action="/boards/{{ .board.Id }}/save-topic" method="post">
     {{ .csrfField }}
     <input type="hidden" name="boardId" value="{{ .form.BoardId }}">
@@ -426,7 +446,7 @@ var TplMap = map[string]string{
         {{ end }}
         {{ else }}
         <tr>
-            <td colspan="4">No boards yet.</td>
+            <td colspan="4">No forums yet.</td>
         </tr>
         {{ end }}
     </tbody>
@@ -666,7 +686,7 @@ var TplMap = map[string]string{
     </thead>
     <tbody>
     {{ range .posts }}
-    <tr>
+    <tr id="{{ .Id }}">
         <td class="col-author">
             {{ .User.Name }}
             <p><img src="{{ .User.Picture }}" width="50"/></p>
@@ -684,6 +704,9 @@ var TplMap = map[string]string{
                 <hr/>
             </div>
             {{ gmi2html .Content }}
+            {{ if .User.About }}
+            <div class="signature">{{ gmi2html .User.About }}</div>
+            {{ end }}
         </td>
     </tr>
     {{ end }}

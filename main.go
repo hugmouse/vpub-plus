@@ -2,7 +2,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"math/rand"
 	"time"
@@ -94,32 +93,32 @@ func main() {
 		}
 	}
 	//seedTestData(1000, 100, data)
-	if _, err := data.ForumById(1); err != nil {
-		fId, _ := data.CreateForum(model.Forum{
-			Name: "Test Area",
-		})
-		data.CreateBoard(model.Board{
-			Name:        "Testing",
-			Description: "Main testing area",
-			Forum:       model.Forum{Id: fId},
-		})
-		data.CreateBoard(model.Board{
-			Name:        "Secondary Testing",
-			Description: "Not the main, but still a testing area!",
-			Forum:       model.Forum{Id: fId},
-		})
-	}
-	_, err = data.CreateTopic(model.Topic{
-		BoardId: 1,
-		Post: model.Post{
-			User:    model.User{Id: 1},
-			Subject: "hello",
-			Content: "world",
-		},
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
+	//if _, err := data.ForumById(1); err != nil {
+	//	fId, _ := data.CreateForum(model.Forum{
+	//		Name: "Test Area",
+	//	})
+	//	data.CreateBoard(model.Board{
+	//		Name:        "Testing",
+	//		Description: "Main testing area",
+	//		Forum:       model.Forum{Id: fId},
+	//	})
+	//	data.CreateBoard(model.Board{
+	//		Name:        "Secondary Testing",
+	//		Description: "Not the main, but still a testing area!",
+	//		Forum:       model.Forum{Id: fId},
+	//	})
+	//}
+	//_, err = data.CreateTopic(model.Topic{
+	//	BoardId: 1,
+	//	Post: model.Post{
+	//		User:    model.User{Id: 1},
+	//		Subject: "hello",
+	//		Content: "world",
+	//	},
+	//})
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
 	//// Now let's add a post to a topic.
 	//pid, err := data.CreatePost(model.Post{
 	//	User:    model.User{Id: 1},

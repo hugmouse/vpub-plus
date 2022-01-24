@@ -167,19 +167,13 @@ var TplCommonMap = map[string]string{
             {{ end }}
         </select>
     </div>
-    <div class="field">
+    <div>
+        <input type="checkbox" id="sticky" name="sticky" {{ if .IsSticky }}checked{{ end }}>
         <label for="sticky">Sticky</label>
-        <select name="sticky" id="sticky">
-            <option value="false">false</option>
-            <option value="true" {{ if .IsSticky }}selected{{ end }}>true</option>
-        </select>
     </div>
-    <div class="field">
+    <div>
+        <input type="checkbox" id="locked" name="locked" {{ if .IsLocked }}checked{{ end }}>
         <label for="locked">Locked</label>
-        <select name="locked" id="locked">
-            <option value="false">false</option>
-            <option value="true" {{ if .IsLocked }}selected{{ end }}>true</option>
-        </select>
     </div>
 </details>
 {{ end }}`,

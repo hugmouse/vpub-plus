@@ -22,8 +22,8 @@ func NewTopicForm(r *http.Request) *TopicForm {
 	return &TopicForm{
 		BoardId:    BoardId,
 		PostForm:   NewPostForm(r),
-		IsSticky:   r.FormValue("sticky") == "true",
-		IsLocked:   r.FormValue("locked") == "true",
+		IsSticky:   r.FormValue("sticky") == "on",
+		IsLocked:   r.FormValue("locked") == "on",
 		NewBoardId: NewBoardId,
 	}
 }
