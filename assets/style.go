@@ -24,7 +24,7 @@ ol.replies > li:not(:last-child) {
 }
 
 /* Posts ************************************************************/
-tr:nth-child(2n) {
+.topic tr:nth-child(2n) {
 	background-color: whitesmoke;
 }
 .signature > * {

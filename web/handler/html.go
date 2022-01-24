@@ -679,7 +679,7 @@ var TplMap = map[string]string{
     </ul>
 </nav>
 <h1>{{ .topic.Post.Subject }}</h1>
-<table>
+<table class="topic">
     <thead>
         <th>Author</th>
         <th>Topic</th>

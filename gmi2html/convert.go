@@ -109,18 +109,6 @@ func Convert(gmi string) string {
 				clearUlMode(&ulMode, &rv)
 				clearLinkMode(&linkMode, &rv)
 				sane := sanitize(l)
-				//if urlRegexp.MatchString(sane) {
-				//	matches := urlRegexp.FindAllStringSubmatch(l, -1)
-				//	for _, m := range matches {
-				//		url := m[0]
-				//		ext := strings.ToLower(filepath.Ext(url))
-				//		if ext == ".gif" || ext == ".jpg" || ext == ".jpeg" || ext == ".png" {
-				//			sane = strings.Replace(sane, url, fmt.Sprintf("<img src=\"%s\"/>", url), 1)
-				//		} else {
-				//			sane = strings.Replace(sane, url, fmt.Sprintf("<a href=\"%s\" target=\"_blank\">%s</a>", url, url), 1)
-				//		}
-				//	}
-				//}
 				if imgRegexp.MatchString(sane) || linkRegexp.MatchString(sane) {
 					matches := imgRegexp.FindAllStringSubmatch(sane, -1)
 					for _, m := range matches {
