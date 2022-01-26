@@ -4,5 +4,4 @@ type Settings struct {
 	Name   string
 	Css    string
 	Footer string
-	Intro  string
 }

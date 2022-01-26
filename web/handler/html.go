@@ -425,8 +425,8 @@ var TplMap = map[string]string{
 {{ end }}
 `,
 	"index": `{{ define "content"}}
-{{ if .settings.Intro }}
-{{ html .settings.Intro }}
+{{ if .settings.Name }}
+<h1>{{ .settings.Name }}</h1>
 {{ else }}
 <h1>Forums</h1>
 {{ end }}

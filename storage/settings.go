@@ -6,18 +6,18 @@ func (s *Storage) Settings() (model.Settings, error) {
 	var settings model.Settings
 	err := s.db.QueryRow(`
         SELECT
-            name, css, footer, intro
+            name, css, footer
         FROM
             settings;
-    `).Scan(&settings.Name, &settings.Css, &settings.Footer, &settings.Intro)
+    `).Scan(&settings.Name, &settings.Css, &settings.Footer)
 	return settings, err
 }
 
 func (s *Storage) UpdateSettings(settings model.Settings) error {
-	stmt, err := s.db.Prepare(`UPDATE settings SET name=$1, css=$2, footer=$3, intro=$4;`)
+	stmt, err := s.db.Prepare(`UPDATE settings SET name=$1, css=$2, footer=$3;`)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(settings.Name, settings.Css, settings.Footer, settings.Intro)
+	_, err = stmt.Exec(settings.Name, settings.Css, settings.Footer)
 	return err
 }
