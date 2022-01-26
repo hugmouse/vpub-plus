@@ -46,9 +46,9 @@
                 {{ end }}
                 <hr/>
             </div>
-            {{ gmi2html .Content }}
+            {{ syntax .Content }}
             {{ if .User.About }}
-            <div class="signature">{{ gmi2html .User.About }}</div>
+            <div class="signature">{{ syntax .User.About }}</div>
             {{ end }}
         </td>
     </tr>

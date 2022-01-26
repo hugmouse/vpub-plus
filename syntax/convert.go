@@ -1,4 +1,4 @@
-package gmi2html
+package syntax
 
 import (
 	"fmt"
@@ -36,6 +36,27 @@ func clearUlMode(ulMode *bool, rv *[]string) {
 
 func sanitize(input string) string {
 	return html.EscapeString(input)
+}
+
+func processLinks(input string) string {
+	sane := sanitize(input)
+	if imgRegexp.MatchString(sane) || linkRegexp.MatchString(sane) {
+		matches := imgRegexp.FindAllStringSubmatch(sane, -1)
+		for _, m := range matches {
+			sane = strings.Replace(sane, m[0], fmt.Sprintf("<img src=\"%s\" alt=\"%s\"/>", m[2], m[1]), 1)
+		}
+		matches = linkRegexp.FindAllStringSubmatch(sane, -1)
+		for _, m := range matches {
+			sane = strings.Replace(sane, m[0], fmt.Sprintf("<a href=\"%s\" target=\"_blank\">%s</a>", m[2], m[1]), 1)
+		}
+	} else if urlRegexp.MatchString(sane) {
+		matches := urlRegexp.FindAllStringSubmatch(sane, -1)
+		for _, m := range matches {
+			url := m[0]
+			sane = strings.Replace(sane, url, fmt.Sprintf("<a href=\"%s\" target=\"_blank\">%s</a>", url, url), 1)
+		}
+	}
+	return sane
 }
 
 func Convert(gmi string) string {
@@ -99,32 +120,17 @@ func Convert(gmi string) string {
 			case bulletRegexp.MatchString(l):
 				clearLinkMode(&linkMode, &rv)
 				matches := bulletRegexp.FindStringSubmatch(l)
+				sane := processLinks(matches[1])
 				if ulMode {
-					rv = append(rv, "<li>"+sanitize(matches[1])+"</li>")
+					rv = append(rv, "<li>"+sane+"</li>")
 					continue
 				}
-				rv = append(rv, "<ul>\n<li>"+sanitize(matches[1])+"</li>")
+				rv = append(rv, "<ul>\n<li>"+sane+"</li>")
 				ulMode = true
 			default:
 				clearUlMode(&ulMode, &rv)
 				clearLinkMode(&linkMode, &rv)
-				sane := sanitize(l)
-				if imgRegexp.MatchString(sane) || linkRegexp.MatchString(sane) {
-					matches := imgRegexp.FindAllStringSubmatch(sane, -1)
-					for _, m := range matches {
-						sane = strings.Replace(sane, m[0], fmt.Sprintf("<img src=\"%s\" alt=\"%s\"/>", m[2], m[1]), 1)
-					}
-					matches = linkRegexp.FindAllStringSubmatch(sane, -1)
-					for _, m := range matches {
-						sane = strings.Replace(sane, m[0], fmt.Sprintf("<a href=\"%s\" target=\"_blank\">%s</a>", m[2], m[1]), 1)
-					}
-				} else if urlRegexp.MatchString(sane) {
-					matches := urlRegexp.FindAllStringSubmatch(l, -1)
-					for _, m := range matches {
-						url := m[0]
-						sane = strings.Replace(sane, url, fmt.Sprintf("<a href=\"%s\" target=\"_blank\">%s</a>", url, url), 1)
-					}
-				}
+				sane := processLinks(l)
 				if len(sane) != 0 {
 					rv = append(rv, "<p>"+sane+"</p>")
 				}

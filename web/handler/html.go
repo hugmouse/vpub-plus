@@ -333,7 +333,7 @@ var TplMap = map[string]string{
 {{ end }}`,
 	"confirm_remove_post": `{{ define "content" }}
     Are you sure you you want to delete the following post?
-    <p>{{ gmi2html .post.Content }}</p>
+    <p>{{ syntax .post.Content }}</p>
     <form action="/posts/{{ .post.Id }}/remove" method="post">
         {{ .csrfField }}
         <input type="submit" value="Submit">
@@ -341,7 +341,7 @@ var TplMap = map[string]string{
 {{ end }}`,
 	"confirm_remove_reply": `{{ define "content" }}
     Are you sure you you want to delete the following reply?
-    <p>{{ gmi2html .reply.Content }}</p>
+    <p>{{ syntax .reply.Content }}</p>
     <form action="/replies/{{ .reply.Id }}/remove" method="post">
         {{ .csrfField }}
         <input type="submit" value="Submit">
@@ -484,7 +484,7 @@ var TplMap = map[string]string{
             </span></li>
         </ul>
     </div>
-    <div class="content">{{ gmi2html .Reply.Content }}</div>
+    <div class="content">{{ syntax .Reply.Content }}</div>
     <p>
         <a href="/replies/{{ .Reply.Id }}">reply</a>
         <a href="/notifications/{{ .Id }}/mark-read">mark as read</a>
@@ -511,12 +511,12 @@ var TplMap = map[string]string{
 <!--<table class="thread">-->
 <!--    <tr>-->
 <!--        <td>{{ .post.User }}</td>-->
-<!--        <td>{{ gmi2html .content }}</td>-->
+<!--        <td>{{ syntax .content }}</td>-->
 <!--    </tr>-->
 <!--    {{ range .replies }}-->
 <!--    <tr>-->
 <!--        <td>{{ .User }}</td>-->
-<!--        <td>{{ gmi2html .Content }}</td>-->
+<!--        <td>{{ syntax .Content }}</td>-->
 <!--    </tr>-->
 <!--    {{ end }}-->
 <!--</table>-->
@@ -533,7 +533,7 @@ var TplMap = map[string]string{
 <!--        <table>-->
 <!--            <tr>-->
 <!--                <td class="post-aside">{{ .post.User }}</td>-->
-<!--                <td class="post-content">{{ gmi2html .content }}</td>-->
+<!--                <td class="post-content">{{ syntax .content }}</td>-->
 <!--            </tr>-->
 <!--        </table>-->
 <!--    </li>-->
@@ -542,7 +542,7 @@ var TplMap = map[string]string{
 <!--        <table>-->
 <!--            <tr>-->
 <!--                <td class="post-aside">{{ .User }}</td>-->
-<!--                <td class="post-content">{{ gmi2html .Content }}</td>-->
+<!--                <td class="post-content">{{ syntax .Content }}</td>-->
 <!--            </tr>-->
 <!--        </table>-->
 <!--    </li>-->
@@ -555,7 +555,7 @@ var TplMap = map[string]string{
             <p>{{ timeAgo .post.CreatedAt }}</p>
         </td>
         <td class="post-content">
-            {{ gmi2html .content }}
+            {{ syntax .content }}
         </td>
     </tr>
     {{ range .replies }}
@@ -565,7 +565,7 @@ var TplMap = map[string]string{
             <p>{{ timeAgo .CreatedAt }}</p>
         </td>
         <td class="post-content">
-            {{ gmi2html .Content }}
+            {{ syntax .Content }}
         </td>
     </tr>
     {{ end }}
@@ -587,7 +587,7 @@ var TplMap = map[string]string{
 <!--    </ul>-->
 <!--    {{ end }}-->
 <!--</div>-->
-<!--<div class="content">{{ gmi2html .content }}</div>-->
+<!--<div class="content">{{ syntax .content }}</div>-->
 <!--{{- if eq .logged .post.User }}-->
 <!--<p>-->
 <!--    <a href="/posts/{{ .post.Id }}/edit">Edit</a>-->
@@ -703,9 +703,9 @@ var TplMap = map[string]string{
                 {{ end }}
                 <hr/>
             </div>
-            {{ gmi2html .Content }}
+            {{ syntax .Content }}
             {{ if .User.About }}
-            <div class="signature">{{ gmi2html .User.About }}</div>
+            <div class="signature">{{ syntax .User.About }}</div>
             {{ end }}
         </td>
     </tr>
@@ -730,7 +730,7 @@ var TplMap = map[string]string{
 {{ end }}`,
 	"user_posts": `{{ define "content" }}
 <h1>{{ .user.Name }}</h1>
-<div class="content">{{ gmi2html .user.About }}</div>
+<div class="content">{{ syntax .user.About }}</div>
 <section class="posts">
 {{ template "posts" .posts }}
 

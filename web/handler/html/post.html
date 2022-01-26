@@ -3,12 +3,12 @@
 <!--<table class="thread">-->
 <!--    <tr>-->
 <!--        <td>{{ .post.User }}</td>-->
-<!--        <td>{{ gmi2html .content }}</td>-->
+<!--        <td>{{ syntax .content }}</td>-->
 <!--    </tr>-->
 <!--    {{ range .replies }}-->
 <!--    <tr>-->
 <!--        <td>{{ .User }}</td>-->
-<!--        <td>{{ gmi2html .Content }}</td>-->
+<!--        <td>{{ syntax .Content }}</td>-->
 <!--    </tr>-->
 <!--    {{ end }}-->
 <!--</table>-->
@@ -25,7 +25,7 @@
 <!--        <table>-->
 <!--            <tr>-->
 <!--                <td class="post-aside">{{ .post.User }}</td>-->
-<!--                <td class="post-content">{{ gmi2html .content }}</td>-->
+<!--                <td class="post-content">{{ syntax .content }}</td>-->
 <!--            </tr>-->
 <!--        </table>-->
 <!--    </li>-->
@@ -34,7 +34,7 @@
 <!--        <table>-->
 <!--            <tr>-->
 <!--                <td class="post-aside">{{ .User }}</td>-->
-<!--                <td class="post-content">{{ gmi2html .Content }}</td>-->
+<!--                <td class="post-content">{{ syntax .Content }}</td>-->
 <!--            </tr>-->
 <!--        </table>-->
 <!--    </li>-->
@@ -47,7 +47,7 @@
             <p>{{ timeAgo .post.CreatedAt }}</p>
         </td>
         <td class="post-content">
-            {{ gmi2html .content }}
+            {{ syntax .content }}
         </td>
     </tr>
     {{ range .replies }}
@@ -57,7 +57,7 @@
             <p>{{ timeAgo .CreatedAt }}</p>
         </td>
         <td class="post-content">
-            {{ gmi2html .Content }}
+            {{ syntax .Content }}
         </td>
     </tr>
     {{ end }}
@@ -79,7 +79,7 @@
 <!--    </ul>-->
 <!--    {{ end }}-->
 <!--</div>-->
-<!--<div class="content">{{ gmi2html .content }}</div>-->
+<!--<div class="content">{{ syntax .content }}</div>-->
 <!--{{- if eq .logged .post.User }}-->
 <!--<p>-->
 <!--    <a href="/posts/{{ .post.Id }}/edit">Edit</a>-->

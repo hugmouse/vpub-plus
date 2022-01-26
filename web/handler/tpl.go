@@ -5,8 +5,8 @@ import (
 	"html/template"
 	"io"
 	"time"
-	"vpub/gmi2html"
 	"vpub/model"
+	"vpub/syntax"
 )
 
 var views = make(map[string]*template.Template)
@@ -25,8 +25,8 @@ func (h *Handler) initTpl() {
 			"logged": func() bool {
 				return false
 			},
-			"gmi2html": func(gmi string) template.HTML {
-				return template.HTML(gmi2html.Convert(gmi))
+			"syntax": func(input string) template.HTML {
+				return template.HTML(syntax.Convert(input))
 			},
 			"iso8601": func(t time.Time) string {
 				return t.Format("2006-01-02")

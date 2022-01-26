@@ -135,9 +135,6 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user model.
 	post.Subject = postForm.Subject
 	post.Content = postForm.Content
 	post.User = user
-	//if postForm.NewBoardId != 0 {
-	//	post.BoardId = postForm.NewBoardId
-	//}
 	if err := post.Validate(); err != nil {
 		serverError(w, err)
 		return

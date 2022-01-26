@@ -8,7 +8,7 @@ package handler
 //	"path"
 //	"strconv"
 //	"time"
-//	"vpub/gmi2html"
+//	"vpub/syntax"
 //	"vpub/model"
 //)
 //
@@ -83,7 +83,7 @@ package handler
 //		},
 //		Content: &Text{
 //			Type: "html",
-//			Body: gmi2html.Convert(post.Content),
+//			Body: syntax.Convert(post.Content),
 //		},
 //	}
 //}
