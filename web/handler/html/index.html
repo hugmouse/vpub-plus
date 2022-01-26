@@ -1,5 +1,9 @@
 {{ define "content"}}
+{{ if .settings.Intro }}
+{{ html .settings.Intro }}
+{{ else }}
 <h1>Forums</h1>
+{{ end }}
 <table>
     <thead>
         <tr>

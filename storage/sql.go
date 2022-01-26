@@ -266,4 +266,7 @@ CREATE TRIGGER get_board_updated_at
 
 insert into settings (name) values ('vpub');
 insert into keys (key) values ('admin');`,
+	"schema_version_2": `alter table settings
+    add column intro text not null default '',
+    add column footer text not null default ''`,
 }

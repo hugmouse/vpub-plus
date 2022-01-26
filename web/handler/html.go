@@ -183,6 +183,14 @@ var TplMap = map[string]string{
         <input type="text" name="name" id="name" value="{{ .form.Name }}" autocomplete="off" maxlength="120" required autofocus/>
     </div>
     <div class="field">
+        <label for="intro">Intro</label>
+        <textarea class="editor" name="intro" id="intro">{{ .form.Intro }}</textarea>
+    </div>
+    <div class="field">
+        <label for="css">Footer</label>
+        <textarea class="editor" name="footer" id="footer">{{ .form.Footer }}</textarea>
+    </div>
+    <div class="field">
         <label for="css">CSS</label>
         <textarea class="editor" name="css" id="css">{{ .form.Css }}</textarea>
     </div>
@@ -417,7 +425,11 @@ var TplMap = map[string]string{
 {{ end }}
 `,
 	"index": `{{ define "content"}}
+{{ if .settings.Intro }}
+{{ html .settings.Intro }}
+{{ else }}
 <h1>Forums</h1>
+{{ end }}
 <table>
     <thead>
         <tr>

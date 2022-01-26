@@ -101,6 +101,8 @@ func (h *Handler) updateSettingsAdmin(w http.ResponseWriter, r *http.Request, us
 	var settings model.Settings
 	settings.Name = settingsForm.Name
 	settings.Css = settingsForm.Css
+	settings.Footer = settingsForm.Footer
+	settings.Intro = settingsForm.Intro
 	if err := h.storage.UpdateSettings(settings); err != nil {
 		serverError(w, err)
 		return
