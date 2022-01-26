@@ -12,7 +12,9 @@ var AssetsMap = map[string]string{
 }
 
 /* Lists ************************************************************/
-
+main {
+	margin-bottom: 1em;
+}
 ol.posts, ol.replies {
 	padding: 0;
 	list-style: none;

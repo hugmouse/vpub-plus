@@ -63,7 +63,9 @@ var TplCommonMap = map[string]string{
             {{ end }}
         </nav>
     </header>
+    <main>
     {{ template "content" . }}
+    </main>
     {{ if .settings.Footer }}
     <footer>
         {{ html .settings.Footer }}
