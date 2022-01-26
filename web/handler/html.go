@@ -180,7 +180,7 @@ var TplMap = map[string]string{
     {{ .csrfField }}
     <div class="field">
         <label for="name">Name</label>
-        <input type="text" name="name" id="name" value="{{ .form.Name }}" autocomplete="off" maxlength="120" required autofocus/>
+        <input type="text" name="name" id="name" value="{{ .form.Name }}" autocomplete="off" maxlength="120" autofocus/>
     </div>
     <div class="field">
         <label for="intro">Intro</label>
