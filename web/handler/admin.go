@@ -167,6 +167,7 @@ func (h *Handler) showEditForumView(w http.ResponseWriter, r *http.Request, user
 	forumForm := form.ForumForm{
 		Name:     forum.Name,
 		Position: forum.Position,
+		IsLocked: forum.IsLocked,
 	}
 	h.renderLayout(w, "admin_forum_edit", map[string]interface{}{
 		"forum":          forum,
@@ -185,6 +186,7 @@ func (h *Handler) updateForum(w http.ResponseWriter, r *http.Request, user model
 	forumForm := form.NewForumForm(r)
 	forum.Name = forumForm.Name
 	forum.Position = forumForm.Position
+	forum.IsLocked = forumForm.IsLocked
 	if err := h.storage.UpdateForum(forum); err != nil {
 		serverError(w, err)
 		return
@@ -245,6 +247,7 @@ func (h *Handler) saveForum(w http.ResponseWriter, r *http.Request, user model.U
 	forum := model.Forum{
 		Name:     forumForm.Name,
 		Position: forumForm.Position,
+		IsLocked: forumForm.IsLocked,
 	}
 	_, err := h.storage.CreateForum(forum)
 	if err != nil {

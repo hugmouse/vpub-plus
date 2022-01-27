@@ -5,4 +5,5 @@ type Forum struct {
 	Name     string
 	Boards   []Board
 	Position int64
+	IsLocked bool
 }

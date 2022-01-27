@@ -12,6 +12,9 @@
     </ul>
 </nav>
 <h1>{{ .forum.Name }}</h1>
+{{ if .forum.IsLocked }}
+<p>This forum is locked.</p>
+{{ end }}
 <table>
     <thead>
     <tr>

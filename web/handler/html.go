@@ -183,10 +183,6 @@ var TplMap = map[string]string{
         <input type="text" name="name" id="name" value="{{ .form.Name }}" autocomplete="off" maxlength="120" autofocus/>
     </div>
     <div class="field">
-        <label for="intro">Intro</label>
-        <textarea class="editor" name="intro" id="intro">{{ .form.Intro }}</textarea>
-    </div>
-    <div class="field">
         <label for="css">Footer</label>
         <textarea class="editor" name="footer" id="footer">{{ .form.Footer }}</textarea>
     </div>
@@ -259,8 +255,14 @@ var TplMap = map[string]string{
 </nav>
 <h1>{{ .board.Name }}</h1>
 
-{{ if .logged }}
-{{ if not .board.IsLocked }}
+{{ if logged }}
+{{ if .board.Forum.IsLocked }}
+<p>This forum is locked.</p>
+{{ end }}
+{{ if .board.IsLocked }}
+<p>This board is locked.</p>
+{{ end }}
+{{ if or (and (not .board.IsLocked) (not .board.Forum.IsLocked)) .logged.IsAdmin }}
 <form action="/boards/{{ .board.Id }}/new-topic" method="get" class="action">
     <input type="submit" value="New topic">
 </form>
@@ -310,6 +312,9 @@ var TplMap = map[string]string{
     </ul>
 </nav>
 <h1>{{ .forum.Name }}</h1>
+{{ if .forum.IsLocked }}
+<p>This forum is locked.</p>
+{{ end }}
 <table>
     <thead>
     <tr>
@@ -724,7 +729,16 @@ var TplMap = map[string]string{
     {{ end }}
     </tbody>
 </table>
-{{ if not .topic.IsLocked }}
+{{ if .board.Forum.IsLocked }}
+<p>This forum is locked.</p>
+{{ end }}
+{{ if .board.IsLocked }}
+<p>This board is locked.</p>
+{{ end }}
+{{ if .topic.IsLocked }}
+<p>This topic is locked.</p>
+{{ end }}
+{{ if or (and (not .topic.IsLocked) (not .board.IsLocked) (not .board.Forum.IsLocked)) .logged.IsAdmin }}
 <section style="margin-top: 1em;">
     <form action="/posts/save" method="post">
         {{ .csrfField }}

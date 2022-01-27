@@ -11,7 +11,8 @@ SELECT
        description,
        b.position,
        forum_id,
-       is_locked,
+       f.is_locked as forum_locked,
+       b.is_locked as board_locked,
        f.name
 from boards b inner join forums f on f.id = b.forum_id WHERE b.id=$1
 `, id).Scan(
@@ -20,6 +21,7 @@ from boards b inner join forums f on f.id = b.forum_id WHERE b.id=$1
 		&board.Description,
 		&board.Position,
 		&board.Forum.Id,
+		&board.Forum.IsLocked,
 		&board.IsLocked,
 		&board.Forum.Name,
 	)

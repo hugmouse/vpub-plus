@@ -55,7 +55,16 @@
     {{ end }}
     </tbody>
 </table>
-{{ if not .topic.IsLocked }}
+{{ if .board.Forum.IsLocked }}
+<p>This forum is locked.</p>
+{{ end }}
+{{ if .board.IsLocked }}
+<p>This board is locked.</p>
+{{ end }}
+{{ if .topic.IsLocked }}
+<p>This topic is locked.</p>
+{{ end }}
+{{ if or (and (not .topic.IsLocked) (not .board.IsLocked) (not .board.Forum.IsLocked)) .logged.IsAdmin }}
 <section style="margin-top: 1em;">
     <form action="/posts/save" method="post">
         {{ .csrfField }}

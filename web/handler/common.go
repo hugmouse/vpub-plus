@@ -41,6 +41,10 @@ var TplCommonMap = map[string]string{
   <label for="name">Position</label>
   <input type="number" name="position" id="position" value="{{ .Position }}" autocomplete="off" required/>
 </div>
+<div>
+  <input type="checkbox" id="locked" name="locked" {{ if .IsLocked }}checked{{ end }}>
+  <label for="locked">Locked</label>
+</div>
 {{ end }}`,
 	"layout": `{{ define "layout" }}
 <!DOCTYPE html>

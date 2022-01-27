@@ -121,7 +121,12 @@ DECLARE
     _is_locked  bool;
     _board_id   int;
     _posts      int;
+    _is_admin bool;
 BEGIN
+    SELECT is_admin  into _is_admin from users where id=NEW.user_id;
+    IF (_is_admin) THEN
+        RETURN NEW;
+    end if;
     SELECT board_id into _board_id from topics where id=NEW.topic_id;
     SELECT is_locked into _is_locked from boards where id=_board_id;
     IF (_is_locked) THEN
@@ -142,25 +147,6 @@ CREATE TRIGGER check_is_locked_topic
     BEFORE INSERT on posts
     FOR EACH ROW
     EXECUTE PROCEDURE check_is_locked();
-
--- CREATE TRIGGER check_is_locked_before_insert
---     BEFORE INSERT ON posts
--- BEGIN
--- select
---     case
---         when is_locked is true then
---             raise (abort, 'Topic is locked')
---         end
--- from posts
--- where id=new.topic_id;
--- select
---     case
---         when is_locked is true then
---             raise (abort, 'Board is locked')
---         end
--- from boards
--- where id=new.board_id;
--- END;
 --
 -- Increase topic and post count on boards
 --

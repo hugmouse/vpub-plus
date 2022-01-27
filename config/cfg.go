@@ -34,9 +34,6 @@ func New() *Config {
 	if os.Getenv("PORT") == "" {
 		cfg.Port = "8080"
 	}
-	if os.Getenv("TITLE") == "" {
-		cfg.Title = "vpub"
-	}
 	perPage, _ := strconv.Atoi(os.Getenv("PER_PAGE"))
 	cfg.PerPage = perPage
 	if os.Getenv("PER_PAGE") == "" {
