@@ -753,6 +753,7 @@ var TplMap = map[string]string{
             </div>
             {{ syntax .Content }}
             {{ if .User.About }}
+            <hr>
             <div class="signature">{{ syntax .User.About }}</div>
             {{ end }}
         </td>
