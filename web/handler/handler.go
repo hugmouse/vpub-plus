@@ -113,6 +113,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Ha
 
 	// Forums
 	router.HandleFunc("/forums/{forumId}", h.showForumView).Methods(http.MethodGet)
+	router.HandleFunc("/posts", h.showPostsView).Methods(http.MethodGet)
 
 	// Topic
 	router.HandleFunc("/topics/{topicId}", h.showTopicView).Methods(http.MethodGet)

@@ -86,6 +86,21 @@ func (h *Handler) showForumView(w http.ResponseWriter, r *http.Request) {
 	}, user)
 }
 
+func (h *Handler) showPostsView(w http.ResponseWriter, r *http.Request) {
+	user, _ := h.session.Get(r)
+
+	posts, _, err := h.storage.Posts()
+	if err != nil {
+		notFound(w)
+		return
+	}
+
+	h.renderLayout(w, "posts", map[string]interface{}{
+		"posts":   posts,
+		"hasMore": "",
+	}, user)
+}
+
 func (h *Handler) showBoardView(w http.ResponseWriter, r *http.Request) {
 	user, _ := h.session.Get(r)
 

@@ -622,6 +622,37 @@ var TplMap = map[string]string{
 <!--{{ end }}-->
 <!--{{ template "reply" .replies }}-->
 {{ end }}`,
+	"posts": `{{ define "content" }}
+<h1>Posts</h1>
+
+
+<section>
+    <table>
+        <thead>
+        <tr>
+            <th class="grow">Subject</th>
+            <th>Author</th>
+            <th>Posted</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{ if .posts }}
+        {{ range .posts }}
+        <tr>
+        <td colspan="grow"><a href="/topics/{{ .TopicId }}#{{ .Id }}">{{ .Subject }}</a></td>
+        <td class="center"><a href="/~{{ .User.Id }}">{{ .User.Name }}</a></td>
+        <td class="center">{{ iso8601 .CreatedAt }}</td>
+        </tr>
+        {{ end }}
+        {{ else }}
+        <tr>
+            <td colspan="4">No posts yet.</td>
+        </tr>
+        {{ end }}
+        </tbody>
+    </table>
+</section>
+{{ end }}`,
 	"register": `{{ define "title" }}Register{{ end }}
 
 {{ define "content" }}

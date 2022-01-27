@@ -21,6 +21,23 @@ func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
 	return posts, false, nil
 }
 
+func (s *Storage) Posts() ([]model.Post, bool, error) {
+	rows, err := s.db.Query("select topic_id, post_id, subject, created_at, user_id, name from posts_full order by created_at desc")
+	if err != nil {
+		return nil, false, err
+	}
+	var posts []model.Post
+	for rows.Next() {
+		var post model.Post
+		err := rows.Scan(&post.TopicId, &post.Id, &post.Subject, &post.CreatedAt, &post.User.Id, &post.User.Name)
+		if err != nil {
+			return posts, false, err
+		}
+		posts = append(posts, post)
+	}
+	return posts, false, nil
+}
+
 func (s *Storage) CreatePost(post model.Post) (int64, error) {
 	var id int64
 	err := s.db.QueryRow(`INSERT INTO posts (subject, content, user_id, topic_id) VALUES ($1, $2, $3, $4) returning id`, post.Subject, post.Content, post.User.Id, post.TopicId).Scan(&id)
