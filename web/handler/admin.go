@@ -87,8 +87,9 @@ func (h *Handler) showAdminSettingsView(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 	settingsForm := form.SettingsForm{
-		Name: settings.Name,
-		Css:  settings.Css,
+		Name:   settings.Name,
+		Css:    settings.Css,
+		Footer: settings.Footer,
 	}
 	h.renderLayout(w, "admin_settings_edit", map[string]interface{}{
 		"form":           settingsForm,
