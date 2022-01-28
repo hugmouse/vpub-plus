@@ -1,7 +1,21 @@
-{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a>{{ end }}
 {{ define "title" }}New forum{{ end }}
 {{ define "content" }}
-<h1><a href="/admin">Admin</a> > <a href="/admin/forums">Forums</a> > Create forum</h1>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/admin">Admin</a>
+            <ul>
+                <li>
+                    <a href="/admin/forums">Forums</a>
+                    <ul>
+                        <li>Create forum</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>Create forum</h1>
 <form action="/admin/forums/save" method="post">
     {{ .csrfField }}
     {{ template "forum_form" .form }}

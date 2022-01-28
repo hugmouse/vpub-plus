@@ -1,7 +1,18 @@
-{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Keys{{ end }}
 {{ define "title" }}Keys{{ end }}
 {{ define "content" }}
-<h1><a href="/admin">Admin</a> > Keys</h1>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/admin">Admin</a>
+            <ul>
+                <li>
+                    Keys
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>Keys</h1>
 <form action="/admin/keys/save" method="post" class="action">
     {{ .csrfField }}
     <input type="submit" value="Create key">

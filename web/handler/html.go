@@ -37,7 +37,19 @@ var TplMap = map[string]string{
 </nav>
 {{ end }}`,
 	"admin_board": `{{ define "content"}}
-<h1><a href="/admin">Admin</a> > Boards</h1>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/admin">Admin</a>
+            <ul>
+                <li>
+                    Boards
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>Boards</h1>
 <p>
     {{ if .hasForums }}
     <a href="/admin/boards/new">New board</a>
@@ -75,10 +87,24 @@ var TplMap = map[string]string{
     </tbody>
 </table>
 {{ end }}`,
-	"admin_board_create": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a>{{ end }}
-{{ define "title" }}New board{{ end }}
+	"admin_board_create": `{{ define "title" }}New board{{ end }}
 {{ define "content" }}
-<h1><a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a> > Create board</h1>
+<nav class="breadcrumb">
+  <ul>
+    <li>
+      <a href="/admin">Admin</a>
+      <ul>
+        <li>
+          <a href="/admin/boards">Boards</a>
+          <ul>
+            <li>Create board</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+<h1>Create board</h1>
 <form action="/admin/boards/save" method="post">
   {{ .csrfField }}
   {{ template "board_form" .form }}
@@ -86,10 +112,24 @@ var TplMap = map[string]string{
 </form>
 {{ end }}
 `,
-	"admin_board_edit": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a>{{ end }}
-{{ define "title" }}Edit board{{ end }}
+	"admin_board_edit": `{{ define "title" }}Edit board{{ end }}
 {{ define "content" }}
-<h1><a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a> > Edit board</h1>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/admin">Admin</a>
+            <ul>
+                <li>
+                    <a href="/admin/boards">Boards</a>
+                    <ul>
+                        <li>Edit board</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>Edit board</h1>
 <form action="/admin/boards/{{ .board.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "board_form" .form }}
@@ -98,7 +138,19 @@ var TplMap = map[string]string{
 {{ end }}
 `,
 	"admin_forum": `{{ define "content"}}
-<h1><a href="/admin">Admin</a> > Forums</h1>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/admin">Admin</a>
+            <ul>
+                <li>
+                    Forums
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>Forums</h1>
 <p><a href="/admin/forums/new">New forum</a></p>
 <table>
     <thead>
@@ -125,10 +177,24 @@ var TplMap = map[string]string{
     </tbody>
 </table>
 {{ end }}`,
-	"admin_forum_create": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a>{{ end }}
-{{ define "title" }}New forum{{ end }}
+	"admin_forum_create": `{{ define "title" }}New forum{{ end }}
 {{ define "content" }}
-<h1><a href="/admin">Admin</a> > <a href="/admin/forums">Forums</a> > Create forum</h1>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/admin">Admin</a>
+            <ul>
+                <li>
+                    <a href="/admin/forums">Forums</a>
+                    <ul>
+                        <li>Create forum</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>Create forum</h1>
 <form action="/admin/forums/save" method="post">
     {{ .csrfField }}
     {{ template "forum_form" .form }}
@@ -138,7 +204,22 @@ var TplMap = map[string]string{
 `,
 	"admin_forum_edit": `{{ define "title" }}Edit forum{{ end }}
 {{ define "content" }}
-<h1><a href="/admin">Admin</a> > <a href="/admin/forums">Forums</a> > Edit forum</h1>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/admin">Admin</a>
+            <ul>
+                <li>
+                    <a href="/admin/forums">Forums</a>
+                    <ul>
+                        <li>Edit forum</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>Edit forum</h1>
 <form action="/admin/forums/{{ .forum.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "forum_form" .form }}
@@ -146,10 +227,21 @@ var TplMap = map[string]string{
 </form>
 {{ end }}
 `,
-	"admin_keys": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Keys{{ end }}
-{{ define "title" }}Keys{{ end }}
+	"admin_keys": `{{ define "title" }}Keys{{ end }}
 {{ define "content" }}
-<h1><a href="/admin">Admin</a> > Keys</h1>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/admin">Admin</a>
+            <ul>
+                <li>
+                    Keys
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>Keys</h1>
 <form action="/admin/keys/save" method="post" class="action">
     {{ .csrfField }}
     <input type="submit" value="Create key">
@@ -175,7 +267,19 @@ var TplMap = map[string]string{
 `,
 	"admin_settings_edit": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Settings{{ end }}
 {{ define "content"}}
-<h1><a href="/admin">Admin</a> > Edit Settings</h1>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/admin">Admin</a>
+            <ul>
+                <li>
+                    Edit Settings
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>Edit Settings</h1>
 <form action="/admin/settings/update" method="post">
     {{ .csrfField }}
     <div class="field">
@@ -194,9 +298,18 @@ var TplMap = map[string]string{
 </form>
 </table>
 {{ end }}`,
-	"admin_user": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Users{{ end }}
-{{ define "content"}}
-<h1><a href="/admin">Admin</a> > Users</h1>
+	"admin_user": `{{ define "content"}}
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/admin">Admin</a>
+            <ul>
+                <li>Users</li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>Users</h1>
 <table>
     <thead>
     <tr>
@@ -218,10 +331,24 @@ var TplMap = map[string]string{
     </tbody>
 </table>
 {{ end }}`,
-	"admin_user_edit": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/users">Users</a>{{ end }}
-{{ define "title" }}Edit user{{ end }}
+	"admin_user_edit": `{{ define "title" }}Edit user{{ end }}
 {{ define "content" }}
-<h2>Edit user</h2>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/admin">Admin</a>
+            <ul>
+                <li>
+                    <a href="/admin/users">Users</a>
+                    <ul>
+                        <li>Edit users</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>Edit user</h1>
 <form action="/admin/users/{{ .user.Name }}/update" method="post">
     {{ .csrfField }}
     <div class="field">
@@ -472,7 +599,7 @@ var TplMap = map[string]string{
 	"login": `{{ define "title" }}Login{{ end }}
 
 {{ define "content" }}
-<h2>Login</h2>
+<h1>Login</h1>
 <form action="/login" method="post" class="auth-form">
     {{ .csrfField }}
     <div class="field">
@@ -656,36 +783,36 @@ var TplMap = map[string]string{
 	"register": `{{ define "title" }}Register{{ end }}
 
 {{ define "content" }}
-    <h2>Register</h2>
-    {{ if .error }}
-    <p class="error">{{ .error }}</p>
-    {{ end }}
-    <form action="/register" method="post" class="auth-form">
-        {{ .csrfField }}
-        <div class="field">
-            <label for="name">Username</label>
-            <input type="text" id="name" name="name" autocomplete="off" value="{{ .form.Username }}" maxlength="15"/>
-        </div>
-        <div class="field">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password"/>
-        </div>
-        <div class="field">
-            <label for="confirm">Confirm password</label>
-            <input type="password" id="confirm" name="confirm" required/>
-        </div>
-        <div class="field">
-            <label for="key">Key</label>
-            <input type="text" id="key" name="key"/>
-        </div>
-        <input type="submit" value="Submit">
-    </form>
+<h1>Register</h1>
+{{ if .error }}
+<p class="error">{{ .error }}</p>
+{{ end }}
+<form action="/register" method="post" class="auth-form">
+    {{ .csrfField }}
+    <div class="field">
+        <label for="name">Username</label>
+        <input type="text" id="name" name="name" autocomplete="off" value="{{ .form.Username }}" maxlength="15"/>
+    </div>
+    <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password"/>
+    </div>
+    <div class="field">
+        <label for="confirm">Confirm password</label>
+        <input type="password" id="confirm" name="confirm" required/>
+    </div>
+    <div class="field">
+        <label for="key">Key</label>
+        <input type="text" id="key" name="key"/>
+    </div>
+    <input type="submit" value="Submit">
+</form>
 {{ end }}
 `,
 	"reset_password": `{{ define "title" }}Reset password{{ end }}
 
 {{ define "content" }}
-<h2>Reset password</h2>
+<h1>Reset password</h1>
 {{ if .error }}
 <p class="error">{{ .error }}</p>
 {{ end }}

@@ -1,5 +1,17 @@
 {{ define "content"}}
-<h1><a href="/admin">Admin</a> > Boards</h1>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/admin">Admin</a>
+            <ul>
+                <li>
+                    Boards
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>Boards</h1>
 <p>
     {{ if .hasForums }}
     <a href="/admin/boards/new">New board</a>

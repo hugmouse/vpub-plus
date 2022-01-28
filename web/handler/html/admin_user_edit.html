@@ -1,7 +1,21 @@
-{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/users">Users</a>{{ end }}
 {{ define "title" }}Edit user{{ end }}
 {{ define "content" }}
-<h2>Edit user</h2>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/admin">Admin</a>
+            <ul>
+                <li>
+                    <a href="/admin/users">Users</a>
+                    <ul>
+                        <li>Edit users</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>Edit user</h1>
 <form action="/admin/users/{{ .user.Name }}/update" method="post">
     {{ .csrfField }}
     <div class="field">

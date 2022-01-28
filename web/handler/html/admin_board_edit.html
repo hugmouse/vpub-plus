@@ -1,7 +1,21 @@
-{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a>{{ end }}
 {{ define "title" }}Edit board{{ end }}
 {{ define "content" }}
-<h1><a href="/admin">Admin</a> > <a href="/admin/boards">Boards</a> > Edit board</h1>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/admin">Admin</a>
+            <ul>
+                <li>
+                    <a href="/admin/boards">Boards</a>
+                    <ul>
+                        <li>Edit board</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>Edit board</h1>
 <form action="/admin/boards/{{ .board.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "board_form" .form }}

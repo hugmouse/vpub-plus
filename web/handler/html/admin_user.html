@@ -1,6 +1,15 @@
-{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Users{{ end }}
 {{ define "content"}}
-<h1><a href="/admin">Admin</a> > Users</h1>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/admin">Admin</a>
+            <ul>
+                <li>Users</li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<h1>Users</h1>
 <table>
     <thead>
     <tr>
