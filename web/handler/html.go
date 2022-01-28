@@ -274,6 +274,7 @@ var TplMap = map[string]string{
         <thead>
         <tr>
             <th class="grow">Subject</th>
+            <th>Author</th>
             <th>Replies</th>
             <th>Updated</th>
         </tr>
@@ -282,7 +283,8 @@ var TplMap = map[string]string{
         {{ if .topics }}
         {{ range .topics }}
         <tr{{ if .IsSticky }} class="sticky"{{ end }}>
-            <td colspan="grow"><a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a><br>{{ .Post.User.Name }}</td>
+            <td colspan="grow"><a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a></td>
+            <td class="center"><a href="/~{{ .Post.User.Id }}">{{ .Post.User.Name }}</a></td>
             <td class="center">{{ .Replies }}</td>
             <td class="center">{{ iso8601 .UpdatedAt }}</td>
         </tr>
