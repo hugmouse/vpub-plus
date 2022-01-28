@@ -87,9 +87,10 @@ func (h *Handler) showAdminSettingsView(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 	settingsForm := form.SettingsForm{
-		Name:   settings.Name,
-		Css:    settings.Css,
-		Footer: settings.Footer,
+		Name:    settings.Name,
+		Css:     settings.Css,
+		Footer:  settings.Footer,
+		PerPage: settings.PerPage,
 	}
 	h.renderLayout(w, "admin_settings_edit", map[string]interface{}{
 		"form":           settingsForm,
@@ -103,6 +104,7 @@ func (h *Handler) updateSettingsAdmin(w http.ResponseWriter, r *http.Request, us
 	settings.Name = settingsForm.Name
 	settings.Css = settingsForm.Css
 	settings.Footer = settingsForm.Footer
+	settings.PerPage = settingsForm.PerPage
 	if err := h.storage.UpdateSettings(settings); err != nil {
 		serverError(w, err)
 		return

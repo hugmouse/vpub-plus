@@ -64,6 +64,7 @@
 {{ if .topic.IsLocked }}
 <p>This topic is locked.</p>
 {{ end }}
+{{ if logged }}
 {{ if or (and (not .topic.IsLocked) (not .board.IsLocked) (not .board.Forum.IsLocked)) .logged.IsAdmin }}
 <section style="margin-top: 1em;">
     <form action="/posts/save" method="post">
@@ -78,5 +79,6 @@
         <input type="submit" value="Reply">
     </form>
 </section>
+{{ end }}
 {{ end }}
 {{ end }}

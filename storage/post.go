@@ -21,12 +21,27 @@ func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
 	return posts, false, nil
 }
 
-func (s *Storage) Posts() ([]model.Post, bool, error) {
-	rows, err := s.db.Query("select topic_id, post_id, subject, created_at, user_id, name from posts_full order by created_at desc")
+func (s *Storage) Posts(page int64) ([]model.Post, bool, error) {
+	var posts []model.Post
+	settings, err := s.Settings()
+	if err != nil {
+		return posts, false, err
+	}
+	rows, err := s.db.Query(`
+select
+       topic_id,
+       post_id,
+       subject,
+       created_at,
+       user_id,
+       name
+from posts_full 
+order by created_at desc
+offset $1
+limit $2`, settings.PerPage*(page-1), settings.PerPage+1)
 	if err != nil {
 		return nil, false, err
 	}
-	var posts []model.Post
 	for rows.Next() {
 		var post model.Post
 		err := rows.Scan(&post.TopicId, &post.Id, &post.Subject, &post.CreatedAt, &post.User.Id, &post.User.Name)
@@ -34,6 +49,9 @@ func (s *Storage) Posts() ([]model.Post, bool, error) {
 			return posts, false, err
 		}
 		posts = append(posts, post)
+	}
+	if len(posts) > int(settings.PerPage) {
+		return posts[0:settings.PerPage], true, err
 	}
 	return posts, false, nil
 }

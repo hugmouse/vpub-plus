@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/csrf"
 	"net/http"
+	"strconv"
 	"vpub/model"
 	"vpub/web/handler/form"
 )
@@ -88,8 +89,12 @@ func (h *Handler) showForumView(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) showPostsView(w http.ResponseWriter, r *http.Request) {
 	user, _ := h.session.Get(r)
+	var page int64 = 1
+	if val, ok := r.URL.Query()["page"]; ok && len(val[0]) == 1 {
+		page, _ = strconv.ParseInt(val[0], 10, 64)
+	}
 
-	posts, _, err := h.storage.Posts()
+	posts, hasMore, err := h.storage.Posts(page)
 	if err != nil {
 		notFound(w)
 		return
@@ -97,7 +102,8 @@ func (h *Handler) showPostsView(w http.ResponseWriter, r *http.Request) {
 
 	h.renderLayout(w, "posts", map[string]interface{}{
 		"posts":   posts,
-		"hasMore": "",
+		"hasMore": hasMore,
+		"page":    page,
 	}, user)
 }
 

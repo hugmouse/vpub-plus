@@ -27,6 +27,10 @@
         <label for="css">CSS</label>
         <textarea class="editor" name="css" id="css">{{ .form.Css }}</textarea>
     </div>
+    <div class="field">
+        <label for="per-page">Per page</label>
+        <input type="number" name="per-page" id="per-page" value="{{ .form.PerPage }}" autocomplete="off" required/>
+    </div>
     <input type="submit" value="Submit">
 </form>
 </table>

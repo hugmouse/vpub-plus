@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-const schemaVersion = 3
+const schemaVersion = 4
 
 func Migrate(db *sql.DB) {
 	var currentVersion int

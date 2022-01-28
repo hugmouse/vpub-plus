@@ -1,7 +1,8 @@
 package model
 
 type Settings struct {
-	Name   string
-	Css    string
-	Footer string
+	Name    string
+	Css     string
+	Footer  string
+	PerPage int64
 }

@@ -294,6 +294,10 @@ var TplMap = map[string]string{
         <label for="css">CSS</label>
         <textarea class="editor" name="css" id="css">{{ .form.Css }}</textarea>
     </div>
+    <div class="field">
+        <label for="per-page">Per page</label>
+        <input type="number" name="per-page" id="per-page" value="{{ .form.PerPage }}" autocomplete="off" required/>
+    </div>
     <input type="submit" value="Submit">
 </form>
 </table>
@@ -778,6 +782,16 @@ var TplMap = map[string]string{
         {{ end }}
         </tbody>
     </table>
+    {{ if or (ne 1 .page) .hasMore }}
+    <p>
+    {{ if ne 1 .page }}
+    <a href="/posts?page={{ dec .page }}">Previous page</a>
+    {{ end }}
+    {{ if .hasMore }}
+    <a href="/posts?page={{ inc .page }}">Next page</a>
+    {{ end }}
+    </p>
+    {{ end }}
 </section>
 {{ end }}`,
 	"register": `{{ define "title" }}Register{{ end }}
@@ -896,6 +910,7 @@ var TplMap = map[string]string{
 {{ if .topic.IsLocked }}
 <p>This topic is locked.</p>
 {{ end }}
+{{ if logged }}
 {{ if or (and (not .topic.IsLocked) (not .board.IsLocked) (not .board.Forum.IsLocked)) .logged.IsAdmin }}
 <section style="margin-top: 1em;">
     <form action="/posts/save" method="post">
@@ -910,6 +925,7 @@ var TplMap = map[string]string{
         <input type="submit" value="Reply">
     </form>
 </section>
+{{ end }}
 {{ end }}
 {{ end }}`,
 	"user_posts": `{{ define "content" }}

@@ -65,6 +65,12 @@ func (h *Handler) initTpl() {
 					return fmt.Sprintf("%d days ago", days)
 				}
 			},
+			"inc": func(v int64) int64 {
+				return v + 1
+			},
+			"dec": func(v int64) int64 {
+				return v - 1
+			},
 		}).Parse(commonTemplates + content))
 	}
 }
