@@ -12,6 +12,14 @@ var AssetsMap = map[string]string{
 }
 
 /* Lists ************************************************************/
+.errors {
+	background-color: mistyrose;
+	color: red;
+}
+.info {
+	background-color: palegreen;
+	color: green;
+}
 .topic img {
 	max-width: 100%;
 }

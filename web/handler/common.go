@@ -67,8 +67,24 @@ var TplCommonMap = map[string]string{
             {{ end }}
         </nav>
     </header>
-    <p>ERRORS: {{ .errors }}</p>
-    <p>INFO: {{ .info }}</p>
+    {{ if .errors }}
+    <div class="errors flash">
+        <ul>
+        {{ range .errors }}
+        <li>{{ . }}</li>
+        {{ end }}
+        </ul>
+    </div>
+    {{ end }}
+    {{ if .info }}
+    <div class="info flash">
+    <ul>
+        {{ range .info }}
+        <li>{{ . }}</li>
+        {{ end }}
+    </ul>
+    </div>
+    {{ end }}
     <main>
     {{ template "content" . }}
     </main>
