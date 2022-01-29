@@ -12,7 +12,7 @@ var AssetsMap = map[string]string{
 }
 
 /* Lists ************************************************************/
-topic img {
+.topic img {
 	max-width: 100%;
 }
 
