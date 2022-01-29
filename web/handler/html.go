@@ -427,6 +427,7 @@ var TplMap = map[string]string{
         {{ end }}
         </tbody>
     </table>
+    {{ template "pagination" .pagination }}
 </section>
 {{ end }}`,
 	"boards": `{{ define "content"}}
@@ -782,16 +783,7 @@ var TplMap = map[string]string{
         {{ end }}
         </tbody>
     </table>
-    {{ if or (ne 1 .page) .hasMore }}
-    <p>
-    {{ if ne 1 .page }}
-    <a href="/posts?page={{ dec .page }}">Previous page</a>
-    {{ end }}
-    {{ if .hasMore }}
-    <a href="/posts?page={{ inc .page }}">Next page</a>
-    {{ end }}
-    </p>
-    {{ end }}
+    {{ template "pagination" .pagination }}
 </section>
 {{ end }}`,
 	"register": `{{ define "title" }}Register{{ end }}

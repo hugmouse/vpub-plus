@@ -80,6 +80,18 @@ var TplCommonMap = map[string]string{
 {{ end }}
 {{ define "head" }}{{ end }}
 {{ define "breadcrumb" }}{{ end }}`,
+	"pagination": `{{ define "pagination" }}
+{{ if or (ne 1 .Page) .HasMore }}
+<p>
+    {{ if ne 1 .Page }}
+    <a href="?page={{ dec .Page }}">Previous page</a>
+    {{ end }}
+    {{ if .HasMore }}
+    <a href="?page={{ inc .Page }}">Next page</a>
+    {{ end }}
+</p>
+{{ end }}
+{{ end }}`,
 	"post_form": `{{ define "post_form" }}
 <input type="hidden" name="topicId" value="{{ .TopicId }}">
 <div class="field">
@@ -92,23 +104,6 @@ var TplCommonMap = map[string]string{
 </div>
 {{ end }}`,
 	"posts": `{{ define "posts" }}
-<!--{{ if . }}-->
-<!--<ol class="posts">-->
-<!--    {{ if . }}-->
-<!--    {{ range . }}-->
-<!--    <li>-->
-<!--        <article>-->
-<!--            <header><h2><a href="/posts/{{ .Id }}">{{ .Subject }}</a></h2> ({{ .Replies }})</header>-->
-<!--            <div><a href="/~{{ .User }}">{{ .User }}</a>{{ if .Topic }} in <a href="/topics/{{ .Topic }}">{{ .Topic }}</a>{{ end }} {{ timeAgo .CreatedAt }}</div>-->
-<!--        </article>-->
-<!--    </li>-->
-<!--    {{ end }}-->
-<!--    {{ else }}-->
-<!--    <li>No post yet</li>-->
-<!--    {{ end }}-->
-<!--</ol>-->
-<!--{{ end }}-->
-
 {{ if . }}
 <table class="posts">
     <thead>

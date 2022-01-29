@@ -49,12 +49,28 @@ func (s *Storage) UpdateTopic(topic model.Topic) error {
 	return err
 }
 
-func (s *Storage) TopicsByBoardId(boardId int64) ([]model.Topic, bool, error) {
-	rows, err := s.db.Query("select topic_id, subject, content, posts_count, updated_at, user_id, name, is_sticky from topics_summary where board_id=$1", boardId)
+func (s *Storage) TopicsByBoardId(boardId, page int64) ([]model.Topic, bool, error) {
+	var topics []model.Topic
+	settings, err := s.Settings()
+	if err != nil {
+		return topics, false, err
+	}
+	rows, err := s.db.Query(`
+select topic_id,
+       subject,
+       content, 
+       posts_count,
+       updated_at,
+       user_id,
+       name,
+       is_sticky
+from topics_summary
+where board_id=$1
+offset $2
+limit $3`, boardId, settings.PerPage*(page-1), settings.PerPage+1)
 	if err != nil {
 		return nil, false, err
 	}
-	var topics []model.Topic
 	for rows.Next() {
 		var topic model.Topic
 		err := rows.Scan(&topic.Id, &topic.Post.Subject, &topic.Post.Content, &topic.Replies, &topic.UpdatedAt, &topic.Post.User.Id, &topic.Post.User.Name, &topic.IsSticky)
@@ -62,6 +78,9 @@ func (s *Storage) TopicsByBoardId(boardId int64) ([]model.Topic, bool, error) {
 			return topics, false, err
 		}
 		topics = append(topics, topic)
+	}
+	if len(topics) > int(settings.PerPage) {
+		return topics[0:settings.PerPage], true, err
 	}
 	return topics, false, nil
 }

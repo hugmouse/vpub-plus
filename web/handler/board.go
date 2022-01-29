@@ -101,14 +101,21 @@ func (h *Handler) showPostsView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.renderLayout(w, "posts", map[string]interface{}{
-		"posts":   posts,
-		"hasMore": hasMore,
-		"page":    page,
+		"posts": posts,
+		"pagination": pagination{
+			HasMore: hasMore,
+			Page:    page,
+		},
 	}, user)
 }
 
 func (h *Handler) showBoardView(w http.ResponseWriter, r *http.Request) {
+	// new
 	user, _ := h.session.Get(r)
+	var page int64 = 1
+	if val, ok := r.URL.Query()["page"]; ok && len(val[0]) == 1 {
+		page, _ = strconv.ParseInt(val[0], 10, 64)
+	}
 
 	id := RouteInt64Param(r, "boardId")
 	board, err := h.storage.BoardById(id)
@@ -117,16 +124,19 @@ func (h *Handler) showBoardView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	topics, _, err := h.storage.TopicsByBoardId(board.Id)
+	topics, hasMore, err := h.storage.TopicsByBoardId(board.Id, page)
 	if err != nil {
 		notFound(w)
 		return
 	}
 
 	h.renderLayout(w, "board", map[string]interface{}{
-		"board":   board,
-		"topics":  topics,
-		"hasMore": "",
+		"board":  board,
+		"topics": topics,
+		"pagination": pagination{
+			HasMore: hasMore,
+			Page:    page,
+		},
 	}, user)
 }
 

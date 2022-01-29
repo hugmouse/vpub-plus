@@ -1,0 +1,12 @@
+{{ define "pagination" }}
+{{ if or (ne 1 .Page) .HasMore }}
+<p>
+    {{ if ne 1 .Page }}
+    <a href="?page={{ dec .Page }}">Previous page</a>
+    {{ end }}
+    {{ if .HasMore }}
+    <a href="?page={{ inc .Page }}">Next page</a>
+    {{ end }}
+</p>
+{{ end }}
+{{ end }}
