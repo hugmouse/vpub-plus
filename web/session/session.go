@@ -20,6 +20,7 @@ func New(key string, storage *storage.Storage) *Session {
 	store.Options = &sessions.Options{
 		HttpOnly: true,
 		MaxAge:   86400 * 30,
+		Path:     "/",
 	}
 	return &Session{
 		Store:   store,
@@ -28,7 +29,7 @@ func New(key string, storage *storage.Storage) *Session {
 }
 
 func (s *Session) Delete(w http.ResponseWriter, r *http.Request) error {
-	session, err := s.Store.Get(r, cookieName)
+	session, err := s.GetSession(r)
 	if err != nil {
 		return err
 	}
@@ -37,14 +38,18 @@ func (s *Session) Delete(w http.ResponseWriter, r *http.Request) error {
 	return err
 }
 
-func (s *Session) Save(r *http.Request, w http.ResponseWriter, id int64) error {
-	session, _ := s.Store.Get(r, cookieName)
-	session.Values["id"] = id
-	return session.Save(r, w)
+func (s *Session) GetSession(r *http.Request) (*sessions.Session, error) {
+	return s.Store.Get(r, cookieName)
 }
 
+//func (s *Session) Save(r *http.Request, w http.ResponseWriter, id int64) error {
+//	session, _ := s.GetSession(r)
+//	session.Values["id"] = id
+//	return session.Save(r, w)
+//}
+
 func (s *Session) Get(r *http.Request) (model.User, error) {
-	session, err := s.Store.Get(r, cookieName)
+	session, err := s.GetSession(r)
 	if err != nil {
 		return model.User{}, err
 	}

@@ -7,6 +7,24 @@ import (
 
 const queryFindName = `SELECT id, name, hash, about, is_admin, picture FROM users WHERE name=lower($1);`
 
+type ErrUserNotFound struct{}
+
+func (u ErrUserNotFound) Error() string {
+	return "user not found"
+}
+
+type ErrWrongPassword struct{}
+
+func (u ErrWrongPassword) Error() string {
+	return "wrong password"
+}
+
+type ErrUserExists struct{}
+
+func (u ErrUserExists) Error() string {
+	return "user already exists"
+}
+
 func (s *Storage) queryUser(q string, params ...interface{}) (user model.User, err error) {
 	err = s.db.QueryRow(q, params...).Scan(&user.Id, &user.Name, &user.Hash, &user.About, &user.IsAdmin, &user.Picture)
 	return
@@ -33,10 +51,10 @@ func (s *Storage) UserExists(name string) bool {
 func (s *Storage) VerifyUser(user model.User) (model.User, error) {
 	u, err := s.queryUser(queryFindName, user.Name)
 	if err != nil {
-		return u, err
+		return u, ErrUserNotFound{}
 	}
 	if err := user.CompareHashToPassword(u.Hash); err != nil {
-		return u, err
+		return u, ErrWrongPassword{}
 	}
 	return u, nil
 }
@@ -61,6 +79,15 @@ func (s *Storage) CreateUser(user model.User, key string) (int64, error) {
 	if err := tx.QueryRowContext(ctx, `select id from keys where key=$1`, key).Scan(&keyId); err != nil {
 		tx.Rollback()
 		return userId, err
+	}
+	var exists bool
+	if err := tx.QueryRowContext(ctx, `select exists(select 1 from users where name=$1)`, user.Name).Scan(&exists); err != nil {
+		tx.Rollback()
+		return userId, err
+	}
+	if exists {
+		tx.Rollback()
+		return userId, ErrUserExists{}
 	}
 	if err := tx.QueryRowContext(ctx, `insert into users (name, hash, is_admin) values (lower($1), $2, $3) returning id`, user.Name, string(hash), user.IsAdmin).Scan(&userId); err != nil {
 		tx.Rollback()

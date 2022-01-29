@@ -795,11 +795,11 @@ var TplMap = map[string]string{
     {{ .csrfField }}
     <div class="field">
         <label for="name">Username</label>
-        <input type="text" id="name" name="name" autocomplete="off" value="{{ .form.Username }}" maxlength="15"/>
+        <input type="text" id="name" name="name" autocomplete="off" value="{{ .form.Username }}" maxlength="15" required/>
     </div>
     <div class="field">
         <label for="password">Password</label>
-        <input type="password" id="password" name="password"/>
+        <input type="password" id="password" name="password" required/>
     </div>
     <div class="field">
         <label for="confirm">Confirm password</label>
@@ -807,7 +807,7 @@ var TplMap = map[string]string{
     </div>
     <div class="field">
         <label for="key">Key</label>
-        <input type="text" id="key" name="key"/>
+        <input type="text" id="key" name="key" required/>
     </div>
     <input type="submit" value="Submit">
 </form>

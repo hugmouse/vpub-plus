@@ -32,7 +32,7 @@ func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	forums := forumFromBoards(boards)
-	h.renderLayout(w, "index", map[string]interface{}{
+	h.renderLayoutFlash(w, r, "index", map[string]interface{}{
 		"forums": forums,
 	}, user)
 }

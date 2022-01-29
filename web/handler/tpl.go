@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"net/http"
 	"time"
 	"vpub/model"
 	"vpub/syntax"
@@ -98,5 +99,48 @@ func (h *Handler) renderLayout(w io.Writer, view string, params map[string]inter
 	}).ExecuteTemplate(w, "layout", data); err != nil {
 		fmt.Println(err)
 	}
+}
 
+func (h *Handler) renderLayoutFlash(w http.ResponseWriter, r *http.Request, view string, params map[string]interface{}, user model.User) {
+	data := make(map[string]interface{})
+	if params != nil {
+		for k, v := range params {
+			data[k] = v
+		}
+	}
+	data["logged"] = user
+	settings, err := h.storage.Settings()
+	if err != nil {
+		fmt.Println(err)
+	}
+	data["settings"] = settings
+	session, err := h.session.Store.Get(r, "vpub")
+	if err != nil {
+		fmt.Println(err)
+	}
+	var errors []string
+	if msgs := session.Flashes("errors"); len(msgs) > 0 {
+		for _, m := range msgs {
+			errors = append(errors, m.(string))
+		}
+	}
+	var info []string
+	if msgs := session.Flashes("info"); len(msgs) > 0 {
+		for _, m := range msgs {
+			info = append(info, m.(string))
+		}
+	}
+	session.Save(r, w)
+	data["errors"] = errors
+	data["info"] = info
+	if err := views[view].Funcs(template.FuncMap{
+		"hasPermission": func(name string) bool {
+			return user.Name == name
+		},
+		"logged": func() bool {
+			return user.Name != ""
+		},
+	}).ExecuteTemplate(w, "layout", data); err != nil {
+		fmt.Println(err)
+	}
 }
