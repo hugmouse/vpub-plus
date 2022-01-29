@@ -25,14 +25,13 @@ func forumFromBoards(boards []model.Board) []model.Forum {
 }
 
 func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.Get(r)
 	boards, err := h.storage.Boards()
 	if err != nil {
 		serverError(w, err)
 		return
 	}
 	forums := forumFromBoards(boards)
-	h.renderLayoutFlash(w, r, "index", map[string]interface{}{
+	h.renderLayout(w, r, "index", map[string]interface{}{
 		"forums": forums,
-	}, user)
+	})
 }

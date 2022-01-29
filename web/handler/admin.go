@@ -8,38 +8,38 @@ import (
 	"vpub/web/handler/form"
 )
 
-func (h *Handler) showAdminView(w http.ResponseWriter, r *http.Request, user model.User) {
-	h.renderLayout(w, "admin", nil, user)
+func (h *Handler) showAdminView(w http.ResponseWriter, r *http.Request) {
+	h.renderLayout(w, r, "admin", nil)
 }
 
-func (h *Handler) showEditUserView(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) showEditUserView(w http.ResponseWriter, r *http.Request) {
 	u, err := h.storage.UserByName(mux.Vars(r)["name"])
 	if err != nil {
 		serverError(w, err)
 		return
 	}
-	h.renderLayout(w, "admin_user_edit", map[string]interface{}{
+	h.renderLayout(w, r, "admin_user_edit", map[string]interface{}{
 		"user": u,
 		"form": form.AdminUserForm{
 			Username: u.Name,
 			About:    u.About,
 		},
 		csrf.TemplateTag: csrf.TemplateField(r),
-	}, user)
+	})
 }
 
-func (h *Handler) showAdminUsersView(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) showAdminUsersView(w http.ResponseWriter, r *http.Request) {
 	users, err := h.storage.Users()
 	if err != nil {
 		serverError(w, err)
 		return
 	}
-	h.renderLayout(w, "admin_user", map[string]interface{}{
+	h.renderLayout(w, r, "admin_user", map[string]interface{}{
 		"users": users,
-	}, user)
+	})
 }
 
-func (h *Handler) showAdminBoardsView(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) showAdminBoardsView(w http.ResponseWriter, r *http.Request) {
 	boards, err := h.storage.Boards()
 	if err != nil {
 		serverError(w, err)
@@ -51,36 +51,36 @@ func (h *Handler) showAdminBoardsView(w http.ResponseWriter, r *http.Request, us
 		return
 	}
 	forums := forumFromBoards(boards)
-	h.renderLayout(w, "admin_board", map[string]interface{}{
+	h.renderLayout(w, r, "admin_board", map[string]interface{}{
 		"hasForums": hasForums,
 		"forums":    forums,
-	}, user)
+	})
 }
 
-func (h *Handler) showAdminForumsView(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) showAdminForumsView(w http.ResponseWriter, r *http.Request) {
 	forums, err := h.storage.Forums()
 	if err != nil {
 		serverError(w, err)
 		return
 	}
-	h.renderLayout(w, "admin_forum", map[string]interface{}{
+	h.renderLayout(w, r, "admin_forum", map[string]interface{}{
 		"forums": forums,
-	}, user)
+	})
 }
 
-func (h *Handler) showKeysView(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) showKeysView(w http.ResponseWriter, r *http.Request) {
 	keys, err := h.storage.Keys()
 	if err != nil {
 		serverError(w, err)
 		return
 	}
-	h.renderLayout(w, "admin_keys", map[string]interface{}{
+	h.renderLayout(w, r, "admin_keys", map[string]interface{}{
 		"keys":           keys,
 		csrf.TemplateTag: csrf.TemplateField(r),
-	}, user)
+	})
 }
 
-func (h *Handler) showAdminSettingsView(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) showAdminSettingsView(w http.ResponseWriter, r *http.Request) {
 	settings, err := h.storage.Settings()
 	if err != nil {
 		serverError(w, err)
@@ -92,13 +92,13 @@ func (h *Handler) showAdminSettingsView(w http.ResponseWriter, r *http.Request, 
 		Footer:  settings.Footer,
 		PerPage: settings.PerPage,
 	}
-	h.renderLayout(w, "admin_settings_edit", map[string]interface{}{
+	h.renderLayout(w, r, "admin_settings_edit", map[string]interface{}{
 		"form":           settingsForm,
 		csrf.TemplateTag: csrf.TemplateField(r),
-	}, user)
+	})
 }
 
-func (h *Handler) updateSettingsAdmin(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) updateSettingsAdmin(w http.ResponseWriter, r *http.Request) {
 	settingsForm := form.NewSettingsForm(r)
 	var settings model.Settings
 	settings.Name = settingsForm.Name
@@ -112,7 +112,7 @@ func (h *Handler) updateSettingsAdmin(w http.ResponseWriter, r *http.Request, us
 	http.Redirect(w, r, "/admin", http.StatusFound)
 }
 
-func (h *Handler) showNewBoardView(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) showNewBoardView(w http.ResponseWriter, r *http.Request) {
 	forums, err := h.storage.Forums()
 	if err != nil {
 		serverError(w, err)
@@ -121,21 +121,21 @@ func (h *Handler) showNewBoardView(w http.ResponseWriter, r *http.Request, user 
 	boardForm := form.BoardForm{
 		Forums: forums,
 	}
-	h.renderLayout(w, "admin_board_create", map[string]interface{}{
+	h.renderLayout(w, r, "admin_board_create", map[string]interface{}{
 		"form":           boardForm,
 		csrf.TemplateTag: csrf.TemplateField(r),
-	}, user)
+	})
 }
 
-func (h *Handler) showNewForumView(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) showNewForumView(w http.ResponseWriter, r *http.Request) {
 	forumForm := form.ForumForm{}
-	h.renderLayout(w, "admin_forum_create", map[string]interface{}{
+	h.renderLayout(w, r, "admin_forum_create", map[string]interface{}{
 		"form":           forumForm,
 		csrf.TemplateTag: csrf.TemplateField(r),
-	}, user)
+	})
 }
 
-func (h *Handler) showEditBoardView(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) showEditBoardView(w http.ResponseWriter, r *http.Request) {
 	board, err := h.storage.BoardById(RouteInt64Param(r, "boardId"))
 	if err != nil {
 		serverError(w, err)
@@ -154,14 +154,14 @@ func (h *Handler) showEditBoardView(w http.ResponseWriter, r *http.Request, user
 		Forums:      forums,
 		IsLocked:    board.IsLocked,
 	}
-	h.renderLayout(w, "admin_board_edit", map[string]interface{}{
+	h.renderLayout(w, r, "admin_board_edit", map[string]interface{}{
 		"form":           boardForm,
 		"board":          board,
 		csrf.TemplateTag: csrf.TemplateField(r),
-	}, user)
+	})
 }
 
-func (h *Handler) showEditForumView(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) showEditForumView(w http.ResponseWriter, r *http.Request) {
 	forum, err := h.storage.ForumById(RouteInt64Param(r, "forumId"))
 	if err != nil {
 		serverError(w, err)
@@ -172,14 +172,14 @@ func (h *Handler) showEditForumView(w http.ResponseWriter, r *http.Request, user
 		Position: forum.Position,
 		IsLocked: forum.IsLocked,
 	}
-	h.renderLayout(w, "admin_forum_edit", map[string]interface{}{
+	h.renderLayout(w, r, "admin_forum_edit", map[string]interface{}{
 		"forum":          forum,
 		"form":           forumForm,
 		csrf.TemplateTag: csrf.TemplateField(r),
-	}, user)
+	})
 }
 
-func (h *Handler) updateForum(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) updateForum(w http.ResponseWriter, r *http.Request) {
 	id := RouteInt64Param(r, "forumId")
 	forum, err := h.storage.ForumById(id)
 	if err != nil {
@@ -197,7 +197,7 @@ func (h *Handler) updateForum(w http.ResponseWriter, r *http.Request, user model
 	http.Redirect(w, r, "/admin/forums", http.StatusFound)
 }
 
-func (h *Handler) updateBoard(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) updateBoard(w http.ResponseWriter, r *http.Request) {
 	id := RouteInt64Param(r, "boardId")
 	board, err := h.storage.BoardById(id)
 	if err != nil {
@@ -217,7 +217,8 @@ func (h *Handler) updateBoard(w http.ResponseWriter, r *http.Request, user model
 	http.Redirect(w, r, "/admin/boards", http.StatusFound)
 }
 
-func (h *Handler) updateUserAdmin(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) updateUserAdmin(w http.ResponseWriter, r *http.Request) {
+	user, _ := h.session.Get(r)
 	userForm := form.NewAdminUserForm(r)
 	user.Name = userForm.Username
 	user.About = userForm.About
@@ -228,7 +229,7 @@ func (h *Handler) updateUserAdmin(w http.ResponseWriter, r *http.Request, user m
 	http.Redirect(w, r, "/admin/users", http.StatusFound)
 }
 
-func (h *Handler) saveBoard(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) saveBoard(w http.ResponseWriter, r *http.Request) {
 	boardForm := form.NewBoardForm(r)
 	board := model.Board{
 		Name:        boardForm.Name,
@@ -245,7 +246,7 @@ func (h *Handler) saveBoard(w http.ResponseWriter, r *http.Request, user model.U
 	http.Redirect(w, r, "/admin/boards", http.StatusFound)
 }
 
-func (h *Handler) saveForum(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) saveForum(w http.ResponseWriter, r *http.Request) {
 	forumForm := form.NewForumForm(r)
 	forum := model.Forum{
 		Name:     forumForm.Name,
@@ -260,7 +261,7 @@ func (h *Handler) saveForum(w http.ResponseWriter, r *http.Request, user model.U
 	http.Redirect(w, r, "/admin/forums", http.StatusFound)
 }
 
-func (h *Handler) saveKey(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) saveKey(w http.ResponseWriter, r *http.Request) {
 	if err := h.storage.CreateKey(); err != nil {
 		serverError(w, err)
 		return

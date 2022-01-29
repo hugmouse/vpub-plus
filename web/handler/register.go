@@ -10,9 +10,9 @@ import (
 )
 
 func (h *Handler) showRegisterView(w http.ResponseWriter, r *http.Request) {
-	h.renderLayoutFlash(w, r, "register", map[string]interface{}{
+	h.renderLayout(w, r, "register", map[string]interface{}{
 		csrf.TemplateTag: csrf.TemplateField(r),
-	}, model.User{})
+	})
 }
 
 func (h *Handler) register(w http.ResponseWriter, r *http.Request) {

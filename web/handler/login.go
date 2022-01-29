@@ -10,9 +10,9 @@ import (
 )
 
 func (h *Handler) showLoginView(w http.ResponseWriter, r *http.Request) {
-	h.renderLayoutFlash(w, r, "login", map[string]interface{}{
+	h.renderLayout(w, r, "login", map[string]interface{}{
 		csrf.TemplateTag: csrf.TemplateField(r),
-	}, model.User{})
+	})
 }
 
 func (h *Handler) checkLogin(w http.ResponseWriter, r *http.Request) {

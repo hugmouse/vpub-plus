@@ -16,10 +16,10 @@ func (h *Handler) showResetPasswordView(w http.ResponseWriter, r *http.Request) 
 		notFound(w)
 		return
 	}
-	h.renderLayout(w, "reset_password", map[string]interface{}{
+	h.renderLayout(w, r, "reset_password", map[string]interface{}{
 		"hash":           hash,
 		csrf.TemplateTag: csrf.TemplateField(r),
-	}, model.User{})
+	})
 }
 
 func (h *Handler) updatePassword(w http.ResponseWriter, r *http.Request) {

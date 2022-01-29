@@ -18,7 +18,7 @@ func contains(list []string, val string) bool {
 	return false
 }
 
-func (h *Handler) showNewTopicView(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) showNewTopicView(w http.ResponseWriter, r *http.Request) {
 	id := RouteInt64Param(r, "boardId")
 	board, err := h.storage.BoardById(id)
 	if err != nil {
@@ -30,14 +30,15 @@ func (h *Handler) showNewTopicView(w http.ResponseWriter, r *http.Request, user 
 		BoardId: board.Id,
 		Boards:  boards,
 	}
-	h.renderLayout(w, "create_topic", map[string]interface{}{
+	h.renderLayout(w, r, "create_topic", map[string]interface{}{
 		"form":           topicForm,
 		"board":          board,
 		csrf.TemplateTag: csrf.TemplateField(r),
-	}, user)
+	})
 }
 
-func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request) {
+	user, _ := h.session.Get(r)
 	topicForm := form.NewTopicForm(r)
 	post := model.Post{
 		User:    user,
@@ -66,8 +67,6 @@ func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request, user model.U
 }
 
 func (h *Handler) showForumView(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.Get(r)
-
 	id := RouteInt64Param(r, "forumId")
 	forum, err := h.storage.ForumById(id)
 	if err != nil {
@@ -81,14 +80,13 @@ func (h *Handler) showForumView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.renderLayout(w, "boards", map[string]interface{}{
+	h.renderLayout(w, r, "boards", map[string]interface{}{
 		"forum":  forum,
 		"boards": boards,
-	}, user)
+	})
 }
 
 func (h *Handler) showPostsView(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.Get(r)
 	var page int64 = 1
 	if val, ok := r.URL.Query()["page"]; ok && len(val[0]) == 1 {
 		page, _ = strconv.ParseInt(val[0], 10, 64)
@@ -100,18 +98,16 @@ func (h *Handler) showPostsView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.renderLayout(w, "posts", map[string]interface{}{
+	h.renderLayout(w, r, "posts", map[string]interface{}{
 		"posts": posts,
 		"pagination": pagination{
 			HasMore: hasMore,
 			Page:    page,
 		},
-	}, user)
+	})
 }
 
 func (h *Handler) showBoardView(w http.ResponseWriter, r *http.Request) {
-	// new
-	user, _ := h.session.Get(r)
 	var page int64 = 1
 	if val, ok := r.URL.Query()["page"]; ok && len(val[0]) == 1 {
 		page, _ = strconv.ParseInt(val[0], 10, 64)
@@ -130,14 +126,14 @@ func (h *Handler) showBoardView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.renderLayout(w, "board", map[string]interface{}{
+	h.renderLayout(w, r, "board", map[string]interface{}{
 		"board":  board,
 		"topics": topics,
 		"pagination": pagination{
 			HasMore: hasMore,
 			Page:    page,
 		},
-	}, user)
+	})
 }
 
 //

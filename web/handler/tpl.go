@@ -3,10 +3,8 @@ package handler
 import (
 	"fmt"
 	"html/template"
-	"io"
 	"net/http"
 	"time"
-	"vpub/model"
 	"vpub/syntax"
 )
 
@@ -76,7 +74,8 @@ func (h *Handler) initTpl() {
 	}
 }
 
-func (h *Handler) renderLayout(w io.Writer, view string, params map[string]interface{}, user model.User) {
+func (h *Handler) renderLayout(w http.ResponseWriter, r *http.Request, view string, params map[string]interface{}) {
+	user, _ := h.session.Get(r)
 	data := make(map[string]interface{})
 	if params != nil {
 		for k, v := range params {
@@ -89,32 +88,7 @@ func (h *Handler) renderLayout(w io.Writer, view string, params map[string]inter
 		fmt.Println(err)
 	}
 	data["settings"] = settings
-	if err := views[view].Funcs(template.FuncMap{
-		"hasPermission": func(name string) bool {
-			return user.Name == name
-		},
-		"logged": func() bool {
-			return user.Name != ""
-		},
-	}).ExecuteTemplate(w, "layout", data); err != nil {
-		fmt.Println(err)
-	}
-}
-
-func (h *Handler) renderLayoutFlash(w http.ResponseWriter, r *http.Request, view string, params map[string]interface{}, user model.User) {
-	data := make(map[string]interface{})
-	if params != nil {
-		for k, v := range params {
-			data[k] = v
-		}
-	}
-	data["logged"] = user
-	settings, err := h.storage.Settings()
-	if err != nil {
-		fmt.Println(err)
-	}
-	data["settings"] = settings
-	session, err := h.session.Store.Get(r, "vpub")
+	session, err := h.session.GetSession(r)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -130,7 +104,9 @@ func (h *Handler) renderLayoutFlash(w http.ResponseWriter, r *http.Request, view
 			info = append(info, m.(string))
 		}
 	}
-	session.Save(r, w)
+	if err := session.Save(r, w); err != nil {
+		fmt.Println(err)
+	}
 	data["errors"] = errors
 	data["info"] = info
 	if err := views[view].Funcs(template.FuncMap{

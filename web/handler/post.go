@@ -18,7 +18,8 @@ func (h *Handler) ParseIntQS(qs *url.URL, name string) (int64, error) {
 	return 0, errors.New("qs value not found")
 }
 
-func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) savePost(w http.ResponseWriter, r *http.Request) {
+	user, _ := h.session.Get(r)
 	postForm := form.NewPostForm(r)
 	post := model.Post{
 		User:    user,
@@ -38,7 +39,7 @@ func (h *Handler) savePost(w http.ResponseWriter, r *http.Request, user model.Us
 	http.Redirect(w, r, fmt.Sprintf("/topics/%d#%d", postForm.TopicId, id), http.StatusFound)
 }
 
-func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request) {
 	post, err := h.storage.PostById(RouteInt64Param(r, "postId"))
 	if err != nil {
 		serverError(w, err)
@@ -49,14 +50,15 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request, user 
 		Content: post.Content,
 		TopicId: post.TopicId,
 	}
-	h.renderLayout(w, "edit_post", map[string]interface{}{
+	h.renderLayout(w, r, "edit_post", map[string]interface{}{
 		"form":           postForm,
 		"post":           post,
 		csrf.TemplateTag: csrf.TemplateField(r),
-	}, user)
+	})
 }
 
-func (h *Handler) showEditTopicView(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) showEditTopicView(w http.ResponseWriter, r *http.Request) {
+	user, _ := h.session.Get(r)
 	if !user.IsAdmin {
 		notFound(w)
 		return
@@ -84,13 +86,14 @@ func (h *Handler) showEditTopicView(w http.ResponseWriter, r *http.Request, user
 			TopicId: post.TopicId,
 		},
 	}
-	h.renderLayout(w, "edit_topic", map[string]interface{}{
+	h.renderLayout(w, r, "edit_topic", map[string]interface{}{
 		"form":           topicForm,
 		csrf.TemplateTag: csrf.TemplateField(r),
-	}, user)
+	})
 }
 
-func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
+	user, _ := h.session.Get(r)
 	if !user.IsAdmin {
 		notFound(w)
 		return
@@ -124,7 +127,8 @@ func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request, user model
 	http.Redirect(w, r, fmt.Sprintf("/topics/%d", topic.Id), http.StatusFound)
 }
 
-func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request) {
+	user, _ := h.session.Get(r)
 	id := RouteInt64Param(r, "postId")
 	post, err := h.storage.PostById(id)
 	if err != nil {
@@ -146,7 +150,8 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request, user model.
 	http.Redirect(w, r, fmt.Sprintf("/topics/%d", post.TopicId), http.StatusFound)
 }
 
-func (h *Handler) handleRemovePost(w http.ResponseWriter, r *http.Request, user model.User) {
+func (h *Handler) handleRemovePost(w http.ResponseWriter, r *http.Request) {
+	user, _ := h.session.Get(r)
 	switch r.Method {
 	case "GET":
 		id := RouteInt64Param(r, "postId")
@@ -155,10 +160,10 @@ func (h *Handler) handleRemovePost(w http.ResponseWriter, r *http.Request, user 
 			serverError(w, err)
 			return
 		}
-		h.renderLayout(w, "confirm_remove_post", map[string]interface{}{
+		h.renderLayout(w, r, "confirm_remove_post", map[string]interface{}{
 			"post":           post,
 			csrf.TemplateTag: csrf.TemplateField(r),
-		}, user)
+		})
 	case "POST":
 		post, err := h.storage.PostById(RouteInt64Param(r, "postId"))
 		if err != nil {
