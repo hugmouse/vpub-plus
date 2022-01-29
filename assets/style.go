@@ -12,7 +12,9 @@ var AssetsMap = map[string]string{
 }
 
 /* Lists ************************************************************/
-
+topic img {
+	max-width: 100%;
+}
 
 main {
 	margin-bottom: 1em;
