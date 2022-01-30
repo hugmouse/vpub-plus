@@ -27,7 +27,7 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 		Password: userForm.Password,
 	}
 	if err := userForm.Validate(); err != nil {
-		session.AddFlash(err.Error(), "errors")
+		session.FlashError(err.Error())
 		if err := session.Save(r, w); err != nil {
 			serverError(w, err)
 			return
@@ -39,9 +39,9 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case storage.ErrUserExists:
-			session.AddFlash("This username is already taken", "errors")
+			session.FlashError("This username is already taken")
 		default:
-			serverError(w, err)
+			session.FlashError("An unexpected error happened")
 		}
 		if err := session.Save(r, w); err != nil {
 			serverError(w, err)
@@ -50,8 +50,8 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/register", http.StatusFound)
 		return
 	}
-	session.Values["id"] = id
-	session.AddFlash(fmt.Sprintf("Welcome, %s!", user.Name), "info")
+	session.SetUserId(id)
+	session.FlashInfo(fmt.Sprintf("Welcome, %s!", user.Name))
 	if err := session.Save(r, w); err != nil {
 		serverError(w, err)
 		return

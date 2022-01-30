@@ -75,7 +75,7 @@ func (h *Handler) initTpl() {
 }
 
 func (h *Handler) renderLayout(w http.ResponseWriter, r *http.Request, view string, params map[string]interface{}) {
-	user, _ := h.session.Get(r)
+	user, _ := h.session.GetUser(r)
 	data := make(map[string]interface{})
 	if params != nil {
 		for k, v := range params {
@@ -92,23 +92,11 @@ func (h *Handler) renderLayout(w http.ResponseWriter, r *http.Request, view stri
 	if err != nil {
 		fmt.Println(err)
 	}
-	var errors []string
-	if msgs := session.Flashes("errors"); len(msgs) > 0 {
-		for _, m := range msgs {
-			errors = append(errors, m.(string))
-		}
-	}
-	var info []string
-	if msgs := session.Flashes("info"); len(msgs) > 0 {
-		for _, m := range msgs {
-			info = append(info, m.(string))
-		}
-	}
+	data["errors"] = session.GetFlashErrors()
+	data["info"] = session.GetFlashInfo()
 	if err := session.Save(r, w); err != nil {
 		fmt.Println(err)
 	}
-	data["errors"] = errors
-	data["info"] = info
 	if err := views[view].Funcs(template.FuncMap{
 		"hasPermission": func(name string) bool {
 			return user.Name == name

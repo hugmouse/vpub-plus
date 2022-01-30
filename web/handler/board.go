@@ -38,7 +38,7 @@ func (h *Handler) showNewTopicView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.Get(r)
+	user, _ := h.session.GetUser(r)
 	topicForm := form.NewTopicForm(r)
 	post := model.Post{
 		User:    user,
@@ -138,7 +138,7 @@ func (h *Handler) showBoardView(w http.ResponseWriter, r *http.Request) {
 
 //
 //func (h *Handler) showPageNumber(w http.ResponseWriter, r *http.Request) {
-//	user, _ := h.session.Get(r)
+//	user, _ := h.session.GetUser(r)
 //
 //	var page int64 = 0
 //	if val, ok := mux.Vars(r)["nb"]; ok {

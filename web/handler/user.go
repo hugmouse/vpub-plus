@@ -36,7 +36,7 @@ func (h *Handler) showUserPostsView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) showAccountView(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.Get(r)
+	user, _ := h.session.GetUser(r)
 	h.renderLayout(w, r, "account", map[string]interface{}{
 		"user":           user,
 		csrf.TemplateTag: csrf.TemplateField(r),
@@ -44,7 +44,7 @@ func (h *Handler) showAccountView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) saveAccount(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.Get(r)
+	user, _ := h.session.GetUser(r)
 	accountForm := form.NewAccountForm(r)
 	user.About = accountForm.About
 	user.Picture = accountForm.Picture

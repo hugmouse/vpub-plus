@@ -29,9 +29,9 @@ func (h *Handler) checkLogin(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err.(type) {
 		case storage.ErrUserNotFound:
-			session.AddFlash(fmt.Sprintf("User %s not found", loginForm.Username), "errors")
+			session.FlashError(fmt.Sprintf("User %s not found", loginForm.Username))
 		case storage.ErrWrongPassword:
-			session.AddFlash("Wrong password", "errors")
+			session.FlashError("Wrong password")
 		}
 		err := session.Save(r, w)
 		if err != nil {
@@ -41,7 +41,7 @@ func (h *Handler) checkLogin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", http.StatusFound)
 		return
 	}
-	session.Values["id"] = user.Id
+	session.SetUserId(user.Id)
 	if err := session.Save(r, w); err != nil {
 		serverError(w, err)
 		return

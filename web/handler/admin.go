@@ -218,7 +218,7 @@ func (h *Handler) updateBoard(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) updateUserAdmin(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.Get(r)
+	user, _ := h.session.GetUser(r)
 	userForm := form.NewAdminUserForm(r)
 	user.Name = userForm.Username
 	user.About = userForm.About

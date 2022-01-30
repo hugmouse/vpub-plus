@@ -42,7 +42,7 @@ func serverError(w http.ResponseWriter, err error) {
 }
 
 type Handler struct {
-	session *session.Session
+	session *session.Manager
 	url     string
 	env     string
 	css     []byte
@@ -54,7 +54,7 @@ type Handler struct {
 
 func (h *Handler) protect(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		user, err := h.session.Get(r)
+		user, err := h.session.GetUser(r)
 		if err != nil || user.Name == "" {
 			forbidden(w)
 			return
@@ -65,7 +65,7 @@ func (h *Handler) protect(fn http.HandlerFunc) http.HandlerFunc {
 
 func (h *Handler) admin(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		user, err := h.session.Get(r)
+		user, err := h.session.GetUser(r)
 		if err != nil || !user.IsAdmin {
 			forbidden(w)
 			return
@@ -74,7 +74,7 @@ func (h *Handler) admin(fn http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func New(cfg *config.Config, data *storage.Storage, s *session.Session) (http.Handler, error) {
+func New(cfg *config.Config, data *storage.Storage, s *session.Manager) (http.Handler, error) {
 	router := mux.NewRouter()
 	h := &Handler{
 		session: s,

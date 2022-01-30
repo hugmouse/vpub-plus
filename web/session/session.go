@@ -10,50 +10,94 @@ import (
 
 const cookieName = "vpub"
 
-type Session struct {
+type Manager struct {
 	Store   *sessions.CookieStore
 	Storage *storage.Storage
 }
 
-func New(key string, storage *storage.Storage) *Session {
+type Session struct {
+	session *sessions.Session
+}
+
+func (s *Session) FlashError(msg string) {
+	s.session.AddFlash(msg, "errors")
+}
+
+func (s *Session) FlashInfo(msg string) {
+	s.session.AddFlash(msg, "info")
+}
+
+func (s *Session) Save(r *http.Request, w http.ResponseWriter) error {
+	return s.session.Save(r, w)
+}
+
+func (s *Session) SetUserId(id int64) {
+	s.session.Values["id"] = id
+}
+
+func (s *Session) GetFlashErrors() []string {
+	var errors []string
+	if msgs := s.session.Flashes("errors"); len(msgs) > 0 {
+		for _, m := range msgs {
+			errors = append(errors, m.(string))
+		}
+	}
+	return errors
+}
+
+func (s *Session) GetFlashInfo() []string {
+	var info []string
+	if msgs := s.session.Flashes("info"); len(msgs) > 0 {
+		for _, m := range msgs {
+			info = append(info, m.(string))
+		}
+	}
+	return info
+}
+
+func New(key string, storage *storage.Storage) *Manager {
 	store := sessions.NewCookieStore([]byte(key))
 	store.Options = &sessions.Options{
 		HttpOnly: true,
 		MaxAge:   86400 * 30,
 		Path:     "/",
 	}
-	return &Session{
+	return &Manager{
 		Store:   store,
 		Storage: storage,
 	}
 }
 
-func (s *Session) Delete(w http.ResponseWriter, r *http.Request) error {
+func (s *Manager) Delete(w http.ResponseWriter, r *http.Request) error {
 	session, err := s.GetSession(r)
 	if err != nil {
 		return err
 	}
-	session.Options.MaxAge = -1
+	session.session.Options.MaxAge = -1
 	err = session.Save(r, w)
 	return err
 }
 
-func (s *Session) GetSession(r *http.Request) (*sessions.Session, error) {
-	return s.Store.Get(r, cookieName)
+func (s *Manager) GetSession(r *http.Request) (*Session, error) {
+	sess, err := s.Store.Get(r, cookieName)
+	if err != nil {
+		return nil, err
+	}
+	return &Session{session: sess}, nil
 }
 
-//func (s *Session) Save(r *http.Request, w http.ResponseWriter, id int64) error {
+//func (s *Manager) Save(r *http.Request, w http.ResponseWriter, id int64) error {
 //	session, _ := s.GetSession(r)
 //	session.Values["id"] = id
 //	return session.Save(r, w)
 //}
 
-func (s *Session) Get(r *http.Request) (model.User, error) {
+func (s *Manager) GetUser(r *http.Request) (model.User, error) {
 	session, err := s.GetSession(r)
 	if err != nil {
 		return model.User{}, err
 	}
-	id, ok := session.Values["id"].(int64)
+	id, ok := session.session.Values["id"].(int64)
 	if id == 0 || !ok {
 		return model.User{}, errors.New("error extracting session")
 	}
