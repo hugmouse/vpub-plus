@@ -220,7 +220,7 @@ CREATE TRIGGER decrease_post_count_on_topics
     FOR EACH ROW
     EXECUTE PROCEDURE count_posts_on_topic();
 --
--- GetUser last updated_at time of a topic
+-- Get last updated_at time of a topic
 --
 CREATE OR REPLACE FUNCTION get_topic_updated_at() RETURNS TRIGGER AS $$
 BEGIN
@@ -235,7 +235,7 @@ CREATE TRIGGER get_topic_updated_at
     FOR EACH ROW
     EXECUTE PROCEDURE get_topic_updated_at();
 --
--- GetUser last updated_at time of a board
+-- Get last updated_at time of a board
 --
 CREATE OR REPLACE FUNCTION get_board_updated_at() RETURNS TRIGGER AS $$
 BEGIN

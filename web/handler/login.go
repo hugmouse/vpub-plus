@@ -2,50 +2,39 @@ package handler
 
 import (
 	"fmt"
-	"github.com/gorilla/csrf"
 	"net/http"
 	"vpub/model"
 	"vpub/storage"
 	"vpub/web/handler/form"
+	"vpub/web/handler/request"
 )
 
 func (h *Handler) showLoginView(w http.ResponseWriter, r *http.Request) {
-	h.renderLayout(w, r, "login", map[string]interface{}{
-		csrf.TemplateTag: csrf.TemplateField(r),
-	})
+	v := NewView(w, r, "login")
+	v.Render()
 }
 
 func (h *Handler) checkLogin(w http.ResponseWriter, r *http.Request) {
-	session, err := h.session.GetSession(r)
-	if err != nil {
-		serverError(w, err)
-		return
-	}
 	loginForm := form.NewLoginForm(r)
 	user, err := h.storage.VerifyUser(model.User{
 		Name:     loginForm.Username,
 		Password: loginForm.Password,
 	})
 	if err != nil {
+		v := NewView(w, r, "login")
+		v.Set("form", loginForm)
 		switch err.(type) {
 		case storage.ErrUserNotFound:
-			session.FlashError(fmt.Sprintf("User %s not found", loginForm.Username))
+			v.Set("errorMessage", fmt.Sprintf("User %s not found", loginForm.Username))
 		case storage.ErrWrongPassword:
-			session.FlashError("Wrong password")
+			v.Set("errorMessage", "Wrong password")
 		}
-		err := session.Save(r, w)
-		if err != nil {
-			serverError(w, err)
-			return
-		}
-		http.Redirect(w, r, "/login", http.StatusFound)
+		v.Render()
 		return
 	}
+	session := request.GetSessionContextKey(r)
 	session.SetUserId(user.Id)
-	if err := session.Save(r, w); err != nil {
-		serverError(w, err)
-		return
-	}
+	session.Save(r, w)
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 

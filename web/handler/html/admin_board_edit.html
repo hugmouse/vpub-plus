@@ -16,6 +16,9 @@
     </ul>
 </nav>
 <h1>Edit board</h1>
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
 <form action="/admin/boards/{{ .board.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "board_form" .form }}

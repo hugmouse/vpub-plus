@@ -2,59 +2,46 @@ package handler
 
 import (
 	"fmt"
-	"github.com/gorilla/csrf"
 	"net/http"
 	"vpub/model"
 	"vpub/storage"
 	"vpub/web/handler/form"
+	"vpub/web/handler/request"
 )
 
 func (h *Handler) showRegisterView(w http.ResponseWriter, r *http.Request) {
-	h.renderLayout(w, r, "register", map[string]interface{}{
-		csrf.TemplateTag: csrf.TemplateField(r),
-	})
+	v := NewView(w, r, "register")
+	v.Render()
 }
 
 func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
-	session, err := h.session.GetSession(r)
-	if err != nil {
-		serverError(w, err)
-		return
-	}
 	userForm := form.NewUserForm(r)
-	user := model.User{
-		Name:     userForm.Username,
-		Password: userForm.Password,
-	}
+
+	v := NewView(w, r, "register")
+	v.Set("form", userForm)
+
 	if err := userForm.Validate(); err != nil {
-		session.FlashError(err.Error())
-		if err := session.Save(r, w); err != nil {
-			serverError(w, err)
-			return
-		}
-		http.Redirect(w, r, "/register", http.StatusFound)
+		v.Set("errorMessage", err.Error())
+		v.Render()
 		return
 	}
+
+	user := *userForm.Merge(&model.User{})
 	id, err := h.storage.CreateUser(user, userForm.Key)
 	if err != nil {
 		switch err.(type) {
 		case storage.ErrUserExists:
-			session.FlashError("This username is already taken")
+			v.Set("errorMessage", "This username is already taken")
 		default:
-			session.FlashError("An unexpected error happened")
+			v.Set("errorMessage", "An unexpected error happened")
 		}
-		if err := session.Save(r, w); err != nil {
-			serverError(w, err)
-			return
-		}
-		http.Redirect(w, r, "/register", http.StatusFound)
+		v.Render()
 		return
 	}
+
+	session := request.GetSessionContextKey(r)
 	session.SetUserId(id)
 	session.FlashInfo(fmt.Sprintf("Welcome, %s!", user.Name))
-	if err := session.Save(r, w); err != nil {
-		serverError(w, err)
-		return
-	}
+	session.Save(r, w)
 	http.Redirect(w, r, "/", http.StatusFound)
 }

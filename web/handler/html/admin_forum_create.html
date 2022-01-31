@@ -16,6 +16,9 @@
     </ul>
 </nav>
 <h1>Create forum</h1>
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
 <form action="/admin/forums/save" method="post">
     {{ .csrfField }}
     {{ template "forum_form" .form }}

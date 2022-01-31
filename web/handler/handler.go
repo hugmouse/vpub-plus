@@ -1,16 +1,15 @@
 package handler
 
 import (
+	"context"
 	"fmt"
 	"github.com/gorilla/mux"
-	"io"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
-	"vpub/assets"
 	"vpub/config"
 	"vpub/storage"
+	"vpub/web/handler/request"
 	"vpub/web/session"
 )
 
@@ -41,21 +40,39 @@ func serverError(w http.ResponseWriter, err error) {
 	http.Error(w, fmt.Sprintf("server error: %s", err), http.StatusInternalServerError)
 }
 
+func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, _ := h.session.GetUser(r)
+		session, err := h.session.GetSession(r)
+		if err != nil {
+			fmt.Println("Unable to create session")
+		}
+		settings, err := h.storage.Settings()
+		if err != nil {
+			serverError(w, err)
+			return
+		}
+		ctx := r.Context()
+		ctx = context.WithValue(ctx, request.SessionKey, session)
+		ctx = context.WithValue(ctx, request.UserKey, user)
+		ctx = context.WithValue(ctx, request.SettingsKey, settings)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
 type Handler struct {
 	session *session.Manager
 	url     string
 	env     string
-	css     []byte
 	mux     *mux.Router
 	storage *storage.Storage
-	topics  []string
 	perPage int
 }
 
 func (h *Handler) protect(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		user, err := h.session.GetUser(r)
-		if err != nil || user.Name == "" {
+		user := request.GetUserContextKey(r)
+		if user.Name == "" {
 			forbidden(w)
 			return
 		}
@@ -65,8 +82,8 @@ func (h *Handler) protect(fn http.HandlerFunc) http.HandlerFunc {
 
 func (h *Handler) admin(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		user, err := h.session.GetUser(r)
-		if err != nil || !user.IsAdmin {
+		user := request.GetUserContextKey(r)
+		if !user.IsAdmin {
 			forbidden(w)
 			return
 		}
@@ -80,15 +97,10 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Manager) (http.Ha
 		session: s,
 		mux:     router,
 		storage: data,
-		perPage: cfg.PerPage,
 		url:     cfg.URL,
 	}
+	router.Use(h.handleSessionMiddleware)
 	h.initTpl()
-
-	// Read and cache css
-	cssFile, _ := os.Open(cfg.CSSFile)
-	b, _ := io.ReadAll(cssFile)
-	h.css = []byte(assets.AssetsMap["style"] + "\n" + string(b))
 
 	// Static assets
 	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)

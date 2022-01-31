@@ -2,6 +2,7 @@ package session
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gorilla/sessions"
 	"net/http"
 	"vpub/model"
@@ -27,8 +28,10 @@ func (s *Session) FlashInfo(msg string) {
 	s.session.AddFlash(msg, "info")
 }
 
-func (s *Session) Save(r *http.Request, w http.ResponseWriter) error {
-	return s.session.Save(r, w)
+func (s *Session) Save(r *http.Request, w http.ResponseWriter) {
+	if err := s.session.Save(r, w); err != nil {
+		fmt.Println("error saving session")
+	}
 }
 
 func (s *Session) SetUserId(id int64) {
@@ -74,7 +77,7 @@ func (s *Manager) Delete(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	session.session.Options.MaxAge = -1
-	err = session.Save(r, w)
+	session.Save(r, w)
 	return err
 }
 
@@ -92,6 +95,7 @@ func (s *Manager) GetSession(r *http.Request) (*Session, error) {
 //	return session.Save(r, w)
 //}
 
+// GetUser Returns an error if the user doesn't exist
 func (s *Manager) GetUser(r *http.Request) (model.User, error) {
 	session, err := s.GetSession(r)
 	if err != nil {

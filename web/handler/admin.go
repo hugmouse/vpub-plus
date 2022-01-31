@@ -1,11 +1,14 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"net/http"
 	"vpub/model"
+	"vpub/validator"
 	"vpub/web/handler/form"
+	"vpub/web/handler/request"
 )
 
 func (h *Handler) showAdminView(w http.ResponseWriter, r *http.Request) {
@@ -40,6 +43,7 @@ func (h *Handler) showAdminUsersView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) showAdminBoardsView(w http.ResponseWriter, r *http.Request) {
+	v := NewView(w, r, "admin_board")
 	boards, err := h.storage.Boards()
 	if err != nil {
 		serverError(w, err)
@@ -51,10 +55,9 @@ func (h *Handler) showAdminBoardsView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	forums := forumFromBoards(boards)
-	h.renderLayout(w, r, "admin_board", map[string]interface{}{
-		"hasForums": hasForums,
-		"forums":    forums,
-	})
+	v.Set("hasForums", hasForums)
+	v.Set("forums", forums)
+	v.Render()
 }
 
 func (h *Handler) showAdminForumsView(w http.ResponseWriter, r *http.Request) {
@@ -100,16 +103,14 @@ func (h *Handler) showAdminSettingsView(w http.ResponseWriter, r *http.Request) 
 
 func (h *Handler) updateSettingsAdmin(w http.ResponseWriter, r *http.Request) {
 	settingsForm := form.NewSettingsForm(r)
-	var settings model.Settings
-	settings.Name = settingsForm.Name
-	settings.Css = settingsForm.Css
-	settings.Footer = settingsForm.Footer
-	settings.PerPage = settingsForm.PerPage
-	if err := h.storage.UpdateSettings(settings); err != nil {
+	if err := h.storage.UpdateSettings(*settingsForm.Merge(&model.Settings{})); err != nil {
 		serverError(w, err)
 		return
 	}
-	http.Redirect(w, r, "/admin", http.StatusFound)
+	session := request.GetSessionContextKey(r)
+	session.FlashInfo("Settings updated")
+	session.Save(r, w)
+	http.Redirect(w, r, "/admin/settings/edit", http.StatusFound)
 }
 
 func (h *Handler) showNewBoardView(w http.ResponseWriter, r *http.Request) {
@@ -121,10 +122,9 @@ func (h *Handler) showNewBoardView(w http.ResponseWriter, r *http.Request) {
 	boardForm := form.BoardForm{
 		Forums: forums,
 	}
-	h.renderLayout(w, r, "admin_board_create", map[string]interface{}{
-		"form":           boardForm,
-		csrf.TemplateTag: csrf.TemplateField(r),
-	})
+	v := NewView(w, r, "admin_board_create")
+	v.Set("form", boardForm)
+	v.Render()
 }
 
 func (h *Handler) showNewForumView(w http.ResponseWriter, r *http.Request) {
@@ -154,11 +154,10 @@ func (h *Handler) showEditBoardView(w http.ResponseWriter, r *http.Request) {
 		Forums:      forums,
 		IsLocked:    board.IsLocked,
 	}
-	h.renderLayout(w, r, "admin_board_edit", map[string]interface{}{
-		"form":           boardForm,
-		"board":          board,
-		csrf.TemplateTag: csrf.TemplateField(r),
-	})
+	v := NewView(w, r, "admin_board_edit")
+	v.Set("form", boardForm)
+	v.Set("board", board)
+	v.Render()
 }
 
 func (h *Handler) showEditForumView(w http.ResponseWriter, r *http.Request) {
@@ -183,42 +182,77 @@ func (h *Handler) updateForum(w http.ResponseWriter, r *http.Request) {
 	id := RouteInt64Param(r, "forumId")
 	forum, err := h.storage.ForumById(id)
 	if err != nil {
-		serverError(w, err)
+		notFound(w)
 		return
 	}
+
 	forumForm := form.NewForumForm(r)
-	forum.Name = forumForm.Name
-	forum.Position = forumForm.Position
-	forum.IsLocked = forumForm.IsLocked
-	if err := h.storage.UpdateForum(forum); err != nil {
+
+	v := NewView(w, r, "admin_forum_edit")
+	v.Set("forum", forum)
+	v.Set("form", forumForm)
+
+	newForum := forumForm.Merge(forum)
+
+	if err := validator.ValidateForumModification(h.storage, newForum); err != nil {
+		v.Set("errorMessage", err.Error())
+		v.Render()
+		return
+	}
+
+	if err := h.storage.UpdateForum(newForum); err != nil {
+		v.Set("errorMessage", "Unable to update forum")
 		serverError(w, err)
 		return
 	}
-	http.Redirect(w, r, "/admin/forums", http.StatusFound)
+
+	session := request.GetSessionContextKey(r)
+	session.FlashInfo("Forum updated")
+	session.Save(r, w)
+
+	http.Redirect(w, r, fmt.Sprintf("/admin/forums/%d/edit", id), http.StatusFound)
 }
 
 func (h *Handler) updateBoard(w http.ResponseWriter, r *http.Request) {
 	id := RouteInt64Param(r, "boardId")
+
 	board, err := h.storage.BoardById(id)
 	if err != nil {
 		serverError(w, err)
 		return
 	}
+
 	boardForm := form.NewBoardForm(r)
-	board.Name = boardForm.Name
-	board.Description = boardForm.Description
-	board.Position = boardForm.Position
-	board.Forum.Id = boardForm.ForumId
-	board.IsLocked = boardForm.IsLocked
-	if err := h.storage.UpdateBoard(board); err != nil {
+
+	v := NewView(w, r, "admin_board_edit")
+	v.Set("board", board)
+	v.Set("form", boardForm)
+
+	if err := boardForm.Validate(); err != nil {
+		v.Set("errorMessage", err.Error())
+		forums, err := h.storage.Forums()
+		if err != nil {
+			serverError(w, err)
+			return
+		}
+		boardForm.Forums = forums
+		v.Render()
+		return
+	}
+
+	if err := h.storage.UpdateBoard(*boardForm.Merge(&board)); err != nil {
 		serverError(w, err)
 		return
 	}
-	http.Redirect(w, r, "/admin/boards", http.StatusFound)
+
+	session := request.GetSessionContextKey(r)
+	session.FlashInfo("Board updated")
+	session.Save(r, w)
+	http.Redirect(w, r, fmt.Sprintf("/admin/boards/%d/edit", id), http.StatusFound)
 }
 
 func (h *Handler) updateUserAdmin(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.GetUser(r)
+	user := request.GetUserContextKey(r)
 	userForm := form.NewAdminUserForm(r)
 	user.Name = userForm.Username
 	user.About = userForm.About
@@ -231,33 +265,55 @@ func (h *Handler) updateUserAdmin(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) saveBoard(w http.ResponseWriter, r *http.Request) {
 	boardForm := form.NewBoardForm(r)
-	board := model.Board{
-		Name:        boardForm.Name,
-		Description: boardForm.Description,
-		Position:    boardForm.Position,
-		IsLocked:    boardForm.IsLocked,
-		Forum:       model.Forum{Id: boardForm.ForumId},
+
+	v := NewView(w, r, "admin_board_create")
+	v.Set("form", boardForm)
+
+	if err := boardForm.Validate(); err != nil {
+		v.Set("errorMessage", err.Error())
+		forums, err := h.storage.Forums()
+		if err != nil {
+			serverError(w, err)
+			return
+		}
+		boardForm.Forums = forums
+		v.Render()
+		return
 	}
-	_, err := h.storage.CreateBoard(board)
+
+	_, err := h.storage.CreateBoard(*boardForm.Merge(&model.Board{}))
 	if err != nil {
 		serverError(w, err)
 		return
 	}
+
 	http.Redirect(w, r, "/admin/boards", http.StatusFound)
 }
 
 func (h *Handler) saveForum(w http.ResponseWriter, r *http.Request) {
 	forumForm := form.NewForumForm(r)
+
+	v := NewView(w, r, "admin_forum_create")
+	v.Set("form", forumForm)
+
 	forum := model.Forum{
 		Name:     forumForm.Name,
 		Position: forumForm.Position,
 		IsLocked: forumForm.IsLocked,
 	}
-	_, err := h.storage.CreateForum(forum)
-	if err != nil {
+
+	if err := validator.ValidateForumCreation(h.storage, forum); err != nil {
+		v.Set("errorMessage", err.Error())
+		v.Render()
+		return
+	}
+
+	if _, err := h.storage.CreateForum(forum); err != nil {
+		v.Set("errorMessage", "Unable to create forum")
 		serverError(w, err)
 		return
 	}
+
 	http.Redirect(w, r, "/admin/forums", http.StatusFound)
 }
 

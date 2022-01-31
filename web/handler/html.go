@@ -105,6 +105,9 @@ var TplMap = map[string]string{
   </ul>
 </nav>
 <h1>Create board</h1>
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
 <form action="/admin/boards/save" method="post">
   {{ .csrfField }}
   {{ template "board_form" .form }}
@@ -130,6 +133,9 @@ var TplMap = map[string]string{
     </ul>
 </nav>
 <h1>Edit board</h1>
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
 <form action="/admin/boards/{{ .board.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "board_form" .form }}
@@ -195,6 +201,9 @@ var TplMap = map[string]string{
     </ul>
 </nav>
 <h1>Create forum</h1>
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
 <form action="/admin/forums/save" method="post">
     {{ .csrfField }}
     {{ template "forum_form" .form }}
@@ -220,6 +229,9 @@ var TplMap = map[string]string{
     </ul>
 </nav>
 <h1>Edit forum</h1>
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
 <form action="/admin/forums/{{ .forum.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "forum_form" .form }}
@@ -603,6 +615,9 @@ var TplMap = map[string]string{
 
 {{ define "content" }}
 <h1>Login</h1>
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
 <form action="/login" method="post" class="auth-form">
     {{ .csrfField }}
     <div class="field">
@@ -788,8 +803,8 @@ var TplMap = map[string]string{
 
 {{ define "content" }}
 <h1>Register</h1>
-{{ if .error }}
-<p class="error">{{ .error }}</p>
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
 <form action="/register" method="post" class="auth-form">
     {{ .csrfField }}

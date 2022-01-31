@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"regexp"
+	"vpub/model"
 )
 
 type UserForm struct {
@@ -31,6 +32,12 @@ func (f *UserForm) Validate() error {
 		return errors.New("password needs to be at least 6 characters")
 	}
 	return nil
+}
+
+func (f *UserForm) Merge(u *model.User) *model.User {
+	u.Name = f.Username
+	u.Password = f.Password
+	return u
 }
 
 func NewUserForm(r *http.Request) *UserForm {

@@ -2,8 +2,8 @@
 
 {{ define "content" }}
 <h1>Register</h1>
-{{ if .error }}
-<p class="error">{{ .error }}</p>
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
 <form action="/register" method="post" class="auth-form">
     {{ .csrfField }}

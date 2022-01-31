@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"vpub/model"
 	"vpub/web/handler/form"
+	"vpub/web/handler/request"
 )
 
 func (h *Handler) ParseIntQS(qs *url.URL, name string) (int64, error) {
@@ -19,7 +20,7 @@ func (h *Handler) ParseIntQS(qs *url.URL, name string) (int64, error) {
 }
 
 func (h *Handler) savePost(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.GetUser(r)
+	user := request.GetUserContextKey(r)
 	postForm := form.NewPostForm(r)
 	post := model.Post{
 		User:    user,
@@ -58,7 +59,7 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) showEditTopicView(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.GetUser(r)
+	user := request.GetUserContextKey(r)
 	if !user.IsAdmin {
 		notFound(w)
 		return
@@ -93,7 +94,7 @@ func (h *Handler) showEditTopicView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.GetUser(r)
+	user := request.GetUserContextKey(r)
 	if !user.IsAdmin {
 		notFound(w)
 		return
@@ -128,7 +129,7 @@ func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.GetUser(r)
+	user := request.GetUserContextKey(r)
 	id := RouteInt64Param(r, "postId")
 	post, err := h.storage.PostById(id)
 	if err != nil {
@@ -151,7 +152,7 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) handleRemovePost(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.GetUser(r)
+	user := request.GetUserContextKey(r)
 	switch r.Method {
 	case "GET":
 		id := RouteInt64Param(r, "postId")

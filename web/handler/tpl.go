@@ -2,13 +2,58 @@ package handler
 
 import (
 	"fmt"
+	"github.com/gorilla/csrf"
 	"html/template"
 	"net/http"
 	"time"
 	"vpub/syntax"
+	"vpub/web/handler/request"
 )
 
 var views = make(map[string]*template.Template)
+
+type View struct {
+	w      http.ResponseWriter
+	r      *http.Request
+	tpl    string
+	params map[string]interface{}
+}
+
+func NewView(w http.ResponseWriter, r *http.Request, tpl string) View {
+	params := make(map[string]interface{})
+	params[csrf.TemplateTag] = csrf.TemplateField(r)
+	return View{
+		w:      w,
+		r:      r,
+		tpl:    tpl,
+		params: params,
+	}
+}
+
+func (v View) Set(key string, val interface{}) {
+	v.params[key] = val
+}
+
+func (v View) Render() {
+	user := request.GetUserContextKey(v.r)
+	data := v.params
+	data["logged"] = user
+	data["settings"] = request.GetSettingsContextKey(v.r)
+	session := request.GetSessionContextKey(v.r)
+	data["errors"] = session.GetFlashErrors()
+	data["info"] = session.GetFlashInfo()
+	session.Save(v.r, v.w)
+	if err := views[v.tpl].Funcs(template.FuncMap{
+		"hasPermission": func(name string) bool {
+			return user.Name == name
+		},
+		"logged": func() bool {
+			return user.Name != ""
+		},
+	}).ExecuteTemplate(v.w, "layout", data); err != nil {
+		fmt.Println(err)
+	}
+}
 
 func (h *Handler) initTpl() {
 	commonTemplates := ""
@@ -75,7 +120,7 @@ func (h *Handler) initTpl() {
 }
 
 func (h *Handler) renderLayout(w http.ResponseWriter, r *http.Request, view string, params map[string]interface{}) {
-	user, _ := h.session.GetUser(r)
+	user := request.GetUserContextKey(r)
 	data := make(map[string]interface{})
 	if params != nil {
 		for k, v := range params {
@@ -94,9 +139,7 @@ func (h *Handler) renderLayout(w http.ResponseWriter, r *http.Request, view stri
 	}
 	data["errors"] = session.GetFlashErrors()
 	data["info"] = session.GetFlashInfo()
-	if err := session.Save(r, w); err != nil {
-		fmt.Println(err)
-	}
+	session.Save(r, w)
 	if err := views[view].Funcs(template.FuncMap{
 		"hasPermission": func(name string) bool {
 			return user.Name == name

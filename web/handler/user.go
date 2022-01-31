@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"vpub/web/handler/form"
+	"vpub/web/handler/request"
 )
 
 func (h *Handler) showUserPostsView(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +37,7 @@ func (h *Handler) showUserPostsView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) showAccountView(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.GetUser(r)
+	user := request.GetUserContextKey(r)
 	h.renderLayout(w, r, "account", map[string]interface{}{
 		"user":           user,
 		csrf.TemplateTag: csrf.TemplateField(r),
@@ -44,7 +45,7 @@ func (h *Handler) showAccountView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) saveAccount(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.GetUser(r)
+	user := request.GetUserContextKey(r)
 	accountForm := form.NewAccountForm(r)
 	user.About = accountForm.About
 	user.Picture = accountForm.Picture

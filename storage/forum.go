@@ -1,6 +1,9 @@
 package storage
 
-import "vpub/model"
+import (
+	"fmt"
+	"vpub/model"
+)
 
 func (s *Storage) CreateForum(forum model.Forum) (int64, error) {
 	var id int64
@@ -45,4 +48,18 @@ func (s *Storage) UpdateForum(forum model.Forum) error {
 	}
 	_, err = stmt.Exec(forum.Name, forum.Position, forum.IsLocked, forum.Id)
 	return err
+}
+
+func (s *Storage) ForumNameExists(name string) bool {
+	var result bool
+	query := `SELECT true FROM forums WHERE lower(name)=lower($1) LIMIT 1`
+	s.db.QueryRow(query, name).Scan(&result)
+	return result
+}
+
+func (s *Storage) AnotherForumExists(id int64, name string) bool {
+	var result bool
+	query := `SELECT true FROM forums WHERE id != $1 AND lower(name)=lower($2) LIMIT 1`
+	s.db.QueryRow(query, id, name).Scan(&result)
+	return result
 }

@@ -2,6 +2,9 @@
 
 {{ define "content" }}
 <h1>Login</h1>
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
 <form action="/login" method="post" class="auth-form">
     {{ .csrfField }}
     <div class="field">

@@ -16,6 +16,9 @@
   </ul>
 </nav>
 <h1>Create board</h1>
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
 <form action="/admin/boards/save" method="post">
   {{ .csrfField }}
   {{ template "board_form" .form }}

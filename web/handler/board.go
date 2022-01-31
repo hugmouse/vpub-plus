@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"vpub/model"
 	"vpub/web/handler/form"
+	"vpub/web/handler/request"
 )
 
 func contains(list []string, val string) bool {
@@ -38,7 +39,7 @@ func (h *Handler) showNewTopicView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.session.GetUser(r)
+	user := request.GetUserContextKey(r)
 	topicForm := form.NewTopicForm(r)
 	post := model.Post{
 		User:    user,
