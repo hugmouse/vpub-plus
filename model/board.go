@@ -13,3 +13,12 @@ type Board struct {
 	Forum       Forum
 	IsLocked    bool
 }
+
+// BoardRequest represents the request to create or update a forum.
+type BoardRequest struct {
+	Name        string
+	Description string
+	IsLocked    bool
+	Position    int64
+	ForumId     int64
+}

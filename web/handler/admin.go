@@ -209,7 +209,7 @@ func (h *Handler) updateForum(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 5. Process request
-	if err := h.storage.UpdateForum(forumRequest.Patch(forum)); err != nil {
+	if err := h.storage.UpdateForum(id, forumRequest); err != nil {
 		v.Set("errorMessage", "Unable to update forum")
 		serverError(w, err)
 		return
@@ -234,30 +234,42 @@ func (h *Handler) updateBoard(w http.ResponseWriter, r *http.Request) {
 
 	boardForm := form.NewBoardForm(r)
 
-	v := NewView(w, r, "admin_board_edit")
+	forums, err := h.storage.Forums()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+
+	boardForm.Forums = forums
+
+	v := NewView(w, r, "admin_board_create")
 	v.Set("board", board)
 	v.Set("form", boardForm)
 
-	if err := boardForm.Validate(); err != nil {
+	boardRequest := model.BoardRequest{
+		Name:        boardForm.Name,
+		Description: boardForm.Description,
+		IsLocked:    boardForm.IsLocked,
+		Position:    boardForm.Position,
+		ForumId:     boardForm.ForumId,
+	}
+
+	if err := validator.ValidateBoardModification(h.storage, id, boardRequest); err != nil {
 		v.Set("errorMessage", err.Error())
-		forums, err := h.storage.Forums()
-		if err != nil {
-			serverError(w, err)
-			return
-		}
-		boardForm.Forums = forums
 		v.Render()
 		return
 	}
 
-	if err := h.storage.UpdateBoard(*boardForm.Merge(&board)); err != nil {
-		serverError(w, err)
+	if err := h.storage.UpdateBoard(id, boardRequest); err != nil {
+		v.Set("errorMessage", "Unable to create board")
+		v.Render()
 		return
 	}
 
 	session := request.GetSessionContextKey(r)
 	session.FlashInfo("Board updated")
 	session.Save(r, w)
+
 	http.Redirect(w, r, fmt.Sprintf("/admin/boards/%d/edit", id), http.StatusFound)
 }
 
@@ -276,24 +288,33 @@ func (h *Handler) updateUserAdmin(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) saveBoard(w http.ResponseWriter, r *http.Request) {
 	boardForm := form.NewBoardForm(r)
 
+	forums, err := h.storage.Forums()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	boardForm.Forums = forums
+
 	v := NewView(w, r, "admin_board_create")
 	v.Set("form", boardForm)
 
-	if err := boardForm.Validate(); err != nil {
+	boardRequest := model.BoardRequest{
+		Name:        boardForm.Name,
+		Description: boardForm.Description,
+		IsLocked:    boardForm.IsLocked,
+		Position:    boardForm.Position,
+		ForumId:     boardForm.ForumId,
+	}
+
+	if err := validator.ValidateBoardCreation(h.storage, boardRequest); err != nil {
 		v.Set("errorMessage", err.Error())
-		forums, err := h.storage.Forums()
-		if err != nil {
-			serverError(w, err)
-			return
-		}
-		boardForm.Forums = forums
 		v.Render()
 		return
 	}
 
-	_, err := h.storage.CreateBoard(*boardForm.Merge(&model.Board{}))
-	if err != nil {
-		serverError(w, err)
+	if _, err := h.storage.CreateBoard(boardRequest); err != nil {
+		v.Set("errorMessage", "Unable to create board")
+		v.Render()
 		return
 	}
 

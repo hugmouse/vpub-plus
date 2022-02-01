@@ -1,10 +1,8 @@
 package form
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
-	"strings"
 	"vpub/model"
 )
 
@@ -15,16 +13,6 @@ type BoardForm struct {
 	Forums      []model.Forum
 	ForumId     int64
 	IsLocked    bool
-}
-
-func (f *BoardForm) Validate() error {
-	if len(strings.TrimSpace(f.Name)) == 0 {
-		return errors.New("Board name can't be empty")
-	}
-	if len(strings.TrimSpace(f.Description)) == 0 {
-		return errors.New("Description name can't be empty")
-	}
-	return nil
 }
 
 func (f *BoardForm) Merge(board *model.Board) *model.Board {

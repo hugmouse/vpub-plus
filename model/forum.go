@@ -14,11 +14,3 @@ type ForumRequest struct {
 	Position int64
 	IsLocked bool
 }
-
-// Patch updates forum fields.
-func (fr ForumRequest) Patch(forum Forum) Forum {
-	forum.Name = fr.Name
-	forum.Position = fr.Position
-	forum.IsLocked = fr.IsLocked
-	return forum
-}

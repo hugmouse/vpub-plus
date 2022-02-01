@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"errors"
 	"fmt"
 	"vpub/model"
 )
@@ -58,13 +59,17 @@ func (s *Storage) ForumById(id int64) (model.Forum, error) {
 	return forum, err
 }
 
-func (s *Storage) UpdateForum(forum model.Forum) error {
-	stmt, err := s.db.Prepare(`UPDATE forums SET name=$1, position=$2, is_locked=$3 WHERE id=$4;`)
-	if err != nil {
-		return err
+func (s *Storage) UpdateForum(forumId int64, request model.ForumRequest) error {
+	query := `
+UPDATE forums 
+SET name=$1, position=$2, is_locked=$3 
+WHERE id=$4
+`
+	if _, err := s.db.Exec(query, request.Name, request.Position, request.IsLocked, forumId); err != nil {
+		return errors.New("unable to update forum")
 	}
-	_, err = stmt.Exec(forum.Name, forum.Position, forum.IsLocked, forum.Id)
-	return err
+
+	return nil
 }
 
 func (s *Storage) ForumNameExists(name string) bool {
