@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"vpub/model"
 )
 
 type SettingsForm struct {
@@ -12,14 +11,6 @@ type SettingsForm struct {
 	Css     string
 	Footer  string
 	PerPage int64
-}
-
-func (f *SettingsForm) Merge(settings *model.Settings) *model.Settings {
-	settings.Name = f.Name
-	settings.Css = f.Css
-	settings.Footer = f.Footer
-	settings.PerPage = f.PerPage
-	return settings
 }
 
 func NewSettingsForm(r *http.Request) *SettingsForm {

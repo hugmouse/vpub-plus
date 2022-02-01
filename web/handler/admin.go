@@ -103,13 +103,21 @@ func (h *Handler) showAdminSettingsView(w http.ResponseWriter, r *http.Request) 
 
 func (h *Handler) updateSettingsAdmin(w http.ResponseWriter, r *http.Request) {
 	settingsForm := form.NewSettingsForm(r)
-	if err := h.storage.UpdateSettings(*settingsForm.Merge(&model.Settings{})); err != nil {
+
+	if err := h.storage.UpdateSettings(model.Settings{
+		Name:    settingsForm.Name,
+		Css:     settingsForm.Css,
+		Footer:  settingsForm.Footer,
+		PerPage: settingsForm.PerPage,
+	}); err != nil {
 		serverError(w, err)
 		return
 	}
+
 	session := request.GetSessionContextKey(r)
 	session.FlashInfo("Settings updated")
 	session.Save(r, w)
+
 	http.Redirect(w, r, "/admin/settings/edit", http.StatusFound)
 }
 
