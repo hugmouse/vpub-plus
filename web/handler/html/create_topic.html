@@ -22,6 +22,9 @@
     </ul>
 </nav>
 <h1>New topic</h1>
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
 <form action="/boards/{{ .board.Id }}/save-topic" method="post">
     {{ .csrfField }}
     <input type="hidden" name="boardId" value="{{ .form.BoardId }}">

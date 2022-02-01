@@ -11,3 +11,13 @@ type Topic struct {
 	UpdatedAt time.Time
 	Post      Post
 }
+
+// TopicRequest represents the request to create or update a topic.
+type TopicRequest struct {
+	BoardId  int64
+	IsSticky bool
+	IsLocked bool
+	UserId   int64
+	Subject  string
+	Content  string
+}

@@ -526,6 +526,9 @@ var TplMap = map[string]string{
     </ul>
 </nav>
 <h1>New topic</h1>
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
 <form action="/boards/{{ .board.Id }}/save-topic" method="post">
     {{ .csrfField }}
     <input type="hidden" name="boardId" value="{{ .form.BoardId }}">
@@ -557,9 +560,11 @@ var TplMap = map[string]string{
 {{ end }}
 `,
 	"edit_topic": `{{ define "title" }}Edit topic{{ end }}
-{{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content" }}
-<h2>New topic</h2>
+<h1>Edit topic</h1>
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
 <form action="/topics/{{ .form.Id }}/update" method="post">
     {{ .csrfField }}
     <input type="hidden" name="boardId" value="{{ .form.BoardId }}">

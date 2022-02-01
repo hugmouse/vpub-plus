@@ -5,7 +5,7 @@ import (
 	"vpub/model"
 )
 
-func (s *Storage) CreateTopic(topic model.Topic) (int64, error) {
+func (s *Storage) CreateTopic(request model.TopicRequest) (int64, error) {
 	var topicId int64
 	ctx := context.Background()
 	tx, err := s.db.BeginTx(ctx, nil)
@@ -13,13 +13,13 @@ func (s *Storage) CreateTopic(topic model.Topic) (int64, error) {
 		return topicId, err
 	}
 	if err := tx.QueryRowContext(ctx, `INSERT INTO topics (is_sticky, is_locked, board_id, post_id) VALUES ($1, $2, $3, -1) RETURNING id`,
-		topic.IsSticky, topic.IsLocked, topic.BoardId).Scan(&topicId); err != nil {
+		request.IsSticky, request.IsLocked, request.BoardId).Scan(&topicId); err != nil {
 		tx.Rollback()
 		return topicId, err
 	}
 	var postId int64
 	if err := tx.QueryRowContext(ctx, `INSERT INTO posts (subject, content, topic_id, user_id) VALUES ($1, $2, $3, $4) RETURNING id`,
-		topic.Post.Subject, topic.Post.Content, topicId, topic.Post.User.Id).Scan(&postId); err != nil {
+		request.Subject, request.Content, topicId, request.UserId).Scan(&postId); err != nil {
 		tx.Rollback()
 		return topicId, err
 	}

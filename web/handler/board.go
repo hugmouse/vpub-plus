@@ -40,30 +40,50 @@ func (h *Handler) showNewTopicView(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request) {
 	user := request.GetUserContextKey(r)
+
 	topicForm := form.NewTopicForm(r)
-	post := model.Post{
-		User:    user,
-		Subject: topicForm.PostForm.Subject,
-		Content: topicForm.PostForm.Content,
-	}
-	if err := post.Validate(); err != nil {
-		serverError(w, err)
+
+	board, err := h.storage.BoardById(topicForm.BoardId)
+	if err != nil {
+		notFound(w)
 		return
 	}
+
+	boards, err := h.storage.Boards()
+	if err != nil {
+		notFound(w)
+		return
+	}
+
+	topicForm.Boards = boards
+
 	boardId := topicForm.NewBoardId
 	if boardId == 0 {
 		boardId = topicForm.BoardId
 	}
-	id, err := h.storage.CreateTopic(model.Topic{
+
+	v := NewView(w, r, "create_topic")
+	v.Set("form", topicForm)
+	v.Set("board", board)
+
+	topicRequest := model.TopicRequest{
 		BoardId:  boardId,
 		IsSticky: topicForm.IsSticky,
 		IsLocked: topicForm.IsLocked,
-		Post:     post,
-	})
+		UserId:   user.Id,
+		Subject:  topicForm.PostForm.Subject,
+		Content:  topicForm.PostForm.Content,
+	}
+
+	// Might want to validate here?
+
+	id, err := h.storage.CreateTopic(topicRequest)
 	if err != nil {
-		serverError(w, err)
+		v.Set("errorMessage", "Unable to create topic")
+		v.Render()
 		return
 	}
+
 	http.Redirect(w, r, fmt.Sprintf("/topics/%d", id), http.StatusFound)
 }
 
