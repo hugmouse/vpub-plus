@@ -2,29 +2,28 @@ package validator
 
 import (
 	"errors"
-	"strings"
 	"vpub/model"
 	"vpub/storage"
 )
 
-func ValidateForumCreation(store *storage.Storage, forum model.Forum) error {
-	if len(strings.TrimSpace(forum.Name)) == 0 {
+func ValidateForumCreation(store *storage.Storage, request model.ForumRequest) error {
+	if checkStringIsEmpty(request.Name) {
 		return errors.New("Forum name can't be empty")
 	}
 
-	if store.ForumNameExists(forum.Name) {
-		return errors.New("A forum with that name already exists")
+	if store.ForumNameExists(request.Name) {
+		return errors.New("Forum name already exists")
 	}
 
 	return nil
 }
 
-func ValidateForumModification(store *storage.Storage, forum model.Forum) error {
-	if len(strings.TrimSpace(forum.Name)) == 0 {
+func ValidateForumModification(store *storage.Storage, forumId int64, request model.ForumRequest) error {
+	if checkStringIsEmpty(request.Name) {
 		return errors.New("Forum name can't be empty")
 	}
 
-	if store.AnotherForumExists(forum.Id, forum.Name) {
+	if store.AnotherForumExists(forumId, request.Name) {
 		return errors.New("A forum with that name already exists")
 	}
 

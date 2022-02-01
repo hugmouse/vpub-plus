@@ -186,26 +186,36 @@ func (h *Handler) updateForum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 1. Build the form object
 	forumForm := form.NewForumForm(r)
 
+	// 2. Prepare the view
 	v := NewView(w, r, "admin_forum_edit")
 	v.Set("forum", forum)
 	v.Set("form", forumForm)
 
-	newForum := forumForm.Merge(forum)
+	// 3. Create request
+	forumRequest := model.ForumRequest{
+		Name:     forumForm.Name,
+		Position: forumForm.Position,
+		IsLocked: forumForm.IsLocked,
+	}
 
-	if err := validator.ValidateForumModification(h.storage, newForum); err != nil {
+	// 4. Validate request
+	if err := validator.ValidateForumModification(h.storage, id, forumRequest); err != nil {
 		v.Set("errorMessage", err.Error())
 		v.Render()
 		return
 	}
 
-	if err := h.storage.UpdateForum(newForum); err != nil {
+	// 5. Process request
+	if err := h.storage.UpdateForum(forumRequest.Patch(forum)); err != nil {
 		v.Set("errorMessage", "Unable to update forum")
 		serverError(w, err)
 		return
 	}
 
+	// 6. Happy path
 	session := request.GetSessionContextKey(r)
 	session.FlashInfo("Forum updated")
 	session.Save(r, w)
@@ -291,29 +301,35 @@ func (h *Handler) saveBoard(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) saveForum(w http.ResponseWriter, r *http.Request) {
+	// 1. Build the form object
 	forumForm := form.NewForumForm(r)
 
+	// 2. Prepare the view
 	v := NewView(w, r, "admin_forum_create")
 	v.Set("form", forumForm)
 
-	forum := model.Forum{
+	// 3. Create request
+	forumRequest := model.ForumRequest{
 		Name:     forumForm.Name,
 		Position: forumForm.Position,
 		IsLocked: forumForm.IsLocked,
 	}
 
-	if err := validator.ValidateForumCreation(h.storage, forum); err != nil {
+	// 4. Validate request
+	if err := validator.ValidateForumCreation(h.storage, forumRequest); err != nil {
 		v.Set("errorMessage", err.Error())
 		v.Render()
 		return
 	}
 
-	if _, err := h.storage.CreateForum(forum); err != nil {
+	// 5. Process the request
+	if _, err := h.storage.CreateForum(forumRequest); err != nil {
 		v.Set("errorMessage", "Unable to create forum")
 		serverError(w, err)
 		return
 	}
 
+	// 6. Happy path
 	http.Redirect(w, r, "/admin/forums", http.StatusFound)
 }
 

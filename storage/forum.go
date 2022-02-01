@@ -5,10 +5,27 @@ import (
 	"vpub/model"
 )
 
-func (s *Storage) CreateForum(forum model.Forum) (int64, error) {
+func (s *Storage) CreateForum(request model.ForumRequest) (int64, error) {
 	var id int64
-	err := s.db.QueryRow(`INSERT INTO forums (name, position, is_locked) VALUES ($1, $2, $3) RETURNING id`,
-		forum.Name, forum.Position, forum.IsLocked).Scan(&id)
+
+	query := `
+INSERT INTO forums (name, position, is_locked)
+VALUES ($1, $2, $3)
+RETURNING id
+`
+	err := s.db.QueryRow(
+		query,
+		request.Name,
+		request.Position,
+		request.IsLocked,
+	).Scan(
+		&id,
+	)
+
+	if err != nil {
+		return id, fmt.Errorf(`store: unable to create forum %q: %v`, request.Name, err)
+	}
+
 	return id, err
 }
 
