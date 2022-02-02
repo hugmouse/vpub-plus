@@ -1,10 +1,35 @@
 {{ define "title" }}Edit Post{{ end }}
-
 {{ define "content" }}
-    <h2>Edit Post</h2>
-    <form action="/posts/{{ .post.Id }}/update" method="post">
-        {{ .csrfField }}
-        {{ template "post_form" .form }}
-        <input type="submit" value="Update">
-    </form>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/">All forums</a>
+            <ul>
+                <li>
+                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                    <ul>
+                        <li>
+                            <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+                            <ul>
+                                <li>{{ .topic.Post.Subject }}</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+<h1>Edit Post</h1>
+
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
+
+<form action="/posts/{{ .post.Id }}/update" method="post">
+    {{ .csrfField }}
+    {{ template "post_form" .form }}
+    <input type="submit" value="Reply">
+</form>
 {{ end }}

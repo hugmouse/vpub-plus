@@ -15,6 +15,14 @@ type Post struct {
 	UpdatedAt time.Time
 }
 
+// PostRequest represents the request to create or update a post.
+type PostRequest struct {
+	UserId  int64
+	Subject string
+	Content string
+	TopicId int64
+}
+
 func (p Post) Validate() error {
 	if len(p.Subject) == 0 {
 		return errors.New("title is empty")

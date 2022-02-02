@@ -1,6 +1,5 @@
 {{ define "breadcrumb" }}<a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
-<!--<h1><a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a></h1>-->
 <nav class="breadcrumb">
     <ul>
         <li>
@@ -67,6 +66,9 @@
 {{ if logged }}
 {{ if or (and (not .topic.IsLocked) (not .board.IsLocked) (not .board.Forum.IsLocked)) .logged.IsAdmin }}
 <section style="margin-top: 1em;">
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
     <form action="/posts/save" method="post">
         {{ .csrfField }}
         <input type="hidden" name="topicId" value="{{ .topic.Id }}">

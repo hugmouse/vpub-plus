@@ -502,6 +502,42 @@ var TplMap = map[string]string{
         <input type="submit" value="Submit">
     </form>
 {{ end }}`,
+	"create_post": `{{ define "title" }}Create Post{{ end }}
+{{ define "content" }}
+<nav class="breadcrumb">
+  <ul>
+    <li>
+      <a href="/">All forums</a>
+      <ul>
+        <li>
+          <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+          <ul>
+            <li>
+              <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+              <ul>
+                <li>{{ .topic.Post.Subject }}</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+<h1>Create Post</h1>
+
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
+
+<form action="/posts/save" method="post">
+  {{ .csrfField }}
+  {{ template "post_form" .form }}
+  <input type="submit" value="Reply">
+</form>
+{{ end }}
+`,
 	"create_topic": `{{ define "title" }}New topic{{ end }}
 {{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content" }}
@@ -541,14 +577,39 @@ var TplMap = map[string]string{
 {{ end }}
 `,
 	"edit_post": `{{ define "title" }}Edit Post{{ end }}
-
 {{ define "content" }}
-    <h2>Edit Post</h2>
-    <form action="/posts/{{ .post.Id }}/update" method="post">
-        {{ .csrfField }}
-        {{ template "post_form" .form }}
-        <input type="submit" value="Update">
-    </form>
+<nav class="breadcrumb">
+    <ul>
+        <li>
+            <a href="/">All forums</a>
+            <ul>
+                <li>
+                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                    <ul>
+                        <li>
+                            <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+                            <ul>
+                                <li>{{ .topic.Post.Subject }}</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+<h1>Edit Post</h1>
+
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
+
+<form action="/posts/{{ .post.Id }}/update" method="post">
+    {{ .csrfField }}
+    {{ template "post_form" .form }}
+    <input type="submit" value="Reply">
+</form>
 {{ end }}
 `,
 	"edit_reply": `{{ define "content" }}
@@ -856,7 +917,6 @@ var TplMap = map[string]string{
 {{ end }}`,
 	"topic": `{{ define "breadcrumb" }}<a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
-<!--<h1><a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a></h1>-->
 <nav class="breadcrumb">
     <ul>
         <li>
@@ -923,6 +983,9 @@ var TplMap = map[string]string{
 {{ if logged }}
 {{ if or (and (not .topic.IsLocked) (not .board.IsLocked) (not .board.Forum.IsLocked)) .logged.IsAdmin }}
 <section style="margin-top: 1em;">
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
     <form action="/posts/save" method="post">
         {{ .csrfField }}
         <input type="hidden" name="topicId" value="{{ .topic.Id }}">

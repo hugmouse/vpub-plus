@@ -22,22 +22,42 @@ func (h *Handler) ParseIntQS(qs *url.URL, name string) (int64, error) {
 
 func (h *Handler) savePost(w http.ResponseWriter, r *http.Request) {
 	user := request.GetUserContextKey(r)
+
 	postForm := form.NewPostForm(r)
-	post := model.Post{
-		User:    user,
+
+	topic, err := h.storage.TopicById(postForm.TopicId)
+	if err != nil {
+		notFound(w)
+		return
+	}
+
+	board, err := h.storage.BoardById(topic.BoardId)
+
+	v := NewView(w, r, "create_post")
+	v.Set("form", postForm)
+	v.Set("board", board)
+	v.Set("topic", topic)
+
+	postRequest := model.PostRequest{
+		UserId:  user.Id,
 		Subject: postForm.Subject,
 		Content: postForm.Content,
 		TopicId: postForm.TopicId,
 	}
-	if err := post.Validate(); err != nil {
-		serverError(w, err)
+
+	if err := validator.ValidatePostRequest(postRequest); err != nil {
+		v.Set("errorMessage", err.Error())
+		v.Render()
 		return
 	}
-	id, err := h.storage.CreatePost(post)
+
+	id, err := h.storage.CreatePost(postRequest)
 	if err != nil {
-		serverError(w, err)
+		v.Set("errorMessage", "Unable to create post")
+		v.Render()
 		return
 	}
+
 	http.Redirect(w, r, fmt.Sprintf("/topics/%d#%d", postForm.TopicId, id), http.StatusFound)
 }
 
@@ -47,6 +67,15 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request) {
 		serverError(w, err)
 		return
 	}
+
+	topic, err := h.storage.TopicById(post.TopicId)
+	if err != nil {
+		notFound(w)
+		return
+	}
+
+	board, err := h.storage.BoardById(topic.BoardId)
+
 	postForm := form.PostForm{
 		Subject: post.Subject,
 		Content: post.Content,
@@ -55,6 +84,8 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request) {
 	h.renderLayout(w, r, "edit_post", map[string]interface{}{
 		"form":           postForm,
 		"post":           post,
+		"topic":          topic,
+		"board":          board,
 		csrf.TemplateTag: csrf.TemplateField(r),
 	})
 }
@@ -151,25 +182,44 @@ func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request) {
 	user := request.GetUserContextKey(r)
+
 	id := RouteInt64Param(r, "postId")
-	post, err := h.storage.PostById(id)
-	if err != nil {
-		serverError(w, err)
-		return
-	}
+
 	postForm := form.NewPostForm(r)
-	post.Subject = postForm.Subject
-	post.Content = postForm.Content
-	post.User = user
-	if err := post.Validate(); err != nil {
-		serverError(w, err)
+
+	topic, err := h.storage.TopicById(postForm.TopicId)
+	if err != nil {
+		notFound(w)
 		return
 	}
-	if err := h.storage.UpdatePost(post); err != nil {
-		serverError(w, err)
+
+	board, err := h.storage.BoardById(topic.BoardId)
+
+	v := NewView(w, r, "edit_post")
+	v.Set("form", postForm)
+	v.Set("board", board)
+	v.Set("topic", topic)
+
+	postRequest := model.PostRequest{
+		UserId:  user.Id,
+		Subject: postForm.Subject,
+		Content: postForm.Content,
+		TopicId: postForm.TopicId,
+	}
+
+	if err := validator.ValidatePostRequest(postRequest); err != nil {
+		v.Set("errorMessage", err.Error())
+		v.Render()
 		return
 	}
-	http.Redirect(w, r, fmt.Sprintf("/topics/%d", post.TopicId), http.StatusFound)
+
+	if err := h.storage.UpdatePost(id, postRequest); err != nil {
+		v.Set("errorMessage", "Unable to create post")
+		v.Render()
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/topics/%d#%d", postForm.TopicId, id), http.StatusFound)
 }
 
 func (h *Handler) handleRemovePost(w http.ResponseWriter, r *http.Request) {

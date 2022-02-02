@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"errors"
 	"vpub/model"
 )
 
@@ -56,10 +57,34 @@ limit $2`, settings.PerPage*(page-1), settings.PerPage+1)
 	return posts, false, nil
 }
 
-func (s *Storage) CreatePost(post model.Post) (int64, error) {
+func (s *Storage) CreatePost(request model.PostRequest) (int64, error) {
 	var id int64
-	err := s.db.QueryRow(`INSERT INTO posts (subject, content, user_id, topic_id) VALUES ($1, $2, $3, $4) returning id`, post.Subject, post.Content, post.User.Id, post.TopicId).Scan(&id)
-	return id, err
+
+	query := `
+		INSERT INTO
+			posts (
+				   subject, 
+				   content,        
+				   user_id,              
+				   topic_id
+				   ) 
+		VALUES ($1, $2, $3, $4)
+		returning id
+    `
+
+	if err := s.db.QueryRow(
+		query,
+		request.Subject,
+		request.Content,
+		request.UserId,
+		request.TopicId,
+	).Scan(
+		&id,
+	); err != nil {
+		return id, errors.New("unable to create post")
+	}
+
+	return id, nil
 }
 
 func (s *Storage) PostById(id int64) (model.Post, error) {
@@ -80,11 +105,26 @@ func (s *Storage) DeletePost(post model.Post) error {
 	return err
 }
 
-func (s *Storage) UpdatePost(post model.Post) error {
-	stmt, err := s.db.Prepare(`UPDATE posts SET subject=$1, content=$2, updated_at=now() WHERE id=$3 and (user_id=$4 or (select is_admin from users where id=$4));`)
-	if err != nil {
-		return err
+func (s *Storage) UpdatePost(id int64, request model.PostRequest) error {
+	query := `
+        UPDATE posts
+        SET 
+            subject=$1,
+            content=$2,
+            updated_at=now() 
+        WHERE 
+              id=$3 and (user_id=$4 or (select is_admin from users where id=$4))
+    `
+
+	if _, err := s.db.Exec(
+		query,
+		request.Subject,
+		request.Content,
+		id,
+		request.UserId,
+	); err != nil {
+		return errors.New("unable to update post")
 	}
-	_, err = stmt.Exec(post.Subject, post.Content, post.Id, post.User.Id)
-	return err
+
+	return nil
 }
