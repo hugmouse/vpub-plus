@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strconv"
 	"vpub/model"
+	"vpub/validator"
 	"vpub/web/handler/form"
 	"vpub/web/handler/request"
 )
@@ -95,37 +96,57 @@ func (h *Handler) showEditTopicView(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
 	user := request.GetUserContextKey(r)
-	if !user.IsAdmin {
-		notFound(w)
-		return
-	}
+
 	id := RouteInt64Param(r, "topicId")
-	t, err := h.storage.TopicById(id)
+
+	topicForm := form.NewTopicForm(r)
+
+	boards, err := h.storage.Boards()
 	if err != nil {
 		notFound(w)
 		return
 	}
-	topicForm := form.NewTopicForm(r)
+
+	topicForm.Boards = boards
+
+	board, err := h.storage.BoardById(topicForm.BoardId)
+	if err != nil {
+		notFound(w)
+		return
+	}
+
+	v := NewView(w, r, "create_topic")
+	v.Set("form", topicForm)
+	v.Set("board", board)
+
 	boardId := topicForm.NewBoardId
 	if boardId == 0 {
 		boardId = topicForm.BoardId
 	}
-	topic := model.Topic{
-		Id:       id,
+
+	topicRequest := model.TopicRequest{
 		BoardId:  boardId,
 		IsSticky: topicForm.IsSticky,
 		IsLocked: topicForm.IsLocked,
-		Post: model.Post{
-			Id:      t.Post.Id,
-			Subject: topicForm.PostForm.Subject,
-			Content: topicForm.PostForm.Content,
-		},
+		UserId:   user.Id,
+		Subject:  topicForm.PostForm.Subject,
+		Content:  topicForm.PostForm.Content,
 	}
-	if err := h.storage.UpdateTopic(topic); err != nil {
-		serverError(w, err)
+
+	if err := validator.ValidateTopicRequest(topicRequest); err != nil {
+		v.Set("errorMessage", err.Error())
+		v.Render()
 		return
 	}
-	http.Redirect(w, r, fmt.Sprintf("/topics/%d", topic.Id), http.StatusFound)
+
+	err = h.storage.UpdateTopic(id, topicRequest)
+	if err != nil {
+		v.Set("errorMessage", "Unable to create topic")
+		v.Render()
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/topics/%d", id), http.StatusFound)
 }
 
 func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request) {

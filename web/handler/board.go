@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"vpub/model"
+	"vpub/validator"
 	"vpub/web/handler/form"
 	"vpub/web/handler/request"
 )
@@ -43,12 +44,6 @@ func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request) {
 
 	topicForm := form.NewTopicForm(r)
 
-	board, err := h.storage.BoardById(topicForm.BoardId)
-	if err != nil {
-		notFound(w)
-		return
-	}
-
 	boards, err := h.storage.Boards()
 	if err != nil {
 		notFound(w)
@@ -57,14 +52,20 @@ func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request) {
 
 	topicForm.Boards = boards
 
-	boardId := topicForm.NewBoardId
-	if boardId == 0 {
-		boardId = topicForm.BoardId
+	board, err := h.storage.BoardById(topicForm.BoardId)
+	if err != nil {
+		notFound(w)
+		return
 	}
 
 	v := NewView(w, r, "create_topic")
 	v.Set("form", topicForm)
 	v.Set("board", board)
+
+	boardId := topicForm.NewBoardId
+	if boardId == 0 {
+		boardId = topicForm.BoardId
+	}
 
 	topicRequest := model.TopicRequest{
 		BoardId:  boardId,
@@ -75,7 +76,11 @@ func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request) {
 		Content:  topicForm.PostForm.Content,
 	}
 
-	// Might want to validate here?
+	if err := validator.ValidateTopicRequest(topicRequest); err != nil {
+		v.Set("errorMessage", err.Error())
+		v.Render()
+		return
+	}
 
 	id, err := h.storage.CreateTopic(topicRequest)
 	if err != nil {

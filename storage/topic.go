@@ -31,17 +31,20 @@ func (s *Storage) CreateTopic(request model.TopicRequest) (int64, error) {
 	return topicId, err
 }
 
-func (s *Storage) UpdateTopic(topic model.Topic) error {
+func (s *Storage) UpdateTopic(id int64, request model.TopicRequest) error {
 	ctx := context.Background()
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
-	if _, err := tx.ExecContext(ctx, `UPDATE topics set is_locked=$1, is_sticky=$2, board_id=$3 where id=$4`, topic.IsLocked, topic.IsSticky, topic.BoardId, topic.Id); err != nil {
+	var postId int64
+	if err := tx.QueryRowContext(ctx, `
+UPDATE topics set is_locked=$1, is_sticky=$2, board_id=$3 where id=$4 returning post_id
+`, request.IsLocked, request.IsSticky, request.BoardId, id).Scan(&postId); err != nil {
 		tx.Rollback()
 		return err
 	}
-	if _, err := tx.ExecContext(ctx, `UPDATE posts set subject=$1, content=$2 where id=$3`, topic.Post.Subject, topic.Post.Content, topic.Post.Id); err != nil {
+	if _, err := tx.ExecContext(ctx, `UPDATE posts set subject=$1, content=$2 where id=$3`, request.Subject, request.Content, postId); err != nil {
 		tx.Rollback()
 		return err
 	}

@@ -127,7 +127,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Manager) (http.Ha
 	// Topic
 	router.HandleFunc("/topics/{topicId}", h.showTopicView).Methods(http.MethodGet)
 	router.HandleFunc("/topics/{topicId}/edit", h.protect(h.showEditTopicView)).Methods(http.MethodGet)
-	router.HandleFunc("/topics/{topicId}/update", h.protect(h.updateTopic)).Methods(http.MethodPost)
+	router.HandleFunc("/topics/{topicId}/update", h.admin(h.updateTopic)).Methods(http.MethodPost)
 
 	router.HandleFunc("/posts/save", h.protect(h.savePost)).Methods(http.MethodPost)
 	//router.HandleFunc("/posts/{postId}", h.showPostView).Methods(http.MethodGet)
