@@ -39,10 +39,8 @@ func (h *Handler) savePost(w http.ResponseWriter, r *http.Request) {
 	v.Set("topic", topic)
 
 	postRequest := model.PostRequest{
-		UserId:  user.Id,
 		Subject: postForm.Subject,
 		Content: postForm.Content,
-		TopicId: postForm.TopicId,
 	}
 
 	if err := validator.ValidatePostRequest(postRequest); err != nil {
@@ -51,7 +49,7 @@ func (h *Handler) savePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := h.storage.CreatePost(postRequest)
+	id, err := h.storage.CreatePost(user.Id, postForm.TopicId, postRequest)
 	if err != nil {
 		v.Set("errorMessage", "Unable to create post")
 		v.Render()
@@ -126,8 +124,6 @@ func (h *Handler) showEditTopicView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
-	user := request.GetUserContextKey(r)
-
 	id := RouteInt64Param(r, "topicId")
 
 	topicForm := form.NewTopicForm(r)
@@ -155,22 +151,21 @@ func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
 		boardId = topicForm.BoardId
 	}
 
-	topicRequest := model.TopicRequest{
+	topicModificationRequest := model.TopicRequest{
 		BoardId:  boardId,
 		IsSticky: topicForm.IsSticky,
 		IsLocked: topicForm.IsLocked,
-		UserId:   user.Id,
 		Subject:  topicForm.PostForm.Subject,
 		Content:  topicForm.PostForm.Content,
 	}
 
-	if err := validator.ValidateTopicRequest(topicRequest); err != nil {
+	if err := validator.ValidateTopicRequest(topicModificationRequest); err != nil {
 		v.Set("errorMessage", err.Error())
 		v.Render()
 		return
 	}
 
-	err = h.storage.UpdateTopic(id, topicRequest)
+	err = h.storage.UpdateTopic(id, topicModificationRequest)
 	if err != nil {
 		v.Set("errorMessage", "Unable to create topic")
 		v.Render()
@@ -201,10 +196,8 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request) {
 	v.Set("topic", topic)
 
 	postRequest := model.PostRequest{
-		UserId:  user.Id,
 		Subject: postForm.Subject,
 		Content: postForm.Content,
-		TopicId: postForm.TopicId,
 	}
 
 	if err := validator.ValidatePostRequest(postRequest); err != nil {
@@ -213,7 +206,7 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.storage.UpdatePost(id, postRequest); err != nil {
+	if err := h.storage.UpdatePost(id, user.Id, postRequest); err != nil {
 		v.Set("errorMessage", "Unable to create post")
 		v.Render()
 		return

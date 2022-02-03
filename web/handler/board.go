@@ -67,22 +67,21 @@ func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request) {
 		boardId = topicForm.BoardId
 	}
 
-	topicRequest := model.TopicRequest{
+	topicCreationRequest := model.TopicRequest{
 		BoardId:  boardId,
 		IsSticky: topicForm.IsSticky,
 		IsLocked: topicForm.IsLocked,
-		UserId:   user.Id,
 		Subject:  topicForm.PostForm.Subject,
 		Content:  topicForm.PostForm.Content,
 	}
 
-	if err := validator.ValidateTopicRequest(topicRequest); err != nil {
+	if err := validator.ValidateTopicRequest(topicCreationRequest); err != nil {
 		v.Set("errorMessage", err.Error())
 		v.Render()
 		return
 	}
 
-	id, err := h.storage.CreateTopic(topicRequest)
+	id, err := h.storage.CreateTopic(user.Id, topicCreationRequest)
 	if err != nil {
 		v.Set("errorMessage", "Unable to create topic")
 		v.Render()

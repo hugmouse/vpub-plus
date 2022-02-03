@@ -17,7 +17,6 @@ type TopicRequest struct {
 	BoardId  int64
 	IsSticky bool
 	IsLocked bool
-	UserId   int64
 	Subject  string
 	Content  string
 }

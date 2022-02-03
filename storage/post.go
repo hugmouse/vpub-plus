@@ -57,17 +57,12 @@ limit $2`, settings.PerPage*(page-1), settings.PerPage+1)
 	return posts, false, nil
 }
 
-func (s *Storage) CreatePost(request model.PostRequest) (int64, error) {
+func (s *Storage) CreatePost(userId, topicId int64, request model.PostRequest) (int64, error) {
 	var id int64
 
 	query := `
-		INSERT INTO
-			posts (
-				   subject, 
-				   content,        
-				   user_id,              
-				   topic_id
-				   ) 
+		INSERT INTO	posts 
+		    (subject, content, user_id, topic_id) 
 		VALUES ($1, $2, $3, $4)
 		returning id
     `
@@ -76,8 +71,8 @@ func (s *Storage) CreatePost(request model.PostRequest) (int64, error) {
 		query,
 		request.Subject,
 		request.Content,
-		request.UserId,
-		request.TopicId,
+		userId,
+		topicId,
 	).Scan(
 		&id,
 	); err != nil {
@@ -105,7 +100,7 @@ func (s *Storage) DeletePost(post model.Post) error {
 	return err
 }
 
-func (s *Storage) UpdatePost(id int64, request model.PostRequest) error {
+func (s *Storage) UpdatePost(id, userId int64, request model.PostRequest) error {
 	query := `
         UPDATE posts
         SET 
@@ -113,7 +108,7 @@ func (s *Storage) UpdatePost(id int64, request model.PostRequest) error {
             content=$2,
             updated_at=now() 
         WHERE 
-              id=$3 and (user_id=$4 or (select is_admin from users where id=$4))
+            id=$3 and (user_id=$4 or (select is_admin from users where id=$4))
     `
 
 	if _, err := s.db.Exec(
@@ -121,7 +116,7 @@ func (s *Storage) UpdatePost(id int64, request model.PostRequest) error {
 		request.Subject,
 		request.Content,
 		id,
-		request.UserId,
+		userId,
 	); err != nil {
 		return errors.New("unable to update post")
 	}

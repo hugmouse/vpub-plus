@@ -264,6 +264,7 @@ var TplMap = map[string]string{
     <tr>
         <th class="grow">Key</th>
         <th>Created</th>
+        <th>Delete</th>
     </tr>
     </thead>
     <tbody>
@@ -271,6 +272,7 @@ var TplMap = map[string]string{
     <tr>
         <td colspan="grow">{{ .Key }}</td>
         <td class="center">{{ iso8601 .CreatedAt }}</td>
+        <td class="center"><a href="/admin/keys/{{ .Id }}/remove">Delete</a></td>
     </tr>
     {{ end }}
     </tbody>

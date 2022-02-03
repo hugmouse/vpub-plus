@@ -369,3 +369,11 @@ func (h *Handler) saveKey(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Redirect(w, r, "/admin/keys", http.StatusFound)
 }
+
+func (h *Handler) handleRemoveKey(w http.ResponseWriter, r *http.Request) {
+	id := RouteInt64Param(r, "keyId")
+
+	h.storage.DeleteKey(id)
+
+	http.Redirect(w, r, fmt.Sprintf("/admin/keys"), http.StatusFound)
+}
