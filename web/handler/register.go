@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"vpub/model"
-	"vpub/storage"
+	"vpub/validator"
 	"vpub/web/handler/form"
 	"vpub/web/handler/request"
 )
@@ -26,22 +26,28 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := *userForm.Merge(&model.User{})
-	id, err := h.storage.CreateUser(user, userForm.Key)
+	userCreationRequest := model.UserCreationRequest{
+		Name:     userForm.Username,
+		Password: userForm.Password,
+	}
+
+	if err := validator.ValidateUserCreation(h.storage, userForm.Key, userCreationRequest); err != nil {
+		v.Set("errorMessage", err.Error())
+		v.Render()
+		return
+	}
+
+	id, err := h.storage.CreateUser(userForm.Key, userCreationRequest)
 	if err != nil {
-		switch err.(type) {
-		case storage.ErrUserExists:
-			v.Set("errorMessage", "This username is already taken")
-		default:
-			v.Set("errorMessage", "An unexpected error happened")
-		}
+		v.Set("errorMessage", "Unable to create user")
 		v.Render()
 		return
 	}
 
 	session := request.GetSessionContextKey(r)
 	session.SetUserId(id)
-	session.FlashInfo(fmt.Sprintf("Welcome, %s!", user.Name))
+	session.FlashInfo(fmt.Sprintf("Welcome, %s!", userCreationRequest.Name))
 	session.Save(r, w)
+
 	http.Redirect(w, r, "/", http.StatusFound)
 }

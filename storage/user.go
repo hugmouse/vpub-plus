@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"golang.org/x/crypto/bcrypt"
 	"vpub/model"
 )
 
@@ -67,21 +68,25 @@ func (s *Storage) UserById(id int64) (model.User, error) {
 	return s.queryUser(`SELECT id, name, hash, about, is_admin, picture FROM users WHERE id=$1;`, id)
 }
 
-func (s *Storage) CreateUser(user model.User, key string) (int64, error) {
+func hashPassword(password string) ([]byte, error) {
+	return bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
+}
+
+func (s *Storage) CreateUser(key string, request model.UserCreationRequest) (int64, error) {
 	var userId int64
-	hash, err := user.HashPassword()
+	hash, err := hashPassword(request.Password)
 	ctx := context.Background()
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return userId, err
 	}
 	var keyId int64
-	if err := tx.QueryRowContext(ctx, `select id from keys where key=$1`, key).Scan(&keyId); err != nil {
+	if err := tx.QueryRowContext(ctx, `select id from keys where key=$1 and user_id is null`, key).Scan(&keyId); err != nil {
 		tx.Rollback()
 		return userId, err
 	}
 	var exists bool
-	if err := tx.QueryRowContext(ctx, `select exists(select 1 from users where name=$1)`, user.Name).Scan(&exists); err != nil {
+	if err := tx.QueryRowContext(ctx, `select exists(select 1 from users where name=$1)`, request.Name).Scan(&exists); err != nil {
 		tx.Rollback()
 		return userId, err
 	}
@@ -89,7 +94,7 @@ func (s *Storage) CreateUser(user model.User, key string) (int64, error) {
 		tx.Rollback()
 		return userId, ErrUserExists{}
 	}
-	if err := tx.QueryRowContext(ctx, `insert into users (name, hash, is_admin) values (lower($1), $2, $3) returning id`, user.Name, string(hash), user.IsAdmin).Scan(&userId); err != nil {
+	if err := tx.QueryRowContext(ctx, `insert into users (name, hash, is_admin) values (lower($1), $2, $3) returning id`, request.Name, string(hash), request.IsAdmin).Scan(&userId); err != nil {
 		tx.Rollback()
 		return userId, err
 	}
@@ -128,7 +133,7 @@ func (s *Storage) UpdateUser(user model.User) error {
 }
 
 func (s *Storage) UpdatePassword(hash string, user model.User) error {
-	newHash, err := user.HashPassword()
+	newHash, err := hashPassword(user.Password)
 	stmt, err := s.db.Prepare(`UPDATE users SET hash=$1 where hash=$2;`)
 	if err != nil {
 		return err

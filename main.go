@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"time"
 	"vpub/config"
-	"vpub/model"
 	"vpub/storage"
 	"vpub/web"
 )
@@ -87,11 +86,11 @@ func main() {
 		log.Fatal(err)
 	}
 	data := storage.New(db)
-	if !data.HasAdmin() {
-		if _, err := data.CreateUser(model.User{Name: "admin", Password: "admin", IsAdmin: true}, "admin"); err != nil {
-			log.Fatal(err)
-		}
-	}
+	//if !data.HasAdmin() {
+	//	if _, err := data.CreateUser(model.User{Name: "admin", Password: "admin", IsAdmin: true}, "admin"); err != nil {
+	//		log.Fatal(err)
+	//	}
+	//}
 	//seedTestData(1000, 100, data)
 	//if _, err := data.ForumById(1); err != nil {
 	//	fId, _ := data.CreateForum(model.Forum{

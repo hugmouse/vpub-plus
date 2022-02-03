@@ -1,9 +1,7 @@
 package model
 
 import (
-	"errors"
 	"golang.org/x/crypto/bcrypt"
-	"regexp"
 )
 
 type User struct {
@@ -16,23 +14,17 @@ type User struct {
 	IsAdmin  bool
 }
 
-func (u User) Validate() error {
-	if u.Name == "" {
-		return errors.New("username is mandatory")
-	}
-	if u.Password == "" {
-		return errors.New("password is mandatory")
-	}
-	match, _ := regexp.MatchString("^[a-z0-9-_]+$", u.Name)
-	if !match {
-		return errors.New("username should match [a-z0-9-_]")
-	}
-	return nil
+// UserCreationRequest represents the request to create a user.
+type UserCreationRequest struct {
+	Name     string
+	Password string
+	IsAdmin  bool
 }
 
-func (u User) HashPassword() ([]byte, error) {
-	return bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.MinCost)
-}
+//
+//func (u User) HashPassword() ([]byte, error) {
+//	return bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.MinCost)
+//}
 
 func (u User) CompareHashToPassword(hash string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(u.Password))

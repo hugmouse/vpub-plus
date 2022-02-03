@@ -60,3 +60,9 @@ func (s *Storage) DeleteKey(id int64) error {
 
 	return nil
 }
+
+func (s *Storage) KeyExists(key string) bool {
+	var rv bool
+	s.db.QueryRow(`SELECT true FROM keys WHERE key=$1 and user_id is null`, key).Scan(&rv)
+	return rv
+}
