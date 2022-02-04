@@ -9,11 +9,6 @@ import (
 	"vpub/web/handler/request"
 )
 
-func (h *Handler) showRegisterView(w http.ResponseWriter, r *http.Request) {
-	v := NewView(w, r, "register")
-	v.Render()
-}
-
 func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 	userForm := form.NewUserForm(r)
 

@@ -104,86 +104,90 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Manager) (http.Ha
 
 	// Static assets
 	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)
+
+	// All public views
+	publicSubRouter := router.PathPrefix("/").Subrouter()
+
 	//router.HandleFunc("/favicon.ico", h.showFavicon).Name("favicon").Methods(http.MethodGet)
 	//router.HandleFunc("/feed.atom", h.showFeedView).Methods(http.MethodGet)
 
 	// Auth
-	router.HandleFunc("/login", h.showLoginView).Methods(http.MethodGet)
-	router.HandleFunc("/login", h.checkLogin).Methods(http.MethodPost)
-	router.HandleFunc("/register", h.showRegisterView).Methods(http.MethodGet)
-	router.HandleFunc("/register", h.register).Methods(http.MethodPost)
-	router.HandleFunc("/logout", h.logout).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/login", h.showLoginView).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/login", h.checkLogin).Methods(http.MethodPost)
+	publicSubRouter.HandleFunc("/register", h.showRegisterView).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/register", h.register).Methods(http.MethodPost)
+	publicSubRouter.HandleFunc("/logout", h.logout).Methods(http.MethodGet)
 
 	// Boards
-	router.HandleFunc("/boards/{boardId}", h.showBoardView).Methods(http.MethodGet)
-	router.HandleFunc("/boards/{boardId}/new-topic", h.protect(h.showNewTopicView)).Methods(http.MethodGet)
-	router.HandleFunc("/boards/{boardId}/save-topic", h.protect(h.saveTopic)).Methods(http.MethodPost)
+	publicSubRouter.HandleFunc("/boards/{boardId}", h.showBoardView).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/boards/{boardId}/new-topic", h.protect(h.showCreateTopicView)).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/boards/{boardId}/save-topic", h.protect(h.saveTopic)).Methods(http.MethodPost)
 	//router.HandleFunc("/boards/{boardId}/feed.atom", h.showFeedViewTopic).Methods(http.MethodGet)
 
 	// Forums
-	router.HandleFunc("/forums/{forumId}", h.showForumView).Methods(http.MethodGet)
-	router.HandleFunc("/posts", h.showPostsView).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/forums/{forumId}", h.showForumView).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/posts", h.showPostListView).Methods(http.MethodGet)
 
 	// Topic
-	router.HandleFunc("/topics/{topicId}", h.showTopicView).Methods(http.MethodGet)
-	router.HandleFunc("/topics/{topicId}/edit", h.protect(h.showEditTopicView)).Methods(http.MethodGet)
-	router.HandleFunc("/topics/{topicId}/update", h.admin(h.updateTopic)).Methods(http.MethodPost)
+	publicSubRouter.HandleFunc("/topics/{topicId}", h.showTopicView).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/topics/{topicId}/edit", h.protect(h.showEditTopicView)).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/topics/{topicId}/update", h.admin(h.updateTopic)).Methods(http.MethodPost)
 
-	router.HandleFunc("/posts/save", h.protect(h.savePost)).Methods(http.MethodPost)
-	//router.HandleFunc("/posts/{postId}", h.showPostView).Methods(http.MethodGet)
-	router.HandleFunc("/posts/{postId}/edit", h.protect(h.showEditPostView)).Methods(http.MethodGet)
-	router.HandleFunc("/posts/{postId}/update", h.protect(h.updatePost)).Methods(http.MethodPost)
-	router.HandleFunc("/posts/{postId}/remove", h.protect(h.handleRemovePost))
-	//router.HandleFunc("/posts/{postId}/reply", h.protect(h.savePostReply)).Methods(http.MethodPost)
-
-	// Admin
-	router.HandleFunc("/admin", h.admin(h.showAdminView)).Methods(http.MethodGet)
-	router.HandleFunc("/admin/boards", h.admin(h.showAdminBoardsView)).Methods(http.MethodGet)
-	router.HandleFunc("/admin/boards/new", h.admin(h.showNewBoardView)).Methods(http.MethodGet)
-	router.HandleFunc("/admin/boards/save", h.admin(h.saveBoard)).Methods(http.MethodPost)
-	router.HandleFunc("/admin/boards/{boardId}/edit", h.admin(h.showEditBoardView)).Methods(http.MethodGet)
-	router.HandleFunc("/admin/boards/{boardId}/update", h.admin(h.updateBoard)).Methods(http.MethodPost)
-	router.HandleFunc("/admin/users", h.admin(h.showAdminUsersView)).Methods(http.MethodGet)
-	router.HandleFunc("/admin/users/{name}/edit", h.admin(h.showEditUserView)).Methods(http.MethodGet)
-	router.HandleFunc("/admin/users/{name}/update", h.admin(h.updateUserAdmin)).Methods(http.MethodPost)
-	router.HandleFunc("/admin/settings/edit", h.admin(h.showAdminSettingsView)).Methods(http.MethodGet)
-	router.HandleFunc("/admin/settings/update", h.admin(h.updateSettingsAdmin)).Methods(http.MethodPost)
-	router.HandleFunc("/admin/keys", h.admin(h.showKeysView)).Methods(http.MethodGet)
-	router.HandleFunc("/admin/keys/save", h.admin(h.saveKey)).Methods(http.MethodPost)
-	router.HandleFunc("/admin/keys/{keyId}/remove", h.admin(h.handleRemoveKey))
-	router.HandleFunc("/reset-password", h.showResetPasswordView).Methods(http.MethodGet)
-	router.HandleFunc("/reset-password", h.updatePassword).Methods(http.MethodPost)
-
-	router.HandleFunc("/admin/forums", h.admin(h.showAdminForumsView)).Methods(http.MethodGet)
-	router.HandleFunc("/admin/forums/new", h.admin(h.showNewForumView)).Methods(http.MethodGet)
-	router.HandleFunc("/admin/forums/save", h.admin(h.saveForum)).Methods(http.MethodPost)
-	router.HandleFunc("/admin/forums/{forumId}/edit", h.admin(h.showEditForumView)).Methods(http.MethodGet)
-	router.HandleFunc("/admin/forums/{forumId}/update", h.admin(h.updateForum)).Methods(http.MethodPost)
-
-	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/posts/save", h.protect(h.savePost)).Methods(http.MethodPost)
+	//publicSubRouter.HandleFunc("/posts/{postId}", h.showPostView).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/posts/{postId}/edit", h.protect(h.showEditPostView)).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/posts/{postId}/update", h.protect(h.updatePost)).Methods(http.MethodPost)
+	publicSubRouter.HandleFunc("/posts/{postId}/remove", h.protect(h.removePost))
+	//publicSubRouter.HandleFunc("/posts/{postId}/reply", h.protect(h.savePostReply)).Methods(http.MethodPost)
 
 	// Pagination
-	//router.HandleFunc("/page/{nb}", h.showPageNumber).Methods(http.MethodGet)
+	//publicSubRouter.HandleFunc("/page/{nb}", h.showPageNumber).Methods(http.MethodGet)
 
 	// Replies
-	//router.HandleFunc("/replies/{replyId}", h.protect(h.showReplyView)).Methods(http.MethodGet)
-	//router.HandleFunc("/replies/{replyId}/save", h.protect(h.saveReplyReply)).Methods(http.MethodPost)
-	//router.HandleFunc("/replies/{replyId}/edit", h.protect(h.showEditReplyView)).Methods(http.MethodGet)
-	//router.HandleFunc("/replies/{replyId}/update", h.protect(h.updateReply)).Methods(http.MethodPost)
-	//router.HandleFunc("/replies/{replyId}/remove", h.protect(h.handleRemoveReply))
+	//publicSubRouter.HandleFunc("/replies/{replyId}", h.protect(h.showReplyView)).Methods(http.MethodGet)
+	//publicSubRouter.HandleFunc("/replies/{replyId}/save", h.protect(h.saveReplyReply)).Methods(http.MethodPost)
+	//publicSubRouter.HandleFunc("/replies/{replyId}/edit", h.protect(h.showEditReplyView)).Methods(http.MethodGet)
+	//publicSubRouter.HandleFunc("/replies/{replyId}/update", h.protect(h.updateReply)).Methods(http.MethodPost)
+	//publicSubRouter.HandleFunc("/replies/{replyId}/remove", h.protect(h.handleRemoveReply))
 
 	// Notifications
-	//router.HandleFunc("/notifications", h.protect(h.showNotificationsView)).Methods(http.MethodGet)
-	//router.HandleFunc("/notifications/{notificationId}/mark-read", h.protect(h.markRead)).Methods(http.MethodGet)
-	//router.HandleFunc("/notifications/mark-all-read", h.protect(h.markAllRead)).Methods(http.MethodGet)
+	//publicSubRouter.HandleFunc("/notifications", h.protect(h.showNotificationsView)).Methods(http.MethodGet)
+	//publicSubRouter.HandleFunc("/notifications/{notificationId}/mark-read", h.protect(h.markRead)).Methods(http.MethodGet)
+	//publicSubRouter.HandleFunc("/notifications/mark-all-read", h.protect(h.markAllRead)).Methods(http.MethodGet)
 
 	// User
-	router.HandleFunc("/~{userId}", h.showUserPostsView).Methods(http.MethodGet)
-	router.HandleFunc("/account", h.protect(h.showAccountView)).Methods(http.MethodGet)
-	router.HandleFunc("/save-account", h.protect(h.saveAccount)).Methods(http.MethodPost)
+	//publicSubRouter.HandleFunc("/~{userId}", h.showUserPostsView).Methods(http.MethodGet)
+	//publicSubRouter.HandleFunc("/account", h.protect(h.showAccountView)).Methods(http.MethodGet)
+	//publicSubRouter.HandleFunc("/save-account", h.protect(h.saveAccount)).Methods(http.MethodPost)
+
+	publicSubRouter.HandleFunc("/reset-password", h.showResetPasswordView).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/reset-password", h.updatePassword).Methods(http.MethodPost)
 
 	// Index
-	router.HandleFunc("/", h.showIndexView).Name("index").Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/", h.showIndexView).Name("index").Methods(http.MethodGet)
+
+	adminSubRouter := router.PathPrefix("/admin").Subrouter().StrictSlash(true)
+	// Admin
+	adminSubRouter.HandleFunc("/", h.admin(h.showAdminView)).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/boards", h.admin(h.showAdminBoardsView)).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/boards/new", h.admin(h.showAdminCreateBoardView)).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/boards/save", h.admin(h.saveAdminBoard)).Methods(http.MethodPost)
+	adminSubRouter.HandleFunc("/boards/{boardId}/edit", h.admin(h.showAdminEditBoardView)).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/boards/{boardId}/update", h.admin(h.updateAdminBoard)).Methods(http.MethodPost)
+	adminSubRouter.HandleFunc("/users", h.admin(h.showAdminUserListView)).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/users/{name}/edit", h.admin(h.showAdminEditUserView)).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/users/{name}/update", h.admin(h.updateAdminUser)).Methods(http.MethodPost)
+	adminSubRouter.HandleFunc("/settings/edit", h.admin(h.showAdminSettingsView)).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/settings/update", h.admin(h.updateAdminSettings)).Methods(http.MethodPost)
+	adminSubRouter.HandleFunc("/keys", h.admin(h.showAdminKeyListView)).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/keys/save", h.admin(h.saveAdminKey)).Methods(http.MethodPost)
+	adminSubRouter.HandleFunc("/keys/{keyId}/remove", h.admin(h.removeAdminKey))
+
+	adminSubRouter.HandleFunc("/forums", h.admin(h.showAdminForumsView)).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/forums/new", h.admin(h.showAdminCreateForumView)).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/forums/save", h.admin(h.saveAdminForum)).Methods(http.MethodPost)
+	adminSubRouter.HandleFunc("/forums/{forumId}/edit", h.admin(h.showAdminEditForumView)).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/forums/{forumId}/update", h.admin(h.updateAdminForum)).Methods(http.MethodPost)
 
 	return router, nil
 }
