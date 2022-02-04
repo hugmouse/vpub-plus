@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"vpub/config"
+	"vpub/model"
 	"vpub/storage"
 	"vpub/web/handler/request"
 	"vpub/web/session"
@@ -89,6 +90,30 @@ func (h *Handler) admin(fn http.HandlerFunc) http.HandlerFunc {
 		}
 		fn(w, r)
 	}
+}
+
+type pagination struct {
+	HasMore bool
+	Page    int64
+}
+
+func forumFromBoards(boards []model.Board) []model.Forum {
+	var forums []model.Forum
+	var forum model.Forum
+	for i, board := range boards {
+		if i == 0 {
+			forum.Name = board.Forum.Name
+			forum.Id = board.Forum.Id
+		} else if board.Forum.Id != forum.Id {
+			forums = append(forums, forum)
+			forum = model.Forum{Name: board.Forum.Name, Id: board.Forum.Id}
+		}
+		forum.Boards = append(forum.Boards, board)
+	}
+	if len(forum.Boards) > 0 {
+		forums = append(forums, forum)
+	}
+	return forums
 }
 
 func New(cfg *config.Config, data *storage.Storage, s *session.Manager) (http.Handler, error) {

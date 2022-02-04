@@ -1,6 +1,8 @@
 package handler
 
-import "net/http"
+import (
+	"net/http"
+)
 
 func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 	boards, err := h.storage.Boards()

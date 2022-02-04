@@ -1,6 +1,8 @@
 package handler
 
-import "net/http"
+import (
+	"net/http"
+)
 
 func (h *Handler) showAdminBoardsView(w http.ResponseWriter, r *http.Request) {
 	v := NewView(w, r, "admin_board")
