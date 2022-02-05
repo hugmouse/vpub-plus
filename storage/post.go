@@ -123,3 +123,20 @@ func (s *Storage) UpdatePost(id, userId int64, request model.PostRequest) error 
 
 	return nil
 }
+
+func (s *Storage) NewestPostFromTopic(topicId int64) (int64, error) {
+	var id int64
+
+	query := `
+        select id from posts where topic_id=$1 order by created_at desc
+    `
+
+	err := s.db.QueryRow(
+		query,
+		topicId,
+	).Scan(
+		&id,
+	)
+
+	return id, err
+}

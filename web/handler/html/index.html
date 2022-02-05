@@ -26,7 +26,7 @@
             </td>
             <td class="center">{{ .Topics }}</td>
             <td class="center">{{ .Posts }}</td>
-            <td class="center">{{ iso8601 .UpdatedAt }}</td>
+            <td class="center"><a href="/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
         </tr>
         {{ end }}
         {{ end }}

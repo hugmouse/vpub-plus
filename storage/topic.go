@@ -116,3 +116,20 @@ from topics_summary where topic_id=$1
 	}
 	return topic, err
 }
+
+func (s *Storage) NewestTopicFromBoard(boardId int64) (int64, error) {
+	var id int64
+
+	query := `
+        select id from topics where board_id=$1 order by updated_at desc
+    `
+
+	err := s.db.QueryRow(
+		query,
+		boardId,
+	).Scan(
+		&id,
+	)
+
+	return id, err
+}

@@ -147,6 +147,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Manager) (http.Ha
 	publicSubRouter.HandleFunc("/boards/{boardId}", h.showBoardView).Methods(http.MethodGet)
 	publicSubRouter.HandleFunc("/boards/{boardId}/new-topic", h.protect(h.showCreateTopicView)).Methods(http.MethodGet)
 	publicSubRouter.HandleFunc("/boards/{boardId}/save-topic", h.protect(h.saveTopic)).Methods(http.MethodPost)
+	publicSubRouter.HandleFunc("/boards/{boardId}/newest", h.showNewestBoardView).Methods(http.MethodGet)
 	//router.HandleFunc("/boards/{boardId}/feed.atom", h.showFeedViewTopic).Methods(http.MethodGet)
 
 	// Forums
@@ -157,6 +158,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Manager) (http.Ha
 	publicSubRouter.HandleFunc("/topics/{topicId}", h.showTopicView).Methods(http.MethodGet)
 	publicSubRouter.HandleFunc("/topics/{topicId}/edit", h.protect(h.showEditTopicView)).Methods(http.MethodGet)
 	publicSubRouter.HandleFunc("/topics/{topicId}/update", h.admin(h.updateTopic)).Methods(http.MethodPost)
+	publicSubRouter.HandleFunc("/topics/{topicId}/newest", h.showNewestTopicView).Methods(http.MethodGet)
 
 	publicSubRouter.HandleFunc("/posts/save", h.protect(h.savePost)).Methods(http.MethodPost)
 	//publicSubRouter.HandleFunc("/posts/{postId}", h.showPostView).Methods(http.MethodGet)

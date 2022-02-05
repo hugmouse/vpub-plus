@@ -442,7 +442,7 @@ Are you sure you you want to delete the following user?
         <tr{{ if .IsSticky }} class="sticky"{{ end }}>
             <td colspan="grow"><a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a><br>By {{ .Post.User.Name }}</td>
             <td class="center">{{ .Replies }}</td>
-            <td>{{ iso8601 .UpdatedAt }}</td>
+            <td><a href="/topics/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
         </tr>
         {{ end }}
         {{ else }}
@@ -490,7 +490,7 @@ Are you sure you you want to delete the following user?
         </td>
         <td class="center">{{ .Topics }}</td>
         <td class="center">{{ .Posts }}</td>
-        <td class="center">{{ iso8601 .UpdatedAt }}</td>
+        <td class="center"><a href="/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
     </tr>
     {{ end }}
     {{ else }}
@@ -684,7 +684,7 @@ Are you sure you you want to delete the following user?
             </td>
             <td class="center">{{ .Topics }}</td>
             <td class="center">{{ .Posts }}</td>
-            <td class="center">{{ iso8601 .UpdatedAt }}</td>
+            <td class="center"><a href="/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
         </tr>
         {{ end }}
         {{ end }}
