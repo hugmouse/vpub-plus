@@ -432,7 +432,7 @@ Are you sure you you want to delete the following user?
         <thead>
         <tr>
             <th class="grow">Subject</th>
-            <td>Author</td>
+            <th>Author</th>
             <th>Replies</th>
             <th>Updated</th>
         </tr>
@@ -442,7 +442,7 @@ Are you sure you you want to delete the following user?
         {{ range .topics }}
         <tr{{ if .IsSticky }} class="sticky"{{ end }}>
             <td colspan="grow"><a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a></td>
-            <td>{{ .Post.User.Name }}</td>
+            <td class="center">{{ .Post.User.Name }}</td>
             <td class="center">{{ dec .Posts }}</td>
             <td><a href="/topics/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
         </tr>
