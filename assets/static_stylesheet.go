@@ -62,7 +62,7 @@ nav.breadcrumb {
 }
 .col-author {
 	text-align: center;
-	width: 70px;
+	width: 100px;
 }
 table.post {
 	background-color: white;

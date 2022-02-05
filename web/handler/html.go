@@ -969,7 +969,7 @@ Are you sure you you want to delete the following user?
     <tr id="{{ .Id }}">
         <td class="col-author">
             {{ .User.Name }}
-            <p><img src="{{ .User.Picture }}" width="50"/></p>
+            <p><img src="{{ .User.Picture }}" width="80"/></p>
         </td>
         <td>
             <div class="posted">
