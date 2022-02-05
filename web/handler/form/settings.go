@@ -11,6 +11,7 @@ type SettingsForm struct {
 	Css     string
 	Footer  string
 	PerPage int64
+	URL     string
 }
 
 func NewSettingsForm(r *http.Request) *SettingsForm {
@@ -19,6 +20,7 @@ func NewSettingsForm(r *http.Request) *SettingsForm {
 		Name:    strings.TrimSpace(r.FormValue("name")),
 		Css:     r.FormValue("css"),
 		Footer:  r.FormValue("footer"),
+		URL:     r.FormValue("url"),
 		PerPage: perPage,
 	}
 }

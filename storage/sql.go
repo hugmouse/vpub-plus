@@ -293,4 +293,6 @@ alter table forums
     add column is_locked bool not null default false;`,
 	"schema_version_4": `alter table settings
     add column per_page int not null default 50;`,
+	"schema_version_5": `alter table settings
+    add column url text not null default '';`,
 }

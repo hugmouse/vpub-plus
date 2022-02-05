@@ -122,7 +122,6 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Manager) (http.Ha
 		session: s,
 		mux:     router,
 		storage: data,
-		url:     cfg.URL,
 	}
 	router.Use(h.handleSessionMiddleware)
 	h.initTpl()
@@ -143,12 +142,13 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Manager) (http.Ha
 	publicSubRouter.HandleFunc("/register", h.register).Methods(http.MethodPost)
 	publicSubRouter.HandleFunc("/logout", h.logout).Methods(http.MethodGet)
 
+	publicSubRouter.HandleFunc("/feed.atom", h.showFeed).Methods(http.MethodGet)
+
 	// Boards
 	publicSubRouter.HandleFunc("/boards/{boardId}", h.showBoardView).Methods(http.MethodGet)
 	publicSubRouter.HandleFunc("/boards/{boardId}/new-topic", h.protect(h.showCreateTopicView)).Methods(http.MethodGet)
 	publicSubRouter.HandleFunc("/boards/{boardId}/save-topic", h.protect(h.saveTopic)).Methods(http.MethodPost)
 	publicSubRouter.HandleFunc("/boards/{boardId}/newest", h.showNewestBoardView).Methods(http.MethodGet)
-	//router.HandleFunc("/boards/{boardId}/feed.atom", h.showFeedViewTopic).Methods(http.MethodGet)
 
 	// Forums
 	publicSubRouter.HandleFunc("/forums/{forumId}", h.showForumView).Methods(http.MethodGet)

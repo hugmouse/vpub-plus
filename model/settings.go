@@ -5,4 +5,5 @@ type Settings struct {
 	Css     string
 	Footer  string
 	PerPage int64
+	URL     string
 }

@@ -33,7 +33,9 @@ select
        topic_id,
        post_id,
        subject,
+       content,
        created_at,
+       updated_at,
        user_id,
        name
 from posts_full 
@@ -45,7 +47,16 @@ limit $2`, settings.PerPage*(page-1), settings.PerPage+1)
 	}
 	for rows.Next() {
 		var post model.Post
-		err := rows.Scan(&post.TopicId, &post.Id, &post.Subject, &post.CreatedAt, &post.User.Id, &post.User.Name)
+		err := rows.Scan(
+			&post.TopicId,
+			&post.Id,
+			&post.Subject,
+			&post.Content,
+			&post.CreatedAt,
+			&post.UpdatedAt,
+			&post.User.Id,
+			&post.User.Name,
+		)
 		if err != nil {
 			return posts, false, err
 		}

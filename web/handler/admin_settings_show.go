@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/gorilla/csrf"
 	"net/http"
 	"vpub/web/handler/form"
 )
@@ -12,14 +11,16 @@ func (h *Handler) showAdminSettingsView(w http.ResponseWriter, r *http.Request) 
 		serverError(w, err)
 		return
 	}
+
 	settingsForm := form.SettingsForm{
 		Name:    settings.Name,
 		Css:     settings.Css,
 		Footer:  settings.Footer,
 		PerPage: settings.PerPage,
+		URL:     settings.URL,
 	}
-	h.renderLayout(w, r, "admin_settings_edit", map[string]interface{}{
-		"form":           settingsForm,
-		csrf.TemplateTag: csrf.TemplateField(r),
-	})
+
+	v := NewView(w, r, "admin_settings_edit")
+	v.Set("form", settingsForm)
+	v.Render()
 }

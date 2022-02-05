@@ -301,6 +301,10 @@ var TplMap = map[string]string{
         <input type="text" name="name" id="name" value="{{ .form.Name }}" autocomplete="off" maxlength="120" autofocus/>
     </div>
     <div class="field">
+        <label for="name">URL</label>
+        <input type="url" name="url" id="url" value="{{ .form.URL }}" autocomplete="off"/>
+    </div>
+    <div class="field">
         <label for="css">Footer</label>
         <textarea class="editor" name="footer" id="footer">{{ .form.Footer }}</textarea>
     </div>
