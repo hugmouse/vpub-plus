@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"github.com/gorilla/csrf"
 	"net/http"
 	"vpub/web/handler/request"
 )
@@ -17,22 +16,26 @@ func (h *Handler) removePost(w http.ResponseWriter, r *http.Request) {
 			serverError(w, err)
 			return
 		}
-		h.renderLayout(w, r, "confirm_remove_post", map[string]interface{}{
-			"post":           post,
-			csrf.TemplateTag: csrf.TemplateField(r),
-		})
+		v := NewView(w, r, "confirm_remove_post")
+		v.Set("post", post)
+		v.Render()
 	case "POST":
 		post, err := h.storage.PostById(RouteInt64Param(r, "postId"))
 		if err != nil {
 			serverError(w, err)
 			return
 		}
+
+		v := NewView(w, r, "confirm_remove_post")
+		v.Set("post", post)
+
 		post.User = user
-		err = h.storage.DeletePost(post)
-		if err != nil {
-			serverError(w, err)
+		if err = h.storage.DeletePost(post); err != nil {
+			v.Set("errorMessage", "Unable to delete post")
+			v.Render()
 			return
 		}
+
 		http.Redirect(w, r, fmt.Sprintf("/topics/%d", post.TopicId), http.StatusFound)
 	}
 }

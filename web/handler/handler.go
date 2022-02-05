@@ -199,11 +199,16 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Manager) (http.Ha
 	adminSubRouter.HandleFunc("/boards/save", h.admin(h.saveAdminBoard)).Methods(http.MethodPost)
 	adminSubRouter.HandleFunc("/boards/{boardId}/edit", h.admin(h.showAdminEditBoardView)).Methods(http.MethodGet)
 	adminSubRouter.HandleFunc("/boards/{boardId}/update", h.admin(h.updateAdminBoard)).Methods(http.MethodPost)
+
 	adminSubRouter.HandleFunc("/users", h.admin(h.showAdminUserListView)).Methods(http.MethodGet)
 	adminSubRouter.HandleFunc("/users/{name}/edit", h.admin(h.showAdminEditUserView)).Methods(http.MethodGet)
 	adminSubRouter.HandleFunc("/users/{name}/update", h.admin(h.updateAdminUser)).Methods(http.MethodPost)
+	adminSubRouter.HandleFunc("/users/{userId}/remove", h.admin(h.showAdminRemoveUserView)).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/users/{userId}/remove", h.admin(h.removeAdminUser)).Methods(http.MethodPost)
+
 	adminSubRouter.HandleFunc("/settings/edit", h.admin(h.showAdminSettingsView)).Methods(http.MethodGet)
 	adminSubRouter.HandleFunc("/settings/update", h.admin(h.updateAdminSettings)).Methods(http.MethodPost)
+
 	adminSubRouter.HandleFunc("/keys", h.admin(h.showAdminKeyListView)).Methods(http.MethodGet)
 	adminSubRouter.HandleFunc("/keys/save", h.admin(h.saveAdminKey)).Methods(http.MethodPost)
 	adminSubRouter.HandleFunc("/keys/{keyId}/remove", h.admin(h.removeAdminKey))

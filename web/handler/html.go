@@ -334,16 +334,16 @@ var TplMap = map[string]string{
         <th class="grow">User</th>
         <th>Edit</th>
         <th>Password</th>
+        <th>Delete</th>
     </tr>
     </thead>
     <tbody>
     {{ range .users }}
     <tr>
-        <td colspan="grow">
-            <a href="/~{{ .Name }}">{{ .Name }}</a>
-        </td>
+        <td colspan="grow">{{ .Name }}</td>
         <td class="center"><a href="/admin/users/{{ .Name }}/edit">Edit</a></td>
         <td class="center"><a href="/reset-password?hash={{ .Hash }}">Reset</a></td>
+        <td class="center"><a href="/admin/users/{{ .Id }}/remove">Delete</a></td>
     </tr>
     {{ end }}
     </tbody>
@@ -381,6 +381,19 @@ var TplMap = map[string]string{
 </form>
 {{ end }}
 `,
+	"admin_user_remove": `{{ define "content" }}
+
+{{ if .errorMessage }}
+    <p class="errors">{{ .errorMessage }}</p>
+{{ end }}
+
+Are you sure you you want to delete the following user?
+<p>{{ .user.Name }}</p>
+<form action="/admin/users/{{ .user.Id }}/remove" method="post">
+    {{ .csrfField }}
+    <input type="submit" value="Submit">
+</form>
+{{ end }}`,
 	"board": `{{ define "breadcrumb" }}<a href="/">boards</a> > {{ .board.Name }}{{ end }}
 {{ define "content" }}
 <nav class="breadcrumb">
@@ -489,6 +502,10 @@ var TplMap = map[string]string{
 </table>
 {{ end }}`,
 	"confirm_remove_post": `{{ define "content" }}
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
+
     Are you sure you you want to delete the following post?
     <p>{{ syntax .post.Content }}</p>
     <form action="/posts/{{ .post.Id }}/remove" method="post">
