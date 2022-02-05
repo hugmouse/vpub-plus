@@ -741,20 +741,6 @@ Are you sure you you want to delete the following user?
 </div>
 {{ end }}
 {{ end }}`,
-	"paginate": `{{ define "content" }}
-<p>Page {{ .page }}{{ if .topic }} of <a href="/topics/{{ .topic }}">{{ .topic }}</a>{{ end }}</p>
-<section>
-    {{ template "posts" .posts }}
-
-    {{ if .hasMore }}
-    {{ if .topic }}
-    <a href="/page/{{ .nextPage }}?topic={{ .topic }}">More</a>
-    {{ else }}
-    <a href="/page/{{ .nextPage }}">More</a>
-    {{ end }}
-    {{ end }}
-</section>
-{{ end }}`,
 	"post": `{{ define "breadcrumb" }} > <a href="/topics/{{ .post.Topic }}">{{ .post.Topic }}</a>{{ end }}
 {{ define "content"}}
 <!--<table class="thread">-->
@@ -857,7 +843,6 @@ Are you sure you you want to delete the following user?
 	"posts": `{{ define "content" }}
 <h1>Posts</h1>
 
-
 <section>
     <table>
         <thead>
@@ -872,7 +857,7 @@ Are you sure you you want to delete the following user?
         {{ range .posts }}
         <tr>
         <td colspan="grow"><a href="/topics/{{ .TopicId }}#{{ .Id }}">{{ .Subject }}</a></td>
-        <td class="center"><a href="/~{{ .User.Id }}">{{ .User.Name }}</a></td>
+        <td class="center">{{ .User.Name }}</td>
         <td class="center">{{ iso8601 .CreatedAt }}</td>
         </tr>
         {{ end }}
@@ -1022,16 +1007,4 @@ Are you sure you you want to delete the following user?
 {{ end }}
 {{ end }}
 {{ end }}`,
-	"user_posts": `{{ define "content" }}
-<h1>{{ .user.Name }}</h1>
-<div class="content">{{ syntax .user.About }}</div>
-<section class="posts">
-{{ template "posts" .posts }}
-
-{{if .showMore }}
-<a href="/~{{ .user.Name }}?page={{ .nextPage }}">More</a>
-{{ end }}
-</section>
-{{ end }}
-`,
 }

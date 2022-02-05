@@ -121,34 +121,6 @@ var TplCommonMap = map[string]string{
     <textarea class="editor" name="content" id="content" required>{{ .Content }}</textarea>
 </div>
 {{ end }}`,
-	"posts": `{{ define "posts" }}
-{{ if . }}
-<table class="posts">
-    <thead>
-        <tr>
-            <th>Subject</th>
-            <th>Author</th>
-            <th>Replies</th>
-            <th>Updated</th>
-        </tr>
-    </thead>
-    <tbody>
-    {{ range . }}
-    <tr>
-        <td>
-            <h2><a href="/posts/{{ .Id }}">{{ .Subject }}</a></h2>
-        </td>
-        <td style="text-align: center;"><a href="/~{{ .User }}">{{ .User }}</a></td>
-        <td style="text-align: center;">{{ dec .Posts }}</td>
-        <td style="text-align: center">{{ .DateUpdated }}</td>
-    </tr>
-    {{ end }}
-    </tbody>
-</table>
-{{ else }}
-<p>No post yet</p>
-{{ end }}
-{{ end }}`,
 	"topic_form": `{{ define "topic_form" }}
 <details>
     <summary>Admin options</summary>
