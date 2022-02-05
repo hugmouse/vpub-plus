@@ -76,7 +76,7 @@ limit $3`, boardId, settings.PerPage*(page-1), settings.PerPage+1)
 	}
 	for rows.Next() {
 		var topic model.Topic
-		err := rows.Scan(&topic.Id, &topic.Post.Subject, &topic.Post.Content, &topic.Replies, &topic.UpdatedAt, &topic.Post.User.Id, &topic.Post.User.Name, &topic.IsSticky)
+		err := rows.Scan(&topic.Id, &topic.Post.Subject, &topic.Post.Content, &topic.Posts, &topic.UpdatedAt, &topic.Post.User.Id, &topic.Post.User.Name, &topic.IsSticky)
 		if err != nil {
 			return topics, false, err
 		}
@@ -103,7 +103,7 @@ select
 from topics_summary where topic_id=$1
 `, id).Scan(
 		&topic.Id,
-		&topic.Replies,
+		&topic.Posts,
 		&topic.IsSticky,
 		&topic.IsLocked,
 		&topic.UpdatedAt,

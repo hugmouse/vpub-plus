@@ -7,7 +7,7 @@ type Topic struct {
 	BoardId   int64
 	IsSticky  bool
 	IsLocked  bool
-	Replies   int64
+	Posts     int64
 	UpdatedAt time.Time
 	Post      Post
 }

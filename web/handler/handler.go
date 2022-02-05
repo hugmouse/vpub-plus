@@ -170,7 +170,7 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Manager) (http.Ha
 	// Pagination
 	//publicSubRouter.HandleFunc("/page/{nb}", h.showPageNumber).Methods(http.MethodGet)
 
-	// Replies
+	// Posts
 	//publicSubRouter.HandleFunc("/replies/{replyId}", h.protect(h.showReplyView)).Methods(http.MethodGet)
 	//publicSubRouter.HandleFunc("/replies/{replyId}/save", h.protect(h.saveReplyReply)).Methods(http.MethodPost)
 	//publicSubRouter.HandleFunc("/replies/{replyId}/edit", h.protect(h.showEditReplyView)).Methods(http.MethodGet)
