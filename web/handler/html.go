@@ -965,7 +965,7 @@ Are you sure you you want to delete the following user?
             <p><img src="{{ .User.Picture }}" width="80"/></p>
         </td>
         <td>
-            <header>
+            <div class="posted">
                 Posted {{ iso8601Time .CreatedAt }}
                 {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
                 <a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
@@ -975,7 +975,7 @@ Are you sure you you want to delete the following user?
                 {{ end }}
                 {{ end }}
                 <hr/>
-            </header>
+            </div>
             <div>{{ syntax .Content }}</div>
             {{ if .User.About }}
             <div class="signature">
