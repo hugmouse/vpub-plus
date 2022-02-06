@@ -203,8 +203,8 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Manager) (http.Ha
 	adminSubRouter.HandleFunc("/boards/{boardId}/update", h.admin(h.updateAdminBoard)).Methods(http.MethodPost)
 
 	adminSubRouter.HandleFunc("/users", h.admin(h.showAdminUserListView)).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/users/{name}/edit", h.admin(h.showAdminEditUserView)).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/users/{name}/update", h.admin(h.updateAdminUser)).Methods(http.MethodPost)
+	adminSubRouter.HandleFunc("/users/{userId}/edit", h.admin(h.showAdminEditUserView)).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/users/{userId}/update", h.admin(h.updateAdminUser)).Methods(http.MethodPost)
 	adminSubRouter.HandleFunc("/users/{userId}/remove", h.admin(h.showAdminRemoveUserView)).Methods(http.MethodGet)
 	adminSubRouter.HandleFunc("/users/{userId}/remove", h.admin(h.removeAdminUser)).Methods(http.MethodPost)
 

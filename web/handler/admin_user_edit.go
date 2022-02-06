@@ -1,23 +1,23 @@
 package handler
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
 	"vpub/web/handler/form"
 )
 
 func (h *Handler) showAdminEditUserView(w http.ResponseWriter, r *http.Request) {
-	u, err := h.storage.UserByName(mux.Vars(r)["name"])
+	user, err := h.storage.UserById(RouteInt64Param(r, "userId"))
 	if err != nil {
-		serverError(w, err)
+		notFound(w)
 		return
 	}
 
 	v := NewView(w, r, "admin_user_edit")
-	v.Set("user", u)
+	v.Set("user", user)
 	v.Set("form", form.AdminUserForm{
-		Username: u.Name,
-		About:    u.About,
+		Username: user.Name,
+		About:    user.About,
+		Picture:  user.Picture,
 	})
 	v.Render()
 }

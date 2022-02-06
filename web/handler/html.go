@@ -345,7 +345,7 @@ var TplMap = map[string]string{
     {{ range .users }}
     <tr>
         <td colspan="grow">{{ .Name }}</td>
-        <td class="center"><a href="/admin/users/{{ .Name }}/edit">Edit</a></td>
+        <td class="center"><a href="/admin/users/{{ .Id }}/edit">Edit</a></td>
         <td class="center"><a href="/reset-password?hash={{ .Hash }}">Reset</a></td>
         <td class="center"><a href="/admin/users/{{ .Id }}/remove">Delete</a></td>
     </tr>
@@ -371,11 +371,15 @@ var TplMap = map[string]string{
     </ul>
 </nav>
 <h1>Edit user</h1>
-<form action="/admin/users/{{ .user.Name }}/update" method="post">
+<form action="/admin/users/{{ .user.Id }}/update" method="post">
     {{ .csrfField }}
     <div class="field">
         <label for="name">Name</label>
         <input type="text" name="name" id="name" value="{{ .form.Username }}" autocomplete="off" maxlength="120" required autofocus/>
+    </div>
+    <div class="field">
+        <label for="name">Picture</label>
+        <input type="text" name="picture" id="picture" value="{{ .form.Picture }}" autocomplete="off"/>
     </div>
     <div class="field">
         <label for="about">About</label>
@@ -983,7 +987,7 @@ Are you sure you you want to delete the following user?
                 </tr>
                 {{ if .User.About }}
                 <tr>
-                    <td>
+                    <td style="vertical-align: bottom;">
                         <hr>
                         <div class="signature">{{ sig .User.About }}</div>
                     </td>
