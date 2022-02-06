@@ -47,10 +47,10 @@
             </header>
             <div>{{ syntax .Content }}</div>
             {{ if .User.About }}
-            <footer>
+            <div class="signature">
                 <hr>
                 {{ sig .User.About }}
-            </footer>
+            </div>
             {{ end }}
         </td>
     </tr>

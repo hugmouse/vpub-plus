@@ -978,10 +978,10 @@ Are you sure you you want to delete the following user?
             </header>
             <div>{{ syntax .Content }}</div>
             {{ if .User.About }}
-            <footer>
+            <div class="signature">
                 <hr>
                 {{ sig .User.About }}
-            </footer>
+            </div>
             {{ end }}
         </td>
     </tr>
