@@ -209,15 +209,6 @@ hr {
 }
 
 .small {
-	font-size: 12px;
+	font-size: 14px;
 	color: grey;
-}
-
-.col-content {
-	display: flex;
-	flex-direction: column;
-}
-
-.col-content > div {
-	flex-grow: 1;
 }
