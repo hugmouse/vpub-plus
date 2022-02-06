@@ -8,15 +8,15 @@ var TplMap = map[string]string{
 {{ define "content" }}
 <h1>Account</h1>
 
-<form action="/save-account" method="post">
+<form action="/update-account" method="post">
     {{ .csrfField }}
     <div class="field">
         <label for="picture">Picture</label>
-        <input type="url" name="picture" id="picture" value="{{ .user.Picture }}">
+        <input type="url" name="picture" id="picture" value="{{ .form.Picture }}">
     </div>
     <div class="field">
         <label for="about">About</label>
-        <textarea name="about" id="about" autofocus>{{ .user.About }}</textarea>
+        <textarea name="about" id="about" autofocus>{{ .form.About }}</textarea>
     </div>
     <input type="submit" value="Submit">
 </form>

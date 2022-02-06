@@ -184,8 +184,8 @@ func New(cfg *config.Config, data *storage.Storage, s *session.Manager) (http.Ha
 
 	// User
 	//publicSubRouter.HandleFunc("/~{userId}", h.showUserPostsView).Methods(http.MethodGet)
-	//publicSubRouter.HandleFunc("/account", h.protect(h.showAccountView)).Methods(http.MethodGet)
-	//publicSubRouter.HandleFunc("/save-account", h.protect(h.saveAccount)).Methods(http.MethodPost)
+	publicSubRouter.HandleFunc("/account", h.protect(h.showAccountEditPage)).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/update-account", h.protect(h.updateAccount)).Methods(http.MethodPost)
 
 	publicSubRouter.HandleFunc("/reset-password", h.showResetPasswordView).Methods(http.MethodGet)
 	publicSubRouter.HandleFunc("/reset-password", h.updatePassword).Methods(http.MethodPost)

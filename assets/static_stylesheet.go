@@ -211,5 +211,19 @@ hr {
 	border: none;
 	height: 1px;
 	background-color: grey;
+}
+
+.small {
+	font-size: 12px;
+	color: grey;
+}
+
+.col-content {
+	display: flex;
+	flex-direction: column;
+}
+
+.col-content > div {
+	flex-grow: 1;
 }`,
 }
