@@ -47,6 +47,12 @@ ol.replies > li:not(:last-child) {
 .signature > * {
 	margin-bottom: 0;
 }
+
+.signature {
+	border-top: 1px solid gray;
+	padding-top: 8px;
+}
+
 .action {
 	margin: 1em 1em 1em 0;
 }

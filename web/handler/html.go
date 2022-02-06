@@ -979,7 +979,6 @@ Are you sure you you want to delete the following user?
             <div>{{ syntax .Content }}</div>
             {{ if .User.About }}
             <div class="signature">
-                <hr>
                 {{ sig .User.About }}
             </div>
             {{ end }}
