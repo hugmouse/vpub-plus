@@ -8,7 +8,8 @@ func (h *Handler) showAdminUserListView(w http.ResponseWriter, r *http.Request) 
 		serverError(w, err)
 		return
 	}
-	h.renderLayout(w, r, "admin_user", map[string]interface{}{
-		"users": users,
-	})
+
+	v := NewView(w, r, "admin_user")
+	v.Set("users", users)
+	v.Render()
 }

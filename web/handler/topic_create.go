@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/gorilla/csrf"
 	"net/http"
 	"vpub/web/handler/form"
 )
@@ -18,9 +17,9 @@ func (h *Handler) showCreateTopicView(w http.ResponseWriter, r *http.Request) {
 		BoardId: board.Id,
 		Boards:  boards,
 	}
-	h.renderLayout(w, r, "create_topic", map[string]interface{}{
-		"form":           topicForm,
-		"board":          board,
-		csrf.TemplateTag: csrf.TemplateField(r),
-	})
+
+	v := NewView(w, r, "create_topic")
+	v.Set("form", topicForm)
+	v.Set("board", board)
+	v.Render()
 }

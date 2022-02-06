@@ -16,8 +16,8 @@ func (h *Handler) showForumView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.renderLayout(w, r, "boards", map[string]interface{}{
-		"forum":  forum,
-		"boards": boards,
-	})
+	v := NewView(w, r, "boards")
+	v.Set("forum", forum)
+	v.Set("boards", boards)
+	v.Render()
 }

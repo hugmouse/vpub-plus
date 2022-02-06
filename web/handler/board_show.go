@@ -24,12 +24,12 @@ func (h *Handler) showBoardView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.renderLayout(w, r, "board", map[string]interface{}{
-		"board":  board,
-		"topics": topics,
-		"pagination": pagination{
-			HasMore: hasMore,
-			Page:    page,
-		},
+	v := NewView(w, r, "board")
+	v.Set("board", board)
+	v.Set("topics", topics)
+	v.Set("pagination", pagination{
+		HasMore: hasMore,
+		Page:    page,
 	})
+	v.Render()
 }

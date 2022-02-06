@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/gorilla/csrf"
 	"net/http"
 )
 
@@ -14,8 +13,8 @@ func (h *Handler) showResetPasswordView(w http.ResponseWriter, r *http.Request) 
 		notFound(w)
 		return
 	}
-	h.renderLayout(w, r, "reset_password", map[string]interface{}{
-		"hash":           hash,
-		csrf.TemplateTag: csrf.TemplateField(r),
-	})
+
+	v := NewView(w, r, "reset_password")
+	v.Set("hash", hash)
+	v.Render()
 }

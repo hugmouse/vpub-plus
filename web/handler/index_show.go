@@ -11,7 +11,8 @@ func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	forums := forumFromBoards(boards)
-	h.renderLayout(w, r, "index", map[string]interface{}{
-		"forums": forums,
-	})
+
+	v := NewView(w, r, "index")
+	v.Set("forums", forums)
+	v.Render()
 }

@@ -33,22 +33,36 @@
             {{ .User.Name }}
             <p><img src="{{ .User.Picture }}" width="80"/></p>
         </td>
-        <td>
-            <div class="posted">
-                Posted {{ iso8601Time .CreatedAt }}
-                {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
-                <a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
-                {{ else }}
-                {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
-                <a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
+        <td style="height: 100%;">
+            <table class="post-body">
+                <tr>
+                    <td>
+                        Posted {{ iso8601Time .CreatedAt }}
+                        {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
+                        <a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
+                        {{ else }}
+                        {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
+                        <a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
+                        {{ end }}
+                        {{ end }}
+                        <hr/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        {{ syntax .Content }}
+                    </td>
+                </tr>
+                {{ if .User.About }}
+                <tr>
+                    <td>
+                        <hr>
+                        <div class="signature">{{ sig .User.About }}</div>
+                    </td>
+                </tr>
                 {{ end }}
-                {{ end }}
-                <hr/>
-            </div>
-            {{ syntax .Content }}
-            {{ if .User.About }}
-            <div class="signature">{{ syntax .User.About }}</div>
-            {{ end }}
+            </table>
         </td>
     </tr>
     {{ end }}

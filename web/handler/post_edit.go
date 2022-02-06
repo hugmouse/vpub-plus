@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/gorilla/csrf"
 	"net/http"
 	"vpub/web/handler/form"
 )
@@ -26,11 +25,11 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request) {
 		Content: post.Content,
 		TopicId: post.TopicId,
 	}
-	h.renderLayout(w, r, "edit_post", map[string]interface{}{
-		"form":           postForm,
-		"post":           post,
-		"topic":          topic,
-		"board":          board,
-		csrf.TemplateTag: csrf.TemplateField(r),
-	})
+
+	v := NewView(w, r, "edit_post")
+	v.Set("form", postForm)
+	v.Set("post", post)
+	v.Set("topic", topic)
+	v.Set("board", board)
+	v.Render()
 }

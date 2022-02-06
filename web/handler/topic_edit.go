@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/gorilla/csrf"
 	"net/http"
 	"vpub/web/handler/form"
 	"vpub/web/handler/request"
@@ -36,8 +35,8 @@ func (h *Handler) showEditTopicView(w http.ResponseWriter, r *http.Request) {
 			TopicId: post.TopicId,
 		},
 	}
-	h.renderLayout(w, r, "edit_topic", map[string]interface{}{
-		"form":           topicForm,
-		csrf.TemplateTag: csrf.TemplateField(r),
-	})
+
+	v := NewView(w, r, "edit_topic")
+	v.Set("form", topicForm)
+	v.Render()
 }

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/gorilla/csrf"
 	"net/http"
 )
 
@@ -13,10 +12,10 @@ func (h *Handler) showTopicView(w http.ResponseWriter, r *http.Request) {
 	}
 	board, err := h.storage.BoardById(topic.BoardId)
 	posts, _, err := h.storage.PostsByTopicId(topic.Id)
-	h.renderLayout(w, r, "topic", map[string]interface{}{
-		"board":          board,
-		"topic":          topic,
-		"posts":          posts,
-		csrf.TemplateTag: csrf.TemplateField(r),
-	})
+
+	v := NewView(w, r, "topic")
+	v.Set("board", board)
+	v.Set("topic", topic)
+	v.Set("posts", posts)
+	v.Render()
 }

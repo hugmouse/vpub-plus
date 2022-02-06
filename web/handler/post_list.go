@@ -17,11 +17,11 @@ func (h *Handler) showPostListView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.renderLayout(w, r, "posts", map[string]interface{}{
-		"posts": posts,
-		"pagination": pagination{
-			HasMore: hasMore,
-			Page:    page,
-		},
+	v := NewView(w, r, "posts")
+	v.Set("posts", posts)
+	v.Set("pagination", pagination{
+		HasMore: hasMore,
+		Page:    page,
 	})
+	v.Render()
 }

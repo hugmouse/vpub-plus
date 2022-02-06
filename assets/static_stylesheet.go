@@ -38,7 +38,10 @@ ol.replies > li:not(:last-child) {
 }
 
 /* Posts ************************************************************/
-.topic tr:nth-child(2n) {
+
+
+
+.topic > tbody > tr:nth-child(2n) {
 	background-color: whitesmoke;
 }
 .signature > * {
@@ -95,6 +98,19 @@ article > div {
 	text-align: center;
 	width: 150px;
 	background-color: paleturquoise;
+}
+
+.post-body {
+	height: 100%;
+}
+
+.post-body, .post-body td, .post-body tr {
+	padding: 0;
+	border: 0;
+}
+
+.post-body tbody {
+	background-color: inherit;
 }
 /* With articles */
 /*article {*/
@@ -189,5 +205,11 @@ blockquote {
 }
 
 .center { text-align: center; }
-.grow { width: 100%; }`,
+.grow { width: 100%; }
+
+hr {
+	border: none;
+	height: 1px;
+	background-color: grey;
+}`,
 }
