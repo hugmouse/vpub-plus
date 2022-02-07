@@ -405,20 +405,19 @@ Are you sure you you want to delete the following user?
 	"board": `{{ define "breadcrumb" }}<a href="/">boards</a> > {{ .board.Name }}{{ end }}
 {{ define "content" }}
 <nav class="breadcrumb">
-    <a href="/">Index</a> » <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a> » {{ .board.Name }}
-<!--    <ul>-->
-<!--        <li>-->
-<!--            <a href="/">All forums</a>-->
-<!--            <ul>-->
-<!--                <li>-->
-<!--                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>-->
-<!--                    <ul>-->
-<!--                        <li>{{ .board.Name }}</li>-->
-<!--                    </ul>-->
-<!--                </li>-->
-<!--            </ul>-->
-<!--        </li>-->
-<!--    </ul>-->
+    <ul>
+        <li>
+            <a href="/">All forums</a>
+            <ul>
+                <li>
+                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                    <ul>
+                        <li>{{ .board.Name }}</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
 </nav>
 <h1>{{ .board.Name }}</h1>
 
