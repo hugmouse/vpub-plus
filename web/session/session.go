@@ -9,7 +9,7 @@ import (
 	"vpub/storage"
 )
 
-const cookieName = "vpub"
+const cookieName = "status"
 
 type Manager struct {
 	Store   *sessions.CookieStore
