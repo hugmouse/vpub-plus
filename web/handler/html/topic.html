@@ -1,15 +1,15 @@
-{{ define "breadcrumb" }}<a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
+{{ define "breadcrumb" }}<a href="{{ root }}/">boards</a> > <a href="{{ root }}/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/">All forums</a>
+            <a href="{{ root }}/">All forums</a>
             <ul>
                 <li>
-                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                    <a href="{{ root }}/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
                     <ul>
                         <li>
-                            <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+                            <a href="{{ root }}/boards/{{ .board.Id }}">{{ .board.Name }}</a>
                             <ul>
                                 <li>{{ .topic.Post.Subject }}</li>
                             </ul>
@@ -37,10 +37,10 @@
             <div class="posted">
                 Posted {{ iso8601Time .CreatedAt }}
                 {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
-                <a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
+                <a href="{{ root }}/topics/{{ $.topic.Id }}/edit">edit</a> <a href="{{ root }}/posts/{{ .Id }}/remove">remove</a>
                 {{ else }}
                 {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
-                <a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
+                <a href="{{ root }}/posts/{{ .Id }}/edit">edit</a> <a href="{{ root }}/posts/{{ .Id }}/remove">remove</a>
                 {{ end }}
                 {{ end }}
                 <hr/>
@@ -71,7 +71,7 @@
     {{ if .errorMessage }}
         <p class="errors">{{ .errorMessage }}</p>
     {{ end }}
-    <form action="/posts/save" method="post">
+    <form action="{{ root }}/posts/save" method="post">
         {{ .csrfField }}
         <input type="hidden" name="topicId" value="{{ .topic.Id }}">
         <input type="hidden" name="boardId" value="{{ .board.Id }}">

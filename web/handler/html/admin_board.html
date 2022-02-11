@@ -2,7 +2,7 @@
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/admin">Admin</a>
+            <a href="{{ root }}/admin">Admin</a>
             <ul>
                 <li>
                     Boards
@@ -14,9 +14,9 @@
 <h1>Boards</h1>
 <p>
     {{ if .hasForums }}
-    <a href="/admin/boards/new">New board</a>
+    <a href="{{ root }}/admin/boards/new">New board</a>
     {{ else }}
-    <a href="/admin/forums">Create a forum</a> to create boards
+    <a href="{{ root }}/admin/forums">Create a forum</a> to create boards
     {{ end }}
 </p>
 <table>
@@ -35,9 +35,9 @@
     {{ range .Boards }}
     <tr>
         <td colspan="grow">
-            <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+            <a href="{{ root }}/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
         </td>
-        <td class="center"><a href="/admin/boards/{{ .Id }}/edit">Edit</a></td>
+        <td class="center"><a href="{{ root }}/admin/boards/{{ .Id }}/edit">Edit</a></td>
     </tr>
     {{ end }}
     {{ end }}

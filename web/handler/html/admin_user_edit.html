@@ -3,10 +3,10 @@
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/admin">Admin</a>
+            <a href="{{ root }}/admin">Admin</a>
             <ul>
                 <li>
-                    <a href="/admin/users">Users</a>
+                    <a href="{{ root }}/admin/users">Users</a>
                     <ul>
                         <li>Edit users</li>
                     </ul>
@@ -16,7 +16,7 @@
     </ul>
 </nav>
 <h1>Edit user</h1>
-<form action="/admin/users/{{ .user.Id }}/update" method="post">
+<form action="{{ root }}/admin/users/{{ .user.Id }}/update" method="post">
     {{ .csrfField }}
     <div class="field">
         <label for="name">Name</label>

@@ -3,13 +3,13 @@
 <nav class="breadcrumb">
   <ul>
     <li>
-      <a href="/">All forums</a>
+      <a href="{{ root }}/">All forums</a>
       <ul>
         <li>
-          <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+          <a href="{{ root }}/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
           <ul>
             <li>
-              <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+              <a href="{{ root }}/boards/{{ .board.Id }}">{{ .board.Name }}</a>
               <ul>
                 <li>{{ .topic.Post.Subject }}</li>
               </ul>

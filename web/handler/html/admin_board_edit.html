@@ -3,10 +3,10 @@
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/admin">Admin</a>
+            <a href="{{ .root }}/admin">Admin</a>
             <ul>
                 <li>
-                    <a href="/admin/boards">Boards</a>
+                    <a href="{{ root }}/admin/boards">Boards</a>
                     <ul>
                         <li>Edit board</li>
                     </ul>
@@ -19,7 +19,7 @@
 {{ if .errorMessage }}
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
-<form action="/admin/boards/{{ .board.Id }}/update" method="post">
+<form action="{{ root }}/admin/boards/{{ .board.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "board_form" .form }}
     <input type="submit" value="Submit">

@@ -3,7 +3,7 @@
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/admin">Admin</a>
+            <a href="{{ root }}/admin">Admin</a>
             <ul>
                 <li>
                     Keys
@@ -13,7 +13,7 @@
     </ul>
 </nav>
 <h1>Keys</h1>
-<form action="/admin/keys/save" method="post" class="action">
+<form action="{{ root }}/admin/keys/save" method="post" class="action">
     {{ .csrfField }}
     <input type="submit" value="Create key">
 </form>
@@ -31,7 +31,7 @@
     <tr>
         <td colspan="grow">{{ .Key }}</td>
         <td class="center">{{ iso8601 .CreatedAt }}</td>
-        <td class="center"><a href="/admin/keys/{{ .Id }}/remove">Delete</a></td>
+        <td class="center"><a href="{{ root }}/admin/keys/{{ .Id }}/remove">Delete</a></td>
     </tr>
     {{ end }}
     </tbody>

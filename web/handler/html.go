@@ -28,11 +28,11 @@ var TplMap = map[string]string{
 <h1>Admin</h1>
 <nav>
   <ul>
-    <li><a href="/admin/settings/edit">Edit settings</a></li>
-    <li><a href="/admin/keys">Manage keys</a></li>
-    <li><a href="/admin/boards">Manage boards</a></li>
-    <li><a href="/admin/forums">Manage forums</a></li>
-    <li><a href="/admin/users">Manage users</a></li>
+    <li><a href="{{ root }}/admin/settings/edit">Edit settings</a></li>
+    <li><a href="{{ root }}/admin/keys">Manage keys</a></li>
+    <li><a href="{{ root }}/admin/boards">Manage boards</a></li>
+    <li><a href="{{ root }}/admin/forums">Manage forums</a></li>
+    <li><a href="{{ root }}/admin/users">Manage users</a></li>
   </ul>
 </nav>
 {{ end }}`,
@@ -40,7 +40,7 @@ var TplMap = map[string]string{
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/admin">Admin</a>
+            <a href="{{ root }}/admin">Admin</a>
             <ul>
                 <li>
                     Boards
@@ -52,9 +52,9 @@ var TplMap = map[string]string{
 <h1>Boards</h1>
 <p>
     {{ if .hasForums }}
-    <a href="/admin/boards/new">New board</a>
+    <a href="{{ root }}/admin/boards/new">New board</a>
     {{ else }}
-    <a href="/admin/forums">Create a forum</a> to create boards
+    <a href="{{ root }}/admin/forums">Create a forum</a> to create boards
     {{ end }}
 </p>
 <table>
@@ -73,9 +73,9 @@ var TplMap = map[string]string{
     {{ range .Boards }}
     <tr>
         <td colspan="grow">
-            <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+            <a href="{{ root }}/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
         </td>
-        <td class="center"><a href="/admin/boards/{{ .Id }}/edit">Edit</a></td>
+        <td class="center"><a href="{{ root }}/admin/boards/{{ .Id }}/edit">Edit</a></td>
     </tr>
     {{ end }}
     {{ end }}
@@ -92,10 +92,10 @@ var TplMap = map[string]string{
 <nav class="breadcrumb">
   <ul>
     <li>
-      <a href="/admin">Admin</a>
+      <a href="{{ root }}/admin">Admin</a>
       <ul>
         <li>
-          <a href="/admin/boards">Boards</a>
+          <a href="{{ root }}/admin/boards">Boards</a>
           <ul>
             <li>Create board</li>
           </ul>
@@ -108,7 +108,7 @@ var TplMap = map[string]string{
 {{ if .errorMessage }}
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
-<form action="/admin/boards/save" method="post">
+<form action="{{ root }}/admin/boards/save" method="post">
   {{ .csrfField }}
   {{ template "board_form" .form }}
   <input type="submit" value="Submit">
@@ -120,10 +120,10 @@ var TplMap = map[string]string{
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/admin">Admin</a>
+            <a href="{{ .root }}/admin">Admin</a>
             <ul>
                 <li>
-                    <a href="/admin/boards">Boards</a>
+                    <a href="{{ root }}/admin/boards">Boards</a>
                     <ul>
                         <li>Edit board</li>
                     </ul>
@@ -136,7 +136,7 @@ var TplMap = map[string]string{
 {{ if .errorMessage }}
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
-<form action="/admin/boards/{{ .board.Id }}/update" method="post">
+<form action="{{ root }}/admin/boards/{{ .board.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "board_form" .form }}
     <input type="submit" value="Submit">
@@ -147,7 +147,7 @@ var TplMap = map[string]string{
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/admin">Admin</a>
+            <a href="{{ root }}/admin">Admin</a>
             <ul>
                 <li>
                     Forums
@@ -157,7 +157,7 @@ var TplMap = map[string]string{
     </ul>
 </nav>
 <h1>Forums</h1>
-<p><a href="/admin/forums/new">New forum</a></p>
+<p><a href="{{ root }}/admin/forums/new">New forum</a></p>
 <table>
     <thead>
     <tr>
@@ -172,7 +172,7 @@ var TplMap = map[string]string{
         <td colspan="grow">
             {{ .Name }}
         </td>
-        <td class="center"><a href="/admin/forums/{{ .Id }}/edit">Edit</a></td>
+        <td class="center"><a href="{{ root }}/admin/forums/{{ .Id }}/edit">Edit</a></td>
     </tr>
     {{ end }}
     {{ else }}
@@ -188,10 +188,10 @@ var TplMap = map[string]string{
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/admin">Admin</a>
+            <a href="{{ root }}/admin">Admin</a>
             <ul>
                 <li>
-                    <a href="/admin/forums">Forums</a>
+                    <a href="{{ root }}/admin/forums">Forums</a>
                     <ul>
                         <li>Create forum</li>
                     </ul>
@@ -204,7 +204,7 @@ var TplMap = map[string]string{
 {{ if .errorMessage }}
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
-<form action="/admin/forums/save" method="post">
+<form action="{{ root }}/admin/forums/save" method="post">
     {{ .csrfField }}
     {{ template "forum_form" .form }}
     <input type="submit" value="Submit">
@@ -216,10 +216,10 @@ var TplMap = map[string]string{
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/admin">Admin</a>
+            <a href="{{ root }}/admin">Admin</a>
             <ul>
                 <li>
-                    <a href="/admin/forums">Forums</a>
+                    <a href="{{ root }}/admin/forums">Forums</a>
                     <ul>
                         <li>Edit forum</li>
                     </ul>
@@ -244,7 +244,7 @@ var TplMap = map[string]string{
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/admin">Admin</a>
+            <a href="{{ root }}/admin">Admin</a>
             <ul>
                 <li>
                     Keys
@@ -254,7 +254,7 @@ var TplMap = map[string]string{
     </ul>
 </nav>
 <h1>Keys</h1>
-<form action="/admin/keys/save" method="post" class="action">
+<form action="{{ root }}/admin/keys/save" method="post" class="action">
     {{ .csrfField }}
     <input type="submit" value="Create key">
 </form>
@@ -272,19 +272,19 @@ var TplMap = map[string]string{
     <tr>
         <td colspan="grow">{{ .Key }}</td>
         <td class="center">{{ iso8601 .CreatedAt }}</td>
-        <td class="center"><a href="/admin/keys/{{ .Id }}/remove">Delete</a></td>
+        <td class="center"><a href="{{ root }}/admin/keys/{{ .Id }}/remove">Delete</a></td>
     </tr>
     {{ end }}
     </tbody>
 </table>
 {{ end }}
 `,
-	"admin_settings_edit": `{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Settings{{ end }}
+	"admin_settings_edit": `{{ define "breadcrumb" }} > <a href="{{ root }}/admin">Admin</a> > Settings{{ end }}
 {{ define "content"}}
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/admin">Admin</a>
+            <a href="{{ root }}/admin">Admin</a>
             <ul>
                 <li>
                     Edit Settings
@@ -324,7 +324,7 @@ var TplMap = map[string]string{
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/admin">Admin</a>
+            <a href="{{ root }}/admin">Admin</a>
             <ul>
                 <li>Users</li>
             </ul>
@@ -345,9 +345,9 @@ var TplMap = map[string]string{
     {{ range .users }}
     <tr>
         <td colspan="grow">{{ .Name }}</td>
-        <td class="center"><a href="/admin/users/{{ .Id }}/edit">Edit</a></td>
-        <td class="center"><a href="/reset-password?hash={{ .Hash }}">Reset</a></td>
-        <td class="center"><a href="/admin/users/{{ .Id }}/remove">Delete</a></td>
+        <td class="center"><a href="{{ root }}/admin/users/{{ .Id }}/edit">Edit</a></td>
+        <td class="center"><a href="{{ root }}/reset-password?hash={{ .Hash }}">Reset</a></td>
+        <td class="center"><a href="{{ root }}/admin/users/{{ .Id }}/remove">Delete</a></td>
     </tr>
     {{ end }}
     </tbody>
@@ -358,10 +358,10 @@ var TplMap = map[string]string{
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/admin">Admin</a>
+            <a href="{{ root }}/admin">Admin</a>
             <ul>
                 <li>
-                    <a href="/admin/users">Users</a>
+                    <a href="{{ root }}/admin/users">Users</a>
                     <ul>
                         <li>Edit users</li>
                     </ul>
@@ -371,7 +371,7 @@ var TplMap = map[string]string{
     </ul>
 </nav>
 <h1>Edit user</h1>
-<form action="/admin/users/{{ .user.Id }}/update" method="post">
+<form action="{{ root }}/admin/users/{{ .user.Id }}/update" method="post">
     {{ .csrfField }}
     <div class="field">
         <label for="name">Name</label>
@@ -402,15 +402,15 @@ Are you sure you you want to delete the following user?
     <input type="submit" value="Submit">
 </form>
 {{ end }}`,
-	"board": `{{ define "breadcrumb" }}<a href="/">boards</a> > {{ .board.Name }}{{ end }}
+	"board": `{{ define "breadcrumb" }}<a href="{{ root }}/">boards</a> > {{ .board.Name }}{{ end }}
 {{ define "content" }}
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/">All forums</a>
+            <a href="{{ root }}/">All forums</a>
             <ul>
                 <li>
-                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                    <a href="{{ root }}/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
                     <ul>
                         <li>{{ .board.Name }}</li>
                     </ul>
@@ -429,7 +429,7 @@ Are you sure you you want to delete the following user?
 <p>This board is locked.</p>
 {{ end }}
 {{ if or (and (not .board.IsLocked) (not .board.Forum.IsLocked)) .logged.IsAdmin }}
-<form action="/boards/{{ .board.Id }}/new-topic" method="get" class="action">
+<form action="{{ root }}/boards/{{ .board.Id }}/new-topic" method="get" class="action">
     <input type="submit" value="New topic">
 </form>
 {{ end }}
@@ -449,10 +449,10 @@ Are you sure you you want to delete the following user?
         {{ if .topics }}
         {{ range .topics }}
         <tr{{ if .IsSticky }} class="sticky"{{ end }}>
-            <td colspan="grow"><a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a></td>
+            <td colspan="grow"><a href="{{ root }}/topics/{{ .Id }}">{{ .Post.Subject }}</a></td>
             <td class="center">{{ .Post.User.Name }}</td>
             <td class="center">{{ dec .Posts }}</td>
-            <td><a href="/topics/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
+            <td><a href="{{ root }}/topics/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
         </tr>
         {{ end }}
         {{ else }}
@@ -469,7 +469,7 @@ Are you sure you you want to delete the following user?
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/">All forums</a>
+            <a href="{{ root }}/">All forums</a>
             <ul>
                 <li>
                     {{ .forum.Name }}
@@ -496,11 +496,11 @@ Are you sure you you want to delete the following user?
     {{ range .boards }}
     <tr>
         <td colspan="grow">
-            <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+            <a href="{{ root }}/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
         </td>
         <td class="center">{{ .Topics }}</td>
         <td class="center">{{ .Posts }}</td>
-        <td class="center"><a href="/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
+        <td class="center"><a href="{{ root }}/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
     </tr>
     {{ end }}
     {{ else }}
@@ -536,13 +536,13 @@ Are you sure you you want to delete the following user?
 <nav class="breadcrumb">
   <ul>
     <li>
-      <a href="/">All forums</a>
+      <a href="{{ root }}/">All forums</a>
       <ul>
         <li>
-          <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+          <a href="{{ root }}/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
           <ul>
             <li>
-              <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+              <a href="{{ root }}/boards/{{ .board.Id }}">{{ .board.Name }}</a>
               <ul>
                 <li>{{ .topic.Post.Subject }}</li>
               </ul>
@@ -568,18 +568,18 @@ Are you sure you you want to delete the following user?
 {{ end }}
 `,
 	"create_topic": `{{ define "title" }}New topic{{ end }}
-{{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
+{{ define "breadcrumb" }} > <a href="{{ root }}/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content" }}
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/">All forums</a>
+            <a href="{{ root }}/">All forums</a>
             <ul>
                 <li>
-                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                    <a href="{{ root }}/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
                     <ul>
                         <li>
-                            <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+                            <a href="{{ root }}/boards/{{ .board.Id }}">{{ .board.Name }}</a>
                             <ul>
                                 <li>New topic</li>
                             </ul>
@@ -594,7 +594,7 @@ Are you sure you you want to delete the following user?
 {{ if .errorMessage }}
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
-<form action="/boards/{{ .board.Id }}/save-topic" method="post">
+<form action="{{ root }}/boards/{{ .board.Id }}/save-topic" method="post">
     {{ .csrfField }}
     <input type="hidden" name="boardId" value="{{ .form.BoardId }}">
     {{ template "post_form" .form.PostForm }}
@@ -610,13 +610,13 @@ Are you sure you you want to delete the following user?
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/">All forums</a>
+            <a href="{{ root }}/">All forums</a>
             <ul>
                 <li>
-                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                    <a href="{{ root }}/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
                     <ul>
                         <li>
-                            <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+                            <a href="{{ root }}/boards/{{ .board.Id }}">{{ .board.Name }}</a>
                             <ul>
                                 <li>{{ .topic.Post.Subject }}</li>
                             </ul>
@@ -634,7 +634,7 @@ Are you sure you you want to delete the following user?
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
 
-<form action="/posts/{{ .post.Id }}/update" method="post">
+<form action="{{ root }}/posts/{{ .post.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "post_form" .form }}
     <input type="submit" value="Reply">
@@ -685,18 +685,18 @@ Are you sure you you want to delete the following user?
         {{ if .forums }}
         {{ range .forums }}
         <tr class="forum">
-            <td colspan="4"><a href="/forums/{{ .Id }}">{{ .Name }}</a></td>
+            <td colspan="4"><a href="{{ root }}/forums/{{ .Id }}">{{ .Name }}</a></td>
         </tr>
         {{ range .Boards }}
         <tr>
             <td colspan="grow">
-                <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+                <a href="{{ root }}/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
             </td>
             <td class="center">{{ .Topics }}</td>
             <td class="center">{{ .Posts }}</td>
             <td class="center">
                 {{ if .Topics }}
-                <a href="/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a>
+                <a href="{{ root }}/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a>
                 {{ else }}
                 {{ iso8601 .UpdatedAt }}
                 {{ end }}
@@ -732,71 +732,9 @@ Are you sure you you want to delete the following user?
     <input type="submit" value="Login">
 </form>
 {{ end }}`,
-	"notifications": `{{ define "content" }}
-<h1>New replies</h1>
-<p><a href="/notifications/mark-all-read">mark all as read</a></p>
-{{ range .notifications }}
-<div>
-    <div class="meta">
-        <ul class="key-value">
-            <li><span class="key">From: </span><span class="value"><a href="/~{{ .Reply.User }}">{{ .Reply.User }}</a></span></li>
-            <li><span class="key">On: </span><span class="value">{{ .Reply.Date }}</span></li>
-            <li><span class="key">Post: </span><span class="value"><a href="/posts/{{ .Reply.PostId }}">{{ .Reply.PostTitle }}</a></span></li>
-            <li><span class="key">Parent: </span><span class="value">
-                        {{ if .Reply.ParentId }}<a href="/replies/{{ .Reply.ParentId }}">view</a>{{ else }}view{{end}}
-            </span></li>
-        </ul>
-    </div>
-    <div class="content">{{ syntax .Reply.Content }}</div>
-    <p>
-        <a href="/replies/{{ .Reply.Id }}">reply</a>
-        <a href="/notifications/{{ .Id }}/mark-read">mark as read</a>
-    </p>
-</div>
-{{ end }}
-{{ end }}`,
-	"post": `{{ define "breadcrumb" }} > <a href="/topics/{{ .post.Topic }}">{{ .post.Topic }}</a>{{ end }}
+	"post": `{{ define "breadcrumb" }} > <a href="{{ root }}/topics/{{ .post.Topic }}">{{ .post.Topic }}</a>{{ end }}
 {{ define "content"}}
-<!--<table class="thread">-->
-<!--    <tr>-->
-<!--        <td>{{ .post.User }}</td>-->
-<!--        <td>{{ syntax .content }}</td>-->
-<!--    </tr>-->
-<!--    {{ range .replies }}-->
-<!--    <tr>-->
-<!--        <td>{{ .User }}</td>-->
-<!--        <td>{{ syntax .Content }}</td>-->
-<!--    </tr>-->
-<!--    {{ end }}-->
-<!--</table>-->
-<!--<form action="/posts/{{ .post.Id }}/reply" method="post">-->
-<!--    {{ .csrfField }}-->
-<!--    <div class="field">-->
-<!--        <textarea name="reply"></textarea>-->
-<!--    </div>-->
-<!--    <input type="submit" value="Reply">-->
-<!--</form>-->
 <h1>{{ .post.Subject }}</h1>
-<!--<ol class="thread">-->
-<!--    <li class="post">-->
-<!--        <table>-->
-<!--            <tr>-->
-<!--                <td class="post-aside">{{ .post.User }}</td>-->
-<!--                <td class="post-content">{{ syntax .content }}</td>-->
-<!--            </tr>-->
-<!--        </table>-->
-<!--    </li>-->
-<!--    {{ range .replies }}-->
-<!--    <li class="post">-->
-<!--        <table>-->
-<!--            <tr>-->
-<!--                <td class="post-aside">{{ .User }}</td>-->
-<!--                <td class="post-content">{{ syntax .Content }}</td>-->
-<!--            </tr>-->
-<!--        </table>-->
-<!--    </li>-->
-<!--    {{ end }}-->
-<!--</ol>-->
 <table class="thread">
     <tr class="post">
         <td class="post-aside">
@@ -819,40 +757,13 @@ Are you sure you you want to delete the following user?
     </tr>
     {{ end }}
 </table>
-<form action="/posts/{{ .post.Id }}/reply" method="post">
+<form action="{{ root }}/posts/{{ .post.Id }}/reply" method="post">
     {{ .csrfField }}
     <div class="field">
         <textarea name="reply"></textarea>
     </div>
     <input type="submit" value="Reply">
 </form>
-<!--<h1>{{ .post.Subject }}</h1>-->
-<!--<div class="meta">-->
-<!--    {{ with .post }}-->
-<!--    <ul class="key-value">-->
-<!--        <li><span class="key">From: </span><span class="value"><a href="/~{{ .User }}">{{ .User }}</a></span></li>-->
-<!--        <li><span class="key">On: </span><span class="value">{{ timeAgo .CreatedAt }} ({{ .Date }})</span></li>-->
-<!--        {{ if .Topic }}<li><span class="key">Topic: </span><span class="value"><a href="/topics/{{ .Topic }}">{{ .Topic }}</a></span></li>{{ end }}-->
-<!--    </ul>-->
-<!--    {{ end }}-->
-<!--</div>-->
-<!--<div class="content">{{ syntax .content }}</div>-->
-<!--{{- if eq .logged .post.User }}-->
-<!--<p>-->
-<!--    <a href="/posts/{{ .post.Id }}/edit">Edit</a>-->
-<!--    <a href="/posts/{{ .post.Id }}/remove">Remove</a>-->
-<!--</p>-->
-<!--{{- end }}-->
-<!--{{ if .logged }}-->
-<!--<form action="/posts/{{ .post.Id }}/reply" method="post">-->
-<!--    {{ .csrfField }}-->
-<!--    <div class="field">-->
-<!--        <textarea name="reply"></textarea>-->
-<!--    </div>-->
-<!--    <input type="submit" value="Reply">-->
-<!--</form>-->
-<!--{{ end }}-->
-<!--{{ template "reply" .replies }}-->
 {{ end }}`,
 	"posts": `{{ define "content" }}
 <h1>Posts</h1>
@@ -870,7 +781,7 @@ Are you sure you you want to delete the following user?
         {{ if .posts }}
         {{ range .posts }}
         <tr>
-        <td colspan="grow"><a href="/topics/{{ .TopicId }}#{{ .Id }}">{{ .Subject }}</a></td>
+        <td colspan="grow"><a href="{{ root }}/topics/{{ .TopicId }}#{{ .Id }}">{{ .Subject }}</a></td>
         <td class="center">{{ .User.Name }}</td>
         <td class="center">{{ iso8601 .CreatedAt }}</td>
         </tr>
@@ -935,18 +846,18 @@ Are you sure you you want to delete the following user?
     <input type="submit" value="Submit">
 </form>
 {{ end }}`,
-	"topic": `{{ define "breadcrumb" }}<a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
+	"topic": `{{ define "breadcrumb" }}<a href="{{ root }}/">boards</a> > <a href="{{ root }}/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/">All forums</a>
+            <a href="{{ root }}/">All forums</a>
             <ul>
                 <li>
-                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                    <a href="{{ root }}/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
                     <ul>
                         <li>
-                            <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+                            <a href="{{ root }}/boards/{{ .board.Id }}">{{ .board.Name }}</a>
                             <ul>
                                 <li>{{ .topic.Post.Subject }}</li>
                             </ul>
@@ -974,10 +885,10 @@ Are you sure you you want to delete the following user?
             <div class="posted">
                 Posted {{ iso8601Time .CreatedAt }}
                 {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
-                <a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
+                <a href="{{ root }}/topics/{{ $.topic.Id }}/edit">edit</a> <a href="{{ root }}/posts/{{ .Id }}/remove">remove</a>
                 {{ else }}
                 {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
-                <a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
+                <a href="{{ root }}/posts/{{ .Id }}/edit">edit</a> <a href="{{ root }}/posts/{{ .Id }}/remove">remove</a>
                 {{ end }}
                 {{ end }}
                 <hr/>
@@ -1008,7 +919,7 @@ Are you sure you you want to delete the following user?
     {{ if .errorMessage }}
         <p class="errors">{{ .errorMessage }}</p>
     {{ end }}
-    <form action="/posts/save" method="post">
+    <form action="{{ root }}/posts/save" method="post">
         {{ .csrfField }}
         <input type="hidden" name="topicId" value="{{ .topic.Id }}">
         <input type="hidden" name="boardId" value="{{ .board.Id }}">
