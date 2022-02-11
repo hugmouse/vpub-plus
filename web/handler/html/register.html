@@ -5,7 +5,7 @@
 {{ if .errorMessage }}
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
-<form action="/register" method="post" class="auth-form">
+<form action="{{ root }}/register" method="post" class="auth-form">
     {{ .csrfField }}
     <div class="field">
         <label for="name">Username</label>

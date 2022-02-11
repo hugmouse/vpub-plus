@@ -1,8 +1,0 @@
-{{ define "content" }}
-    Are you sure you you want to delete the following reply?
-    <p>{{ syntax .reply.Content }}</p>
-    <form action="/replies/{{ .reply.Id }}/remove" method="post">
-        {{ .csrfField }}
-        <input type="submit" value="Submit">
-    </form>
-{{ end }}

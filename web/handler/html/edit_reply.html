@@ -1,7 +1,0 @@
-{{ define "content" }}
-    <form action="/replies/{{ .reply.Id }}/update" method="post" class="form">
-        {{ .csrfField }}
-        <label for="reply">reply</label><textarea name="reply" id="reply">{{ .form.Content }}</textarea>
-        <input type="submit" value="Submit">
-    </form>
-{{ end }}

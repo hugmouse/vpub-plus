@@ -27,7 +27,7 @@
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
 
-<form action="/posts/save" method="post">
+<form action="{{ root }}/posts/save" method="post">
   {{ .csrfField }}
   {{ template "post_form" .form }}
   <input type="submit" value="Reply">

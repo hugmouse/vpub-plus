@@ -8,7 +8,7 @@ var TplMap = map[string]string{
 {{ define "content" }}
 <h1>Account</h1>
 
-<form action="/update-account" method="post">
+<form action="{{ root }}/update-account" method="post">
     {{ .csrfField }}
     <div class="field">
         <label for="picture">Picture</label>
@@ -232,7 +232,7 @@ var TplMap = map[string]string{
 {{ if .errorMessage }}
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
-<form action="/admin/forums/{{ .forum.Id }}/update" method="post">
+<form action="{{ root }}/admin/forums/{{ .forum.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "forum_form" .form }}
     <input type="submit" value="Submit">
@@ -294,7 +294,7 @@ var TplMap = map[string]string{
     </ul>
 </nav>
 <h1>Edit Settings</h1>
-<form action="/admin/settings/update" method="post">
+<form action="{{ root }}/admin/settings/update" method="post">
     {{ .csrfField }}
     <div class="field">
         <label for="name">Name</label>
@@ -397,7 +397,7 @@ var TplMap = map[string]string{
 
 Are you sure you you want to delete the following user?
 <p>{{ .user.Name }}</p>
-<form action="/admin/users/{{ .user.Id }}/remove" method="post">
+<form action="{{ root }}/admin/users/{{ .user.Id }}/remove" method="post">
     {{ .csrfField }}
     <input type="submit" value="Submit">
 </form>
@@ -518,15 +518,7 @@ Are you sure you you want to delete the following user?
 
     Are you sure you you want to delete the following post?
     <p>{{ syntax .post.Content }}</p>
-    <form action="/posts/{{ .post.Id }}/remove" method="post">
-        {{ .csrfField }}
-        <input type="submit" value="Submit">
-    </form>
-{{ end }}`,
-	"confirm_remove_reply": `{{ define "content" }}
-    Are you sure you you want to delete the following reply?
-    <p>{{ syntax .reply.Content }}</p>
-    <form action="/replies/{{ .reply.Id }}/remove" method="post">
+    <form action="{{ root }}/posts/{{ .post.Id }}/remove" method="post">
         {{ .csrfField }}
         <input type="submit" value="Submit">
     </form>
@@ -560,7 +552,7 @@ Are you sure you you want to delete the following user?
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
 
-<form action="/posts/save" method="post">
+<form action="{{ root }}/posts/save" method="post">
   {{ .csrfField }}
   {{ template "post_form" .form }}
   <input type="submit" value="Reply">
@@ -641,21 +633,13 @@ Are you sure you you want to delete the following user?
 </form>
 {{ end }}
 `,
-	"edit_reply": `{{ define "content" }}
-    <form action="/replies/{{ .reply.Id }}/update" method="post" class="form">
-        {{ .csrfField }}
-        <label for="reply">reply</label><textarea name="reply" id="reply">{{ .form.Content }}</textarea>
-        <input type="submit" value="Submit">
-    </form>
-{{ end }}
-`,
 	"edit_topic": `{{ define "title" }}Edit topic{{ end }}
 {{ define "content" }}
 <h1>Edit topic</h1>
 {{ if .errorMessage }}
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
-<form action="/topics/{{ .form.Id }}/update" method="post">
+<form action="{{ root }}/topics/{{ .form.Id }}/update" method="post">
     {{ .csrfField }}
     <input type="hidden" name="boardId" value="{{ .form.BoardId }}">
     {{ template "post_form" .form.PostForm }}
@@ -719,7 +703,7 @@ Are you sure you you want to delete the following user?
 {{ if .errorMessage }}
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
-<form action="/login" method="post" class="auth-form">
+<form action="{{ root }}/login" method="post" class="auth-form">
     {{ .csrfField }}
     <div class="field">
         <label for="name">Username</label>
@@ -803,7 +787,7 @@ Are you sure you you want to delete the following user?
 {{ if .errorMessage }}
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
-<form action="/register" method="post" class="auth-form">
+<form action="{{ root }}/register" method="post" class="auth-form">
     {{ .csrfField }}
     <div class="field">
         <label for="name">Username</label>
@@ -832,7 +816,7 @@ Are you sure you you want to delete the following user?
 {{ if .error }}
 <p class="error">{{ .error }}</p>
 {{ end }}
-<form action="/reset-password" method="post" class="auth-form">
+<form action="{{ root }}/reset-password" method="post" class="auth-form">
     {{ .csrfField }}
     <input name="hash" type="hidden" value="{{ .hash }}">
     <div class="field">

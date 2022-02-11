@@ -13,7 +13,7 @@
     </ul>
 </nav>
 <h1>Edit Settings</h1>
-<form action="/admin/settings/update" method="post">
+<form action="{{ root }}/admin/settings/update" method="post">
     {{ .csrfField }}
     <div class="field">
         <label for="name">Name</label>

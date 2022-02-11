@@ -4,7 +4,7 @@
 {{ if .errorMessage }}
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
-<form action="/topics/{{ .form.Id }}/update" method="post">
+<form action="{{ root }}/topics/{{ .form.Id }}/update" method="post">
     {{ .csrfField }}
     <input type="hidden" name="boardId" value="{{ .form.BoardId }}">
     {{ template "post_form" .form.PostForm }}
