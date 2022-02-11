@@ -54,7 +54,6 @@ var TplCommonMap = map[string]string{
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css"/>
     <title>{{ .settings.Name }}</title>
-    <base href="{{ .settings.URL }}">
     {{ template "head" . }}
 </head>
 <body>
