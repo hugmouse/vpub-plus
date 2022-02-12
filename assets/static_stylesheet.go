@@ -96,7 +96,7 @@ article > div {
 	padding: 0 1em;
 }
 
-.sticky, .forum { background-color: cornsilk; }
+.forum { background-color: cornsilk; }
 
 /* Start post */
 /* With a table */

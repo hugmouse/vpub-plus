@@ -44,8 +44,11 @@
         <tbody>
         {{ if .topics }}
         {{ range .topics }}
-        <tr{{ if .IsSticky }} class="sticky"{{ end }}>
-            <td colspan="grow"><a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a></td>
+        <tr>
+            <td colspan="grow">
+                {{ if .IsSticky }}<span class="sticky">[Sticky]</span>{{ end }}
+                <a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a>
+            </td>
             <td class="center">{{ .Post.User.Name }}</td>
             <td class="center">{{ dec .Posts }}</td>
             <td><a href="/topics/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
