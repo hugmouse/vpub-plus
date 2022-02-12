@@ -101,7 +101,7 @@ func Convert(gmi string) string {
 				preMode = true
 			case bulletRegexp.MatchString(l):
 				matches := bulletRegexp.FindStringSubmatch(l)
-				sane := processLinks(matches[1])
+				sane := processDecoration(matches[1])
 				if ulMode {
 					rv = append(rv, "<li>"+sane+"</li>")
 					continue
@@ -147,7 +147,7 @@ func ConvertNoParagraph(gmi string) string {
 				preMode = true
 			case bulletRegexp.MatchString(l):
 				matches := bulletRegexp.FindStringSubmatch(l)
-				sane := processLinks(matches[1])
+				sane := processDecoration(matches[1])
 				if ulMode {
 					rv = append(rv, "<li>"+sane+"</li>")
 					continue
