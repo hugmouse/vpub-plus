@@ -2,7 +2,7 @@
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="{{ root }}/admin">Admin</a>
+            <a href="/admin">Admin</a>
             <ul>
                 <li>
                     Forums
@@ -12,7 +12,7 @@
     </ul>
 </nav>
 <h1>Forums</h1>
-<p><a href="{{ root }}/admin/forums/new">New forum</a></p>
+<p><a href="/admin/forums/new">New forum</a></p>
 <table>
     <thead>
     <tr>
@@ -27,7 +27,7 @@
         <td colspan="grow">
             {{ .Name }}
         </td>
-        <td class="center"><a href="{{ root }}/admin/forums/{{ .Id }}/edit">Edit</a></td>
+        <td class="center"><a href="/admin/forums/{{ .Id }}/edit">Edit</a></td>
     </tr>
     {{ end }}
     {{ else }}

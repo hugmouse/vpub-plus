@@ -2,7 +2,7 @@
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="{{ root }}/">All forums</a>
+            <a href="/">All forums</a>
             <ul>
                 <li>
                     {{ .forum.Name }}
@@ -29,11 +29,11 @@
     {{ range .boards }}
     <tr>
         <td colspan="grow">
-            <a href="{{ root }}/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+            <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
         </td>
         <td class="center">{{ .Topics }}</td>
         <td class="center">{{ .Posts }}</td>
-        <td class="center"><a href="{{ root }}/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
+        <td class="center"><a href="/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
     </tr>
     {{ end }}
     {{ else }}

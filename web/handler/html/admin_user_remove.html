@@ -6,7 +6,7 @@
 
 Are you sure you you want to delete the following user?
 <p>{{ .user.Name }}</p>
-<form action="{{ root }}/admin/users/{{ .user.Id }}/remove" method="post">
+<form action="/admin/users/{{ .user.Id }}/remove" method="post">
     {{ .csrfField }}
     <input type="submit" value="Submit">
 </form>

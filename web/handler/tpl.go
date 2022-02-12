@@ -5,8 +5,6 @@ import (
 	"github.com/gorilla/csrf"
 	"html/template"
 	"net/http"
-	"net/url"
-	"path"
 	"time"
 	"vpub/syntax"
 	"vpub/web/handler/request"
@@ -53,10 +51,6 @@ func (v View) Render() {
 		"logged": func() bool {
 			return user.Name != ""
 		},
-		"root": func() string {
-			url, _ := url.Parse(settings.URL)
-			return path.Clean(url.Path)
-		},
 	}).ExecuteTemplate(v.w, "layout", data); err != nil {
 		fmt.Println(err)
 	}
@@ -75,9 +69,6 @@ func (h *Handler) initTpl() {
 			},
 			"logged": func() bool {
 				return false
-			},
-			"root": func() string {
-				return ""
 			},
 			"syntax": func(input string) template.HTML {
 				return template.HTML(syntax.Convert(input))

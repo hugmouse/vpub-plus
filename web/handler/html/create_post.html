@@ -3,13 +3,13 @@
 <nav class="breadcrumb">
   <ul>
     <li>
-      <a href="{{ root }}/">All forums</a>
+      <a href="/">All forums</a>
       <ul>
         <li>
-          <a href="{{ root }}/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+          <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
           <ul>
             <li>
-              <a href="{{ root }}/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+              <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
               <ul>
                 <li>{{ .topic.Post.Subject }}</li>
               </ul>
@@ -27,7 +27,7 @@
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
 
-<form action="{{ root }}/posts/save" method="post">
+<form action="/posts/save" method="post">
   {{ .csrfField }}
   {{ template "post_form" .form }}
   <input type="submit" value="Reply">

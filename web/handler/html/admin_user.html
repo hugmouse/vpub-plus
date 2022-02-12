@@ -2,7 +2,7 @@
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="{{ root }}/admin">Admin</a>
+            <a href="/admin">Admin</a>
             <ul>
                 <li>Users</li>
             </ul>
@@ -23,9 +23,9 @@
     {{ range .users }}
     <tr>
         <td colspan="grow">{{ .Name }}</td>
-        <td class="center"><a href="{{ root }}/admin/users/{{ .Id }}/edit">Edit</a></td>
-        <td class="center"><a href="{{ root }}/reset-password?hash={{ .Hash }}">Reset</a></td>
-        <td class="center"><a href="{{ root }}/admin/users/{{ .Id }}/remove">Delete</a></td>
+        <td class="center"><a href="/admin/users/{{ .Id }}/edit">Edit</a></td>
+        <td class="center"><a href="/reset-password?hash={{ .Hash }}">Reset</a></td>
+        <td class="center"><a href="/admin/users/{{ .Id }}/remove">Delete</a></td>
     </tr>
     {{ end }}
     </tbody>

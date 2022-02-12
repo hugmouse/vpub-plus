@@ -1,9 +1,9 @@
-{{ define "breadcrumb" }} > <a href="{{ root }}/admin">Admin</a> > Settings{{ end }}
+{{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Settings{{ end }}
 {{ define "content"}}
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="{{ root }}/admin">Admin</a>
+            <a href="/admin">Admin</a>
             <ul>
                 <li>
                     Edit Settings
@@ -13,7 +13,7 @@
     </ul>
 </nav>
 <h1>Edit Settings</h1>
-<form action="{{ root }}/admin/settings/update" method="post">
+<form action="/admin/settings/update" method="post">
     {{ .csrfField }}
     <div class="field">
         <label for="name">Name</label>

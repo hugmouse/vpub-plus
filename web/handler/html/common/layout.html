@@ -4,18 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ root }}/style.css"/>
+    <link rel="stylesheet" href="/style.css"/>
     <title>{{ .settings.Name }}</title>
     {{ template "head" . }}
 </head>
 <body>
     <header>
-        <span><a href="{{ root }}/">home</a> <a href="{{ root }}/posts">posts</a> <a href="{{ root }}/feed.atom">atom</a></span>
+        <span><a href="/">home</a> <a href="/posts">posts</a> <a href="/feed.atom">atom</a></span>
         <nav>
             {{ if logged }}
-            {{ if .hasNotifications }}<a href="{{ root }}/notifications" class="notifications">New replies</a> {{ end }} <a href="{{ root }}/account">{{ .logged.Name }}</a> (<a href="{{ root }}/logout">logout</a>)
+            {{ if .hasNotifications }}<a href="/notifications" class="notifications">New replies</a> {{ end }} <a href="/account">{{ .logged.Name }}</a> (<a href="/logout">logout</a>)
             {{ else }}
-            <a href="{{ root }}/login">login</a> <a href="{{ root }}/register">register</a>
+            <a href="/login">login</a> <a href="/register">register</a>
             {{ end }}
         </nav>
     </header>

@@ -1,16 +1,16 @@
 {{ define "title" }}New topic{{ end }}
-{{ define "breadcrumb" }} > <a href="{{ root }}/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
+{{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content" }}
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="{{ root }}/">All forums</a>
+            <a href="/">All forums</a>
             <ul>
                 <li>
-                    <a href="{{ root }}/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
                     <ul>
                         <li>
-                            <a href="{{ root }}/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+                            <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
                             <ul>
                                 <li>New topic</li>
                             </ul>
@@ -25,7 +25,7 @@
 {{ if .errorMessage }}
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
-<form action="{{ root }}/boards/{{ .board.Id }}/save-topic" method="post">
+<form action="/boards/{{ .board.Id }}/save-topic" method="post">
     {{ .csrfField }}
     <input type="hidden" name="boardId" value="{{ .form.BoardId }}">
     {{ template "post_form" .form.PostForm }}

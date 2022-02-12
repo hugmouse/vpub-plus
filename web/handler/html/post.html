@@ -1,4 +1,4 @@
-{{ define "breadcrumb" }} > <a href="{{ root }}/topics/{{ .post.Topic }}">{{ .post.Topic }}</a>{{ end }}
+{{ define "breadcrumb" }} > <a href="/topics/{{ .post.Topic }}">{{ .post.Topic }}</a>{{ end }}
 {{ define "content"}}
 <h1>{{ .post.Subject }}</h1>
 <table class="thread">
@@ -23,7 +23,7 @@
     </tr>
     {{ end }}
 </table>
-<form action="{{ root }}/posts/{{ .post.Id }}/reply" method="post">
+<form action="/posts/{{ .post.Id }}/reply" method="post">
     {{ .csrfField }}
     <div class="field">
         <textarea name="reply"></textarea>
