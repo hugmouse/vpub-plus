@@ -34,7 +34,7 @@ func processLinks(input string) string {
 		for _, m := range matches {
 			sane = strings.Replace(sane, m[0], fmt.Sprintf("<img src=\"%s\" alt=\"%s\"/>", m[2], m[1]), 1)
 		}
-		matches = linkRegexp.FindAllStringSubmatch(input, -1)
+		matches = linkRegexp.FindAllStringSubmatch(sane, -1)
 		for _, m := range matches {
 			sane = strings.Replace(sane, m[0], fmt.Sprintf("<a href=\"%s\" target=\"_blank\">%s</a>", m[2], m[1]), 1)
 		}
