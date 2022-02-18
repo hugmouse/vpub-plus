@@ -91,7 +91,7 @@ func createAtomEntryFromPost(url string, post model.Post) *Entry {
 		},
 		Content: &Text{
 			Type: "html",
-			Body: syntax.Convert(post.Content),
+			Body: syntax.Convert(post.Content, true),
 		},
 	}
 }

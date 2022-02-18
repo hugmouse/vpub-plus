@@ -71,10 +71,10 @@ func (h *Handler) initTpl() {
 				return false
 			},
 			"syntax": func(input string) template.HTML {
-				return template.HTML(syntax.Convert(input))
+				return template.HTML(syntax.Convert(input, true))
 			},
 			"sig": func(input string) template.HTML {
-				return template.HTML(syntax.ConvertNoParagraph(input))
+				return template.HTML(syntax.Convert(input, false))
 			},
 			"iso8601": func(t time.Time) string {
 				return t.Format("2006-01-02")

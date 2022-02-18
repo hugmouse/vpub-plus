@@ -28,23 +28,24 @@ func sanitize(input string) string {
 }
 
 func processLinks(input string) string {
+	sane := html.EscapeString(input)
 	if imgRegexp.MatchString(input) || linkRegexp.MatchString(input) {
 		matches := imgRegexp.FindAllStringSubmatch(input, -1)
 		for _, m := range matches {
-			input = strings.Replace(input, m[0], fmt.Sprintf("<img src=\"%s\" alt=\"%s\"/>", m[2], m[1]), 1)
+			sane = strings.Replace(sane, m[0], fmt.Sprintf("<img src=\"%s\" alt=\"%s\"/>", m[2], m[1]), 1)
 		}
 		matches = linkRegexp.FindAllStringSubmatch(input, -1)
 		for _, m := range matches {
-			input = strings.Replace(input, m[0], fmt.Sprintf("<a href=\"%s\" target=\"_blank\">%s</a>", m[2], m[1]), 1)
+			sane = strings.Replace(sane, m[0], fmt.Sprintf("<a href=\"%s\" target=\"_blank\">%s</a>", m[2], m[1]), 1)
 		}
 	} else if urlRegexp.MatchString(input) {
 		matches := urlRegexp.FindAllStringSubmatch(input, -1)
 		for _, m := range matches {
 			url := m[0]
-			input = strings.Replace(input, url, fmt.Sprintf("<a href=\"%s\" target=\"_blank\">%s</a>", url, url), 1)
+			sane = strings.Replace(sane, url, fmt.Sprintf("<a href=\"%s\" target=\"_blank\">%s</a>", url, url), 1)
 		}
 	}
-	return input
+	return sane
 }
 
 func processBold(input string) string {
@@ -67,15 +68,15 @@ func processItalics(input string) string {
 	return input
 }
 
+// Returns a sanitized output
 func processDecoration(input string) string {
-	sane := sanitize(input)
-	sane = processLinks(sane)
+	sane := processLinks(input)
 	sane = processBold(sane)
 	sane = processItalics(sane)
 	return sane
 }
 
-func Convert(gmi string) string {
+func Convert(gmi string, wrap bool) string {
 	var rv []string
 	preMode := false
 	ulMode := false
@@ -112,53 +113,11 @@ func Convert(gmi string) string {
 				clearUlMode(&ulMode, &rv)
 				sane := processDecoration(l)
 				if len(l) != 0 {
-					rv = append(rv, "<p>"+sane+"</p>")
-				}
-			}
-		}
-	}
-	clearUlMode(&ulMode, &rv)
-	return strings.Join(rv, "\n")
-}
-
-func ConvertNoParagraph(gmi string) string {
-	var rv []string
-	preMode := false
-	ulMode := false
-	for _, l := range strings.Split(gmi, "\n") {
-		l = strings.TrimRight(l, "\r")
-		if preMode {
-			switch {
-			case preRegexp.MatchString(l):
-				rv = append(rv, "</pre>")
-				preMode = false
-			default:
-				rv = append(rv, sanitize(l))
-			}
-		} else {
-			switch {
-			case blockquoteRegexp.MatchString(l):
-				clearUlMode(&ulMode, &rv)
-				matches := blockquoteRegexp.FindStringSubmatch(l)
-				rv = append(rv, "<blockquote>> "+sanitize(matches[1])+"</blockquote>")
-			case preRegexp.MatchString(l):
-				clearUlMode(&ulMode, &rv)
-				rv = append(rv, "<pre>")
-				preMode = true
-			case bulletRegexp.MatchString(l):
-				matches := bulletRegexp.FindStringSubmatch(l)
-				sane := processDecoration(matches[1])
-				if ulMode {
-					rv = append(rv, "<li>"+sane+"</li>")
-					continue
-				}
-				rv = append(rv, "<ul>\n<li>"+sane+"</li>")
-				ulMode = true
-			default:
-				clearUlMode(&ulMode, &rv)
-				sane := processDecoration(l)
-				if len(l) != 0 {
-					rv = append(rv, sane)
+					if wrap {
+						rv = append(rv, "<p>"+sane+"</p>")
+					} else {
+						rv = append(rv, sane)
+					}
 				}
 			}
 		}
