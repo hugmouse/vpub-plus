@@ -1,3 +1,4 @@
+{{ define "head" }}<link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}/boards/{{ .board.Id }}/feed.atom"/>{{ end }}
 {{ define "breadcrumb" }}<a href="/">boards</a> > {{ .board.Name }}{{ end }}
 {{ define "content" }}
 <nav class="breadcrumb">

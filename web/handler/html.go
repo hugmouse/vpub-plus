@@ -402,7 +402,8 @@ Are you sure you you want to delete the following user?
     <input type="submit" value="Submit">
 </form>
 {{ end }}`,
-	"board": `{{ define "breadcrumb" }}<a href="/">boards</a> > {{ .board.Name }}{{ end }}
+	"board": `{{ define "head" }}<link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}/boards/{{ .board.Id }}/feed.atom"/>{{ end }}
+{{ define "breadcrumb" }}<a href="/">boards</a> > {{ .board.Name }}{{ end }}
 {{ define "content" }}
 <nav class="breadcrumb">
     <ul>
@@ -467,7 +468,8 @@ Are you sure you you want to delete the following user?
     </table>
     {{ template "pagination" .pagination }}
 </section>
-{{ end }}`,
+{{ end }}
+`,
 	"boards": `{{ define "content"}}
 <nav class="breadcrumb">
     <ul>

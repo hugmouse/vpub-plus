@@ -158,6 +158,7 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 
 	// Boards
 	publicSubRouter.HandleFunc("/boards/{boardId}", h.showBoardView).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/boards/{boardId}/feed.atom", h.showBoardFeed).Methods(http.MethodGet)
 	publicSubRouter.HandleFunc("/boards/{boardId}/new-topic", h.protect(h.showCreateTopicView)).Methods(http.MethodGet)
 	publicSubRouter.HandleFunc("/boards/{boardId}/save-topic", h.protect(h.saveTopic)).Methods(http.MethodPost)
 	publicSubRouter.HandleFunc("/boards/{boardId}/newest", h.showNewestBoardView).Methods(http.MethodGet)
