@@ -833,7 +833,8 @@ Are you sure you you want to delete the following user?
     <input type="submit" value="Submit">
 </form>
 {{ end }}`,
-	"topic": `{{ define "breadcrumb" }}<a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
+	"topic": `{{ define "head" }}<link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}/topics/{{ .topic.Id }}/feed.atom"/>{{ end }}
+{{ define "breadcrumb" }}<a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
 <nav class="breadcrumb">
     <ul>
@@ -920,5 +921,6 @@ Are you sure you you want to delete the following user?
 </section>
 {{ end }}
 {{ end }}
-{{ end }}`,
+{{ end }}
+`,
 }
