@@ -408,7 +408,7 @@ Are you sure you you want to delete the following user?
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/">All forums</a>
+            <a href="/">All forums?</a>
             <ul>
                 <li>
                     <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
