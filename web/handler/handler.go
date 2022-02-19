@@ -164,6 +164,7 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 
 	// Topic
 	publicSubRouter.HandleFunc("/topics/{topicId}", h.showTopicView).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/topics/{topicId}/feed.atom", h.showTopicFeed).Methods(http.MethodGet)
 	publicSubRouter.HandleFunc("/topics/{topicId}/edit", h.protect(h.showEditTopicView)).Methods(http.MethodGet)
 	publicSubRouter.HandleFunc("/topics/{topicId}/update", h.updateTopic).Methods(http.MethodPost)
 	publicSubRouter.HandleFunc("/topics/{topicId}/newest", h.showNewestTopicView).Methods(http.MethodGet)
