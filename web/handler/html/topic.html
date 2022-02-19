@@ -47,6 +47,9 @@
                 <hr/>
             </div>
             <div>{{ syntax .Content }}</div>
+            {{ if ne .CreatedAt .UpdatedAt }}
+            <div><p><i>Last edited on {{ iso8601Time .UpdatedAt }}</i></p></div>
+            {{ end }}
             {{ if .User.About }}
             <div class="signature">
                 {{ sig .User.About }}

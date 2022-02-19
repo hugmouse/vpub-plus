@@ -408,7 +408,7 @@ Are you sure you you want to delete the following user?
 <nav class="breadcrumb">
     <ul>
         <li>
-            <a href="/">All forums?</a>
+            <a href="/">All forums</a>
             <ul>
                 <li>
                     <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
@@ -721,39 +721,6 @@ Are you sure you you want to delete the following user?
     <input type="submit" value="Login">
 </form>
 {{ end }}`,
-	"post": `{{ define "breadcrumb" }} > <a href="/topics/{{ .post.Topic }}">{{ .post.Topic }}</a>{{ end }}
-{{ define "content"}}
-<h1>{{ .post.Subject }}</h1>
-<table class="thread">
-    <tr class="post">
-        <td class="post-aside">
-            <p>{{ .post.User }}</p>
-            <p>{{ timeAgo .post.CreatedAt }}</p>
-        </td>
-        <td class="post-content">
-            {{ syntax .content }}
-        </td>
-    </tr>
-    {{ range .replies }}
-    <tr class="post">
-        <td class="post-aside">
-            <p>{{ .User }}</p>
-            <p>{{ timeAgo .CreatedAt }}</p>
-        </td>
-        <td class="post-content">
-            {{ syntax .Content }}
-        </td>
-    </tr>
-    {{ end }}
-</table>
-<form action="/posts/{{ .post.Id }}/reply" method="post">
-    {{ .csrfField }}
-    <div class="field">
-        <textarea name="reply"></textarea>
-    </div>
-    <input type="submit" value="Reply">
-</form>
-{{ end }}`,
 	"posts": `{{ define "content" }}
 <h1>Posts</h1>
 
@@ -884,6 +851,9 @@ Are you sure you you want to delete the following user?
                 <hr/>
             </div>
             <div>{{ syntax .Content }}</div>
+            {{ if ne .CreatedAt .UpdatedAt }}
+            <div><p><i>Last edited on {{ iso8601Time .UpdatedAt }}</i></p></div>
+            {{ end }}
             {{ if .User.About }}
             <div class="signature">
                 {{ sig .User.About }}

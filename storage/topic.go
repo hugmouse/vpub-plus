@@ -39,12 +39,31 @@ func (s *Storage) UpdateTopic(id int64, request model.TopicRequest) error {
 	}
 	var postId int64
 	if err := tx.QueryRowContext(ctx, `
-UPDATE topics set is_locked=$1, is_sticky=$2, board_id=$3 where id=$4 returning post_id
-`, request.IsLocked, request.IsSticky, request.BoardId, id).Scan(&postId); err != nil {
+        UPDATE topics set
+            is_locked=$1,
+            is_sticky=$2,
+            board_id=$3
+        where id=$4 returning post_id
+    `,
+		request.IsLocked,
+		request.IsSticky,
+		request.BoardId,
+		id,
+	).Scan(&postId); err != nil {
 		tx.Rollback()
 		return err
 	}
-	if _, err := tx.ExecContext(ctx, `UPDATE posts set subject=$1, content=$2 where id=$3`, request.Subject, request.Content, postId); err != nil {
+	if _, err := tx.ExecContext(ctx, `
+        UPDATE posts set
+            subject=$1,
+            content=$2,
+            updated_at=now()
+        where id=$3
+    `,
+		request.Subject,
+		request.Content,
+		postId,
+	); err != nil {
 		tx.Rollback()
 		return err
 	}
