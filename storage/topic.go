@@ -64,6 +64,7 @@ select topic_id,
        content, 
        posts_count,
        updated_at,
+       created_at,
        user_id,
        name,
        is_sticky
@@ -76,7 +77,7 @@ limit $3`, boardId, settings.PerPage*(page-1), settings.PerPage+1)
 	}
 	for rows.Next() {
 		var topic model.Topic
-		err := rows.Scan(&topic.Id, &topic.Post.Subject, &topic.Post.Content, &topic.Posts, &topic.UpdatedAt, &topic.Post.User.Id, &topic.Post.User.Name, &topic.IsSticky)
+		err := rows.Scan(&topic.Id, &topic.Post.Subject, &topic.Post.Content, &topic.Posts, &topic.UpdatedAt, &topic.Post.CreatedAt, &topic.Post.User.Id, &topic.Post.User.Name, &topic.IsSticky)
 		if err != nil {
 			return topics, false, err
 		}

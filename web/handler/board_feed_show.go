@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
-  "strconv"
+	"strconv"
 	"time"
 	"vpub/model"
 	"vpub/syntax"
@@ -16,12 +16,12 @@ func createAtomEntryFromTopic(url string, topic model.Topic) *Entry {
 		url,
 		"topics",
 	) + fmt.Sprintf("/%d", topic.Id)
-  postCount := ""
-  if topic.Posts > 2 {
-    postCount = fmt.Sprintf("<p>%d replies</p>", topic.Posts - 1)
-  } else if topic.Posts == 2 {
-    postCount = "<p>1 reply</p>"
-  }
+	postCount := ""
+	if topic.Posts > 2 {
+		postCount = fmt.Sprintf("<p>%d replies</p>", topic.Posts-1)
+	} else if topic.Posts == 2 {
+		postCount = "<p>1 reply</p>"
+	}
 	return &Entry{
 		Title: topic.Post.Subject,
 		ID:    link,
@@ -39,13 +39,13 @@ func createAtomEntryFromTopic(url string, topic model.Topic) *Entry {
 		},
 		Content: &Text{
 			Type: "html",
-			Body: syntax.Convert(topic.Post.Content) + postCount,
+			Body: syntax.Convert(topic.Post.Content, true) + postCount,
 		},
 	}
 }
 
 func (h *Handler) showBoardFeed(w http.ResponseWriter, r *http.Request) {
-  boardId := RouteInt64Param(r, "boardId")
+	boardId := RouteInt64Param(r, "boardId")
 	settings := request.GetSettingsContextKey(r)
 	feed := Feed{
 		Title:   settings.Name,
