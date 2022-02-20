@@ -27,6 +27,11 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := NewView(w, r, "edit_post")
+	v.Set("navigation", navigation{
+		Forum: board.Forum,
+		Board: board,
+		Topic: topic.Post.Subject,
+	})
 	v.Set("form", postForm)
 	v.Set("post", post)
 	v.Set("topic", topic)

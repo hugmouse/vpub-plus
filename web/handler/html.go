@@ -588,26 +588,7 @@ Are you sure you you want to delete the following user?
 `,
 	"edit_post": `{{ define "title" }}Edit Post{{ end }}
 {{ define "content" }}
-<nav class="breadcrumb">
-    <ul>
-        <li>
-            <a href="/">All forums</a>
-            <ul>
-                <li>
-                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
-                    <ul>
-                        <li>
-                            <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
-                            <ul>
-                                <li>{{ .topic.Post.Subject }}</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
+{{ template "forum_nav" .navigation }}
 
 <h1>Edit Post</h1>
 
@@ -618,7 +599,7 @@ Are you sure you you want to delete the following user?
 <form action="/posts/{{ .post.Id }}/update" method="post">
     {{ .csrfField }}
     {{ template "post_form" .form }}
-    <input type="submit" value="Reply">
+    <input type="submit" value="Submit">
 </form>
 {{ end }}
 `,
