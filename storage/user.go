@@ -143,37 +143,7 @@ func (s *Storage) UpdatePassword(hash string, user model.User) error {
 }
 
 func (s *Storage) RemoveUser(id int64) error {
-	ctx := context.Background()
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-
-	if _, err := tx.ExecContext(ctx, `
-        delete from keys where user_id=$1;
-    `, id); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if _, err := tx.ExecContext(ctx, `
-        delete from posts
-        where user_id=$1 or topic_id in
-           ( select t.id
-             from topics t
-                 inner join posts p on t.post_id = p.id
-             where p.user_id = $1 );
-    `, id); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if _, err := tx.ExecContext(ctx, `
-        delete from users where id=$1;
-    `, id); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	return tx.Commit()
+	query := `call remove_user($1)`
+	_, err := s.db.Exec(query, id)
+	return err
 }

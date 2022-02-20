@@ -1,0 +1,13 @@
+{{ define "content" }}
+
+{{ if .errorMessage }}
+<p class="errors">{{ .errorMessage }}</p>
+{{ end }}
+
+Are you sure you you want to delete the following forum?
+<p>{{ .forum.Name }}</p>
+<form action="/admin/forums/{{ .forum.Id }}/remove" method="post">
+    {{ .csrfField }}
+    <input type="submit" value="Submit">
+</form>
+{{ end }}

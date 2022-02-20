@@ -200,6 +200,8 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 	adminSubRouter.HandleFunc("/boards/save", h.saveAdminBoard).Methods(http.MethodPost)
 	adminSubRouter.HandleFunc("/boards/{boardId}/edit", h.showAdminEditBoardView).Methods(http.MethodGet)
 	adminSubRouter.HandleFunc("/boards/{boardId}/update", h.updateAdminBoard).Methods(http.MethodPost)
+	adminSubRouter.HandleFunc("/boards/{boardId}/remove", h.showAdminRemoveBoardView).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/boards/{boardId}/remove", h.removeAdminBoard).Methods(http.MethodPost)
 
 	adminSubRouter.HandleFunc("/users", h.showAdminUserListView).Methods(http.MethodGet)
 	adminSubRouter.HandleFunc("/users/{userId}/edit", h.showAdminEditUserView).Methods(http.MethodGet)
@@ -219,6 +221,8 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 	adminSubRouter.HandleFunc("/forums/save", h.saveAdminForum).Methods(http.MethodPost)
 	adminSubRouter.HandleFunc("/forums/{forumId}/edit", h.showAdminEditForumView).Methods(http.MethodGet)
 	adminSubRouter.HandleFunc("/forums/{forumId}/update", h.updateAdminForum).Methods(http.MethodPost)
+	adminSubRouter.HandleFunc("/forums/{forumId}/remove", h.showAdminRemoveForumView).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/forums/{forumId}/remove", h.removeAdminForum).Methods(http.MethodPost)
 
 	return router, nil
 }

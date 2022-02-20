@@ -85,3 +85,9 @@ func (s *Storage) AnotherForumExists(id int64, name string) bool {
 	s.db.QueryRow(query, id, name).Scan(&result)
 	return result
 }
+
+func (s *Storage) RemoveForum(id int64) error {
+	query := `call remove_forum($1)`
+	_, err := s.db.Exec(query, id)
+	return err
+}

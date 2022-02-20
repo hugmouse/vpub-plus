@@ -24,6 +24,7 @@
     <tr>
         <th class="grow">Board</th>
         <th>Edit</th>
+        <th>Delete</th>
     </tr>
     </thead>
     <tbody>
@@ -38,6 +39,7 @@
             <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
         </td>
         <td class="center"><a href="/admin/boards/{{ .Id }}/edit">Edit</a></td>
+        <td class="center"><a href="/admin/boards/{{ .Id }}/remove">Delete</a></td>
     </tr>
     {{ end }}
     {{ end }}

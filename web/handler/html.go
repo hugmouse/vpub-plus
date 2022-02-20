@@ -62,6 +62,7 @@ var TplMap = map[string]string{
     <tr>
         <th class="grow">Board</th>
         <th>Edit</th>
+        <th>Delete</th>
     </tr>
     </thead>
     <tbody>
@@ -76,6 +77,7 @@ var TplMap = map[string]string{
             <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
         </td>
         <td class="center"><a href="/admin/boards/{{ .Id }}/edit">Edit</a></td>
+        <td class="center"><a href="/admin/boards/{{ .Id }}/remove">Delete</a></td>
     </tr>
     {{ end }}
     {{ end }}
@@ -143,6 +145,19 @@ var TplMap = map[string]string{
 </form>
 {{ end }}
 `,
+	"admin_board_remove": `{{ define "content" }}
+
+{{ if .errorMessage }}
+<p class="errors">{{ .errorMessage }}</p>
+{{ end }}
+
+Are you sure you you want to delete the following board?
+<p>{{ .board.Name }}</p>
+<form action="/admin/boards/{{ .board.Id }}/remove" method="post">
+    {{ .csrfField }}
+    <input type="submit" value="Submit">
+</form>
+{{ end }}`,
 	"admin_forum": `{{ define "content"}}
 <nav class="breadcrumb">
     <ul>
@@ -163,6 +178,7 @@ var TplMap = map[string]string{
     <tr>
         <th class="grow">Forum</th>
         <th>Edit</th>
+        <th>Delete</th>
     </tr>
     </thead>
     <tbody>
@@ -173,11 +189,12 @@ var TplMap = map[string]string{
             {{ .Name }}
         </td>
         <td class="center"><a href="/admin/forums/{{ .Id }}/edit">Edit</a></td>
+        <td class="center"><a href="/admin/forums/{{ .Id }}/remove">Delete</a></td>
     </tr>
     {{ end }}
     {{ else }}
     <tr>
-        <td colspan="2">No boards yet.</td>
+        <td colspan="2">No forums yet.</td>
     </tr>
     {{ end }}
     </tbody>
@@ -239,6 +256,19 @@ var TplMap = map[string]string{
 </form>
 {{ end }}
 `,
+	"admin_forum_remove": `{{ define "content" }}
+
+{{ if .errorMessage }}
+<p class="errors">{{ .errorMessage }}</p>
+{{ end }}
+
+Are you sure you you want to delete the following forum?
+<p>{{ .forum.Name }}</p>
+<form action="/admin/forums/{{ .forum.Id }}/remove" method="post">
+    {{ .csrfField }}
+    <input type="submit" value="Submit">
+</form>
+{{ end }}`,
 	"admin_keys": `{{ define "title" }}Keys{{ end }}
 {{ define "content" }}
 <nav class="breadcrumb">
