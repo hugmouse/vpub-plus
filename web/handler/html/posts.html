@@ -15,7 +15,7 @@
         {{ range .posts }}
         <tr>
         <td colspan="grow"><a href="/topics/{{ .TopicId }}#{{ .Id }}">{{ .Subject }}</a></td>
-        <td class="center">{{ .User.Name }}</td>
+        <td class="center"><a href="/users/{{ .User.Id }}">{{ .User.Name }}</a></td>
         <td class="center">{{ iso8601 .CreatedAt }}</td>
         </tr>
         {{ end }}

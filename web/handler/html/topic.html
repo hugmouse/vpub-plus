@@ -31,7 +31,7 @@
     {{ range .posts }}
     <tr id="{{ .Id }}">
         <td class="col-author">
-            {{ .User.Name }}
+            <a href="/users/{{ .User.Id }}">{{ .User.Name }}</a>
             <p><img src="{{ .User.Picture }}" width="80"/></p>
         </td>
         <td>

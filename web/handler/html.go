@@ -454,7 +454,7 @@ Are you sure you you want to delete the following user?
                 {{ if .IsSticky }}<span class="sticky">[Sticky]</span>{{ end }}
                 <a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a>
             </td>
-            <td class="center">{{ .Post.User.Name }}</td>
+            <td class="center"><a href="/users/{{ .Post.User.Id }}">{{ .Post.User.Name }}</a></td>
             <td class="center">{{ dec .Posts }}</td>
             <td><a href="/topics/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
         </tr>
@@ -738,7 +738,7 @@ Are you sure you you want to delete the following user?
         {{ range .posts }}
         <tr>
         <td colspan="grow"><a href="/topics/{{ .TopicId }}#{{ .Id }}">{{ .Subject }}</a></td>
-        <td class="center">{{ .User.Name }}</td>
+        <td class="center"><a href="/users/{{ .User.Id }}">{{ .User.Name }}</a></td>
         <td class="center">{{ iso8601 .CreatedAt }}</td>
         </tr>
         {{ end }}
@@ -835,7 +835,7 @@ Are you sure you you want to delete the following user?
     {{ range .posts }}
     <tr id="{{ .Id }}">
         <td class="col-author">
-            {{ .User.Name }}
+            <a href="/users/{{ .User.Id }}">{{ .User.Name }}</a>
             <p><img src="{{ .User.Picture }}" width="80"/></p>
         </td>
         <td>

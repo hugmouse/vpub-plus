@@ -50,7 +50,7 @@
                 {{ if .IsSticky }}<span class="sticky">[Sticky]</span>{{ end }}
                 <a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a>
             </td>
-            <td class="center">{{ .Post.User.Name }}</td>
+            <td class="center"><a href="/users/{{ .Post.User.Id }}">{{ .Post.User.Name }}</a></td>
             <td class="center">{{ dec .Posts }}</td>
             <td><a href="/topics/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
         </tr>

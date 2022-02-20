@@ -58,14 +58,13 @@ var TplCommonMap = map[string]string{
 </head>
 <body>
     <header>
-        <span><a href="/">home</a> <a href="/posts">posts</a> <a href="/feed.atom">atom</a></span>
-        <nav>
+        <span><a href="/">home</a> <a href="/posts">posts</a> <a href="/feed.atom">atom</a>
             {{ if logged }}
-            {{ if .hasNotifications }}<a href="/notifications" class="notifications">New replies</a> {{ end }} <a href="/account">{{ .logged.Name }}</a> (<a href="/logout">logout</a>)
+            <a href="/users/{{ .logged.Id }}">{{ .logged.Name }}</a> <a href="/account">account</a> <a href="/logout">logout</a>
             {{ else }}
             <a href="/login">login</a> <a href="/register">register</a>
             {{ end }}
-        </nav>
+        </span>
     </header>
     {{ if .errors }}
     <div class="errors flash">

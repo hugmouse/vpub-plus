@@ -68,6 +68,53 @@ limit $2`, settings.PerPage*(page-1), settings.PerPage+1)
 	return posts, false, nil
 }
 
+func (s *Storage) PostsByUserId(id, page int64) ([]model.Post, bool, error) {
+	var posts []model.Post
+	settings, err := s.Settings()
+	if err != nil {
+		return posts, false, err
+	}
+	rows, err := s.db.Query(`
+select
+       topic_id,
+       post_id,
+       subject,
+       content,
+       created_at,
+       updated_at,
+       user_id,
+       name
+from posts_full 
+where user_id=$1
+order by created_at desc
+offset $2
+limit $3`, id, settings.PerPage*(page-1), settings.PerPage+1)
+	if err != nil {
+		return nil, false, err
+	}
+	for rows.Next() {
+		var post model.Post
+		err := rows.Scan(
+			&post.TopicId,
+			&post.Id,
+			&post.Subject,
+			&post.Content,
+			&post.CreatedAt,
+			&post.UpdatedAt,
+			&post.User.Id,
+			&post.User.Name,
+		)
+		if err != nil {
+			return posts, false, err
+		}
+		posts = append(posts, post)
+	}
+	if len(posts) > int(settings.PerPage) {
+		return posts[0:settings.PerPage], true, err
+	}
+	return posts, false, nil
+}
+
 func (s *Storage) CreatePost(userId, topicId int64, request model.PostRequest) (int64, error) {
 	var id int64
 

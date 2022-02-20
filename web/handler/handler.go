@@ -183,6 +183,9 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 	publicSubRouter.HandleFunc("/reset-password", h.showResetPasswordView).Methods(http.MethodGet)
 	publicSubRouter.HandleFunc("/reset-password", h.updatePassword).Methods(http.MethodPost)
 
+	// Users
+	publicSubRouter.HandleFunc("/users/{userId}", h.showUserView).Methods(http.MethodGet)
+
 	// Index
 	publicSubRouter.HandleFunc("/", h.showIndexView).Name("index").Methods(http.MethodGet)
 
