@@ -1,26 +1,6 @@
 {{ define "title" }}New topic{{ end }}
-{{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content" }}
-<nav class="breadcrumb">
-    <ul>
-        <li>
-            <a href="/">All forums</a>
-            <ul>
-                <li>
-                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
-                    <ul>
-                        <li>
-                            <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
-                            <ul>
-                                <li>New topic</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
+{{ template "forum_nav" .navigation }}
 <h1>New topic</h1>
 {{ if .errorMessage }}
     <p class="errors">{{ .errorMessage }}</p>

@@ -433,23 +433,8 @@ Are you sure you you want to delete the following user?
 </form>
 {{ end }}`,
 	"board": `{{ define "head" }}<link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}/boards/{{ .board.Id }}/feed.atom"/>{{ end }}
-{{ define "breadcrumb" }}<a href="/">boards</a> > {{ .board.Name }}{{ end }}
 {{ define "content" }}
-<nav class="breadcrumb">
-    <ul>
-        <li>
-            <a href="/">All forums</a>
-            <ul>
-                <li>
-                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
-                    <ul>
-                        <li>{{ .board.Name }}</li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
+{{ template "forum_nav" .navigation }}
 <h1>{{ .board.Name }}</h1>
 
 {{ if logged }}
@@ -501,18 +486,7 @@ Are you sure you you want to delete the following user?
 {{ end }}
 `,
 	"boards": `{{ define "content"}}
-<nav class="breadcrumb">
-    <ul>
-        <li>
-            <a href="/">All forums</a>
-            <ul>
-                <li>
-                    {{ .forum.Name }}
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
+{{ template "forum_nav" .navigation }}
 <h1>{{ .forum.Name }}</h1>
 {{ if .forum.IsLocked }}
 <p>This forum is locked.</p>
@@ -595,28 +569,8 @@ Are you sure you you want to delete the following user?
 {{ end }}
 `,
 	"create_topic": `{{ define "title" }}New topic{{ end }}
-{{ define "breadcrumb" }} > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content" }}
-<nav class="breadcrumb">
-    <ul>
-        <li>
-            <a href="/">All forums</a>
-            <ul>
-                <li>
-                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
-                    <ul>
-                        <li>
-                            <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
-                            <ul>
-                                <li>New topic</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
+{{ template "forum_nav" .navigation }}
 <h1>New topic</h1>
 {{ if .errorMessage }}
     <p class="errors">{{ .errorMessage }}</p>
@@ -833,28 +787,8 @@ Are you sure you you want to delete the following user?
 </form>
 {{ end }}`,
 	"topic": `{{ define "head" }}<link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}/topics/{{ .topic.Id }}/feed.atom"/>{{ end }}
-{{ define "breadcrumb" }}<a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
-<nav class="breadcrumb">
-    <ul>
-        <li>
-            <a href="/">All forums</a>
-            <ul>
-                <li>
-                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
-                    <ul>
-                        <li>
-                            <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
-                            <ul>
-                                <li>{{ .topic.Post.Subject }}</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
+{{ template "forum_nav" .navigation }}
 <h1>{{ .topic.Post.Subject }}</h1>
 <table class="topic">
     <thead>

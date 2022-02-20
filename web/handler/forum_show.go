@@ -1,6 +1,8 @@
 package handler
 
-import "net/http"
+import (
+	"net/http"
+)
 
 func (h *Handler) showForumView(w http.ResponseWriter, r *http.Request) {
 	id := RouteInt64Param(r, "forumId")
@@ -17,6 +19,9 @@ func (h *Handler) showForumView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := NewView(w, r, "boards")
+	v.Set("navigation", navigation{
+		Forum: forum,
+	})
 	v.Set("forum", forum)
 	v.Set("boards", boards)
 	v.Render()

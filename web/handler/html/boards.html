@@ -1,16 +1,5 @@
 {{ define "content"}}
-<nav class="breadcrumb">
-    <ul>
-        <li>
-            <a href="/">All forums</a>
-            <ul>
-                <li>
-                    {{ .forum.Name }}
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
+{{ template "forum_nav" .navigation }}
 <h1>{{ .forum.Name }}</h1>
 {{ if .forum.IsLocked }}
 <p>This forum is locked.</p>

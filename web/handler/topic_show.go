@@ -14,6 +14,11 @@ func (h *Handler) showTopicView(w http.ResponseWriter, r *http.Request) {
 	posts, _, err := h.storage.PostsByTopicId(topic.Id)
 
 	v := NewView(w, r, "topic")
+	v.Set("navigation", navigation{
+		Forum: board.Forum,
+		Board: board,
+		Topic: topic.Post.Subject,
+	})
 	v.Set("board", board)
 	v.Set("topic", topic)
 	v.Set("posts", posts)

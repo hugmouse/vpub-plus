@@ -46,6 +46,23 @@ var TplCommonMap = map[string]string{
   <label for="locked">Locked</label>
 </div>
 {{ end }}`,
+	"forum_nav": `{{ define "forum_nav" }}
+<nav class="breadcrumb">
+    <a href="/">Forums</a>
+    {{ if .Forum.Name }}
+    {{ if .Board.Name }}
+    › <a href="/forums/{{ .Forum.Id }}">{{ .Forum.Name }}</a>
+    {{ if .Topic }}
+    › <a href="/boards/{{ .Board.Id }}">{{ .Board.Name }}</a> › {{ .Topic }}
+    {{ else }}
+    › {{ .Board.Name }}
+    {{ end }}
+    {{ else }}
+    › {{ .Forum.Name }}
+    {{ end }}
+    {{ end }}
+</nav>
+{{ end }}`,
 	"layout": `{{ define "layout" }}
 <!DOCTYPE html>
 <html lang="en">

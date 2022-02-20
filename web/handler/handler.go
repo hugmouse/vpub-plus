@@ -96,6 +96,12 @@ type pagination struct {
 	Page    int64
 }
 
+type navigation struct {
+	Forum model.Forum
+	Board model.Board
+	Topic string
+}
+
 func forumFromBoards(boards []model.Board) []model.Forum {
 	var forums []model.Forum
 	var forum model.Forum

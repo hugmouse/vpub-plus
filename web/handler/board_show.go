@@ -25,6 +25,10 @@ func (h *Handler) showBoardView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := NewView(w, r, "board")
+	v.Set("navigation", navigation{
+		Forum: board.Forum,
+		Board: board,
+	})
 	v.Set("board", board)
 	v.Set("topics", topics)
 	v.Set("pagination", pagination{

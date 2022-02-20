@@ -19,6 +19,11 @@ func (h *Handler) showCreateTopicView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := NewView(w, r, "create_topic")
+	v.Set("navigation", navigation{
+		Forum: board.Forum,
+		Board: board,
+		Topic: "New topic",
+	})
 	v.Set("form", topicForm)
 	v.Set("board", board)
 	v.Render()

@@ -1,26 +1,6 @@
 {{ define "head" }}<link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}/topics/{{ .topic.Id }}/feed.atom"/>{{ end }}
-{{ define "breadcrumb" }}<a href="/">boards</a> > <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>{{ end }}
 {{ define "content"}}
-<nav class="breadcrumb">
-    <ul>
-        <li>
-            <a href="/">All forums</a>
-            <ul>
-                <li>
-                    <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
-                    <ul>
-                        <li>
-                            <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
-                            <ul>
-                                <li>{{ .topic.Post.Subject }}</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
+{{ template "forum_nav" .navigation }}
 <h1>{{ .topic.Post.Subject }}</h1>
 <table class="topic">
     <thead>
