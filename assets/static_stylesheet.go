@@ -163,19 +163,6 @@ tbody {
 .content h3 { font-size: 1em; }
 .content { margin: 1em 0; }
 
-/* Navigation *******************************************************/
-
-header > nav {
-	float: right;
-}
-
-/*body > footer {*/
-/*	margin-top: 1em;*/
-/*	border-top: 1px solid lightgrey;*/
-/*	color: grey;*/
-/*	text-align: center;*/
-/*}*/
-
 /* Forms ************************************************************/
 
 .auth-form {
