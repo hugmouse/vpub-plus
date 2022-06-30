@@ -26,7 +26,7 @@ func (h *Handler) saveAdminForum(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, err := h.storage.CreateForum(forumRequest); err != nil {
-		v.Set("errorMessage", "Unable to create forum")
+		v.Set("errorMessage", "Unable to create forum: "+err.Error())
 		serverError(w, err)
 		return
 	}

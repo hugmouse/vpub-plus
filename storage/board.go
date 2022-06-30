@@ -84,7 +84,7 @@ RETURNING id
 	).Scan(
 		&id,
 	); err != nil {
-		return id, errors.New("unable to create board")
+		return id, errors.New("unable to create board: " + err.Error())
 	}
 
 	return id, nil
@@ -101,7 +101,7 @@ func (s *Storage) UpdateBoard(id int64, request model.BoardRequest) error {
 		request.ForumId,
 		request.IsLocked,
 		id); err != nil {
-		return errors.New("unable to update board")
+		return errors.New("unable to update board: " + err.Error())
 	}
 
 	return nil

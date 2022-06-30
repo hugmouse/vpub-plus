@@ -16,7 +16,7 @@ func (h *Handler) removeAdminUser(w http.ResponseWriter, r *http.Request) {
 	v.Set("user", user)
 
 	if err := h.storage.RemoveUser(user.Id); err != nil {
-		v.Set("errorMessage", "Unable to delete user")
+		v.Set("errorMessage", "Unable to delete user: "+err.Error())
 		v.Render()
 		return
 	}

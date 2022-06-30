@@ -55,7 +55,7 @@ func (s *Storage) DeleteKey(id int64) error {
 		query,
 		id,
 	); err != nil {
-		return errors.New("unable to delete key")
+		return errors.New("unable to delete key: " + err.Error())
 	}
 
 	return nil

@@ -16,7 +16,7 @@ func (h *Handler) removeAdminBoard(w http.ResponseWriter, r *http.Request) {
 	v.Set("board", board)
 
 	if err := h.storage.RemoveBoard(board.Id); err != nil {
-		v.Set("errorMessage", "Unable to delete board")
+		v.Set("errorMessage", "Unable to delete board: "+err.Error())
 		v.Render()
 		return
 	}

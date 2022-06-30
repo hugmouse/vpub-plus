@@ -40,7 +40,7 @@ func (h *Handler) savePost(w http.ResponseWriter, r *http.Request) {
 
 	id, err := h.storage.CreatePost(user.Id, postForm.TopicId, postRequest)
 	if err != nil {
-		v.Set("errorMessage", "Unable to create post")
+		v.Set("errorMessage", "Unable to create post: "+err.Error())
 		v.Render()
 		return
 	}

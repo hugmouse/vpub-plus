@@ -34,7 +34,7 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 
 	id, err := h.storage.CreateUser(userForm.Key, userCreationRequest)
 	if err != nil {
-		v.Set("errorMessage", "Unable to create user")
+		v.Set("errorMessage", "Unable to create user: "+err.Error())
 		v.Render()
 		return
 	}

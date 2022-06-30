@@ -53,7 +53,7 @@ func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request) {
 
 	id, err := h.storage.CreateTopic(user.Id, topicCreationRequest)
 	if err != nil {
-		v.Set("errorMessage", "Unable to create topic")
+		v.Set("errorMessage", "Unable to create topic: "+err.Error())
 		v.Render()
 		return
 	}

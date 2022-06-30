@@ -66,7 +66,7 @@ SET name=$1, position=$2, is_locked=$3
 WHERE id=$4
 `
 	if _, err := s.db.Exec(query, request.Name, request.Position, request.IsLocked, forumId); err != nil {
-		return errors.New("unable to update forum")
+		return errors.New("unable to update forum: " + err.Error())
 	}
 
 	return nil

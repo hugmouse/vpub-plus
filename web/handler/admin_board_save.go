@@ -35,7 +35,7 @@ func (h *Handler) saveAdminBoard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, err := h.storage.CreateBoard(boardRequest); err != nil {
-		v.Set("errorMessage", "Unable to create board")
+		v.Set("errorMessage", "Unable to create board: "+err.Error())
 		v.Render()
 		return
 	}

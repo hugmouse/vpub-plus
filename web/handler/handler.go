@@ -45,7 +45,7 @@ func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
 		user, _ := h.session.GetUser(r)
 		session, err := h.session.GetSession(r)
 		if err != nil {
-			fmt.Println("Unable to create session")
+			fmt.Println("Unable to create session: " + err.Error())
 		}
 		settings, err := h.storage.Settings()
 		if err != nil {

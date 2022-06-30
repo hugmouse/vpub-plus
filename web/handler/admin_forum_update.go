@@ -36,7 +36,7 @@ func (h *Handler) updateAdminForum(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.storage.UpdateForum(id, forumRequest); err != nil {
-		v.Set("errorMessage", "Unable to update forum")
+		v.Set("errorMessage", "Unable to update forum: "+err.Error())
 		serverError(w, err)
 		return
 	}

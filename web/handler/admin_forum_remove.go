@@ -16,7 +16,7 @@ func (h *Handler) removeAdminForum(w http.ResponseWriter, r *http.Request) {
 	v.Set("forum", forum)
 
 	if err := h.storage.RemoveForum(forum.Id); err != nil {
-		v.Set("errorMessage", "Unable to delete forum")
+		v.Set("errorMessage", "Unable to delete forum: "+err.Error())
 		v.Render()
 		return
 	}

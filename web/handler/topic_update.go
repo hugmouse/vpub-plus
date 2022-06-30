@@ -52,7 +52,7 @@ func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
 
 	err = h.storage.UpdateTopic(id, topicModificationRequest)
 	if err != nil {
-		v.Set("errorMessage", "Unable to updated topic")
+		v.Set("errorMessage", "Unable to updated topic: "+err.Error())
 		v.Render()
 		return
 	}

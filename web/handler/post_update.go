@@ -41,7 +41,7 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.storage.UpdatePost(id, user.Id, postRequest); err != nil {
-		v.Set("errorMessage", "Unable to create post")
+		v.Set("errorMessage", "Unable to create post: "+err.Error())
 		v.Render()
 		return
 	}

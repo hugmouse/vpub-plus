@@ -47,7 +47,7 @@ func (h *Handler) updateAdminBoard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.storage.UpdateBoard(id, boardRequest); err != nil {
-		v.Set("errorMessage", "Unable to create board")
+		v.Set("errorMessage", "Unable to create board: "+err.Error())
 		v.Render()
 		return
 	}

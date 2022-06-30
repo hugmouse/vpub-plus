@@ -31,7 +31,7 @@ func (h *Handler) removePost(w http.ResponseWriter, r *http.Request) {
 
 		post.User = user
 		if err = h.storage.DeletePost(post); err != nil {
-			v.Set("errorMessage", "Unable to delete post")
+			v.Set("errorMessage", "Unable to delete post: "+err.Error())
 			v.Render()
 			return
 		}

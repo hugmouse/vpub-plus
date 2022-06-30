@@ -134,7 +134,7 @@ func (s *Storage) CreatePost(userId, topicId int64, request model.PostRequest) (
 	).Scan(
 		&id,
 	); err != nil {
-		return id, errors.New("unable to create post")
+		return id, errors.New("unable to create post: " + err.Error())
 	}
 
 	return id, nil
@@ -176,7 +176,7 @@ func (s *Storage) UpdatePost(id, userId int64, request model.PostRequest) error 
 		id,
 		userId,
 	); err != nil {
-		return errors.New("unable to update post")
+		return errors.New("unable to update post: " + err.Error())
 	}
 
 	return nil
