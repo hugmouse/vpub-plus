@@ -3,7 +3,7 @@
         <p class="errors">{{ .errorMessage }}</p>
     {{ end }}
 
-    Are you sure you you want to delete the following post?
+    Are you sure you want to delete the following post?
     <p>{{ syntax .post.Content }}</p>
     <form action="/posts/{{ .post.Id }}/remove" method="post">
         {{ .csrfField }}
