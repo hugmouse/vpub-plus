@@ -115,26 +115,24 @@ func Convert(gmi string, wrap bool) string {
 				tableBuilder.WriteString("<table><thead><tr>")
 				sep := strings.Split(tableHeaderTmp, " | ")
 				for i := 0; i < len(sep); i++ {
+					sep[i] = strings.Trim(sep[i], "|")
 					tmpAligned := false
 					for _, centered := range tableCenteredRows {
 						if i == centered {
-							// sep[i][1:len(sep[i])-1] - removes the first and the last symbols (on our case - |)
-							tableBuilder.WriteString("<td align=\"center\">" + sep[i][1:len(sep[i])-1] + "</td>")
+							tableBuilder.WriteString("<td align=\"center\">" + sep[i] + "</td>")
 							tmpAligned = true
 							break
 						}
 					}
 					for _, rightAlign := range tableRightAlignedRows {
 						if i == rightAlign {
-							// sep[i][1:len(sep[i])-1] - removes the first and the last symbols (on our case - |)
-							tableBuilder.WriteString("<td align=\"right\">" + sep[i][1:len(sep[i])-1] + "</td>")
+							tableBuilder.WriteString("<td align=\"right\">" + sep[i] + "</td>")
 							tmpAligned = true
 							break
 						}
 					}
 					if !tmpAligned {
-						// sep[i][1:len(sep[i])-1] - removes the first and the last symbols (on our case - |)
-						tableBuilder.WriteString("<td>" + sep[i][1:len(sep[i])-1] + "</td>")
+						tableBuilder.WriteString("<td>" + sep[i] + "</td>")
 						tmpAligned = false
 					}
 				}
@@ -152,27 +150,25 @@ func Convert(gmi string, wrap bool) string {
 				sep := strings.Split(l, " | ")
 				tableBuilder.WriteString("<tr>")
 				for i := 0; i < len(sep); i++ {
+					sep[i] = strings.Trim(sep[i], "|")
 					tmpAligned := false
 					for _, centered := range tableCenteredRows {
 						if i == centered {
-							// sep[i][1:len(sep[i])-1] - removes the first and the last symbols (on our case - |)
-							tableBuilder.WriteString("<td align=\"center\">" + sep[i][1:len(sep[i])-1] + "</td>")
+							tableBuilder.WriteString("<td align=\"center\">" + sep[i] + "</td>")
 							tmpAligned = true
 							break
 						}
 					}
 					for _, rightAlign := range tableRightAlignedRows {
 						if i == rightAlign {
-							// sep[i][1:len(sep[i])-1] - removes the first and the last symbols (on our case - |)
-							tableBuilder.WriteString("<td align=\"right\">" + sep[i][1:len(sep[i])-1] + "</td>")
+							tableBuilder.WriteString("<td align=\"right\">" + sep[i] + "</td>")
 							tmpAligned = true
 							break
 						}
 					}
 
 					if !tmpAligned {
-						// sep[i][1:len(sep[i])-1] - removes the first and the last symbols (on our case - |)
-						tableBuilder.WriteString("<td>" + sep[i][1:len(sep[i])-1] + "</td>")
+						tableBuilder.WriteString("<td>" + sep[i] + "</td>")
 						tmpAligned = false
 					}
 				}
