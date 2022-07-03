@@ -15,6 +15,8 @@ var imgRegexp = regexp.MustCompile(`!\[(.*?)\]\((.*?)\)`)
 var linkRegexp = regexp.MustCompile(`\[(.*?)\]\((.*?)\)`)
 var boldRegexp = regexp.MustCompile(`\*\*(.*?)\*\*`)
 var italicsRegexp = regexp.MustCompile(`\*(.*?)\*`)
+var tableLikeHeader = regexp.MustCompile(`^\|\s.+\s\|$`)
+var tableSeparator = regexp.MustCompile(`(?::?-.-+:?)`)
 
 func clearUlMode(ulMode *bool, rv *[]string) {
 	if *ulMode {
@@ -78,10 +80,119 @@ func processDecoration(input string) string {
 
 func Convert(gmi string, wrap bool) string {
 	var rv []string
+
+	// Table parser logic
+	var tableHeaderTmp string
+	var tableHeaderAlreadyBuilt bool = false
+	var tableBuilder strings.Builder
+	var tableCenteredRows []int
+	var tableRightAlignedRows []int
+	var inCurrentTableTBodyIsAlreadyExists bool = false
+	tableMode := false
+
 	preMode := false
 	ulMode := false
+
+	// Remove \r from existence
+	gmi = strings.ReplaceAll(gmi, "\r\n", "\n")
+
 	for _, l := range strings.Split(gmi, "\n") {
-		l = strings.TrimRight(l, "\r")
+		// If tableMode detected, then we sure hope that the current string
+		// is either a header separator, or a continuous table
+		if tableMode {
+			tmpIsThisAHeaderSeparator := false
+			// Remembering what rows should be centered or right aligned
+			for i, match := range tableSeparator.FindAllStringSubmatch(l, -1) {
+				tmpIsThisAHeaderSeparator = true
+				if match[0][0:1] == ":" && match[0][len(match[0])-2:] == "-:" {
+					tableCenteredRows = append(tableCenteredRows, i)
+				} else if match[0][0:1] == "-" && match[0][len(match[0])-2:] == "-:" {
+					tableRightAlignedRows = append(tableRightAlignedRows, i)
+				}
+			}
+
+			if !tableHeaderAlreadyBuilt {
+				tableBuilder.WriteString("<table><thead><tr>")
+				sep := strings.Split(tableHeaderTmp, " | ")
+				for i := 0; i < len(sep); i++ {
+					tmpAligned := false
+					for _, centered := range tableCenteredRows {
+						if i == centered {
+							// sep[i][1:len(sep[i])-1] - removes the first and the last symbols (on our case - |)
+							tableBuilder.WriteString("<td align=\"center\">" + sep[i][1:len(sep[i])-1] + "</td>")
+							tmpAligned = true
+							break
+						}
+					}
+					for _, rightAlign := range tableRightAlignedRows {
+						if i == rightAlign {
+							// sep[i][1:len(sep[i])-1] - removes the first and the last symbols (on our case - |)
+							tableBuilder.WriteString("<td align=\"right\">" + sep[i][1:len(sep[i])-1] + "</td>")
+							tmpAligned = true
+							break
+						}
+					}
+					if !tmpAligned {
+						// sep[i][1:len(sep[i])-1] - removes the first and the last symbols (on our case - |)
+						tableBuilder.WriteString("<td>" + sep[i][1:len(sep[i])-1] + "</td>")
+						tmpAligned = false
+					}
+				}
+				tableBuilder.WriteString("</tr></thead>")
+				tableHeaderAlreadyBuilt = true
+			}
+
+			// Usually after the table ends there is an empty string with a newline in it
+			if !tmpIsThisAHeaderSeparator && len(l) > 2 {
+				if !inCurrentTableTBodyIsAlreadyExists {
+					tableBuilder.WriteString("<tbody>")
+					inCurrentTableTBodyIsAlreadyExists = true
+				}
+
+				sep := strings.Split(l, " | ")
+				tableBuilder.WriteString("<tr>")
+				for i := 0; i < len(sep); i++ {
+					tmpAligned := false
+					for _, centered := range tableCenteredRows {
+						if i == centered {
+							// sep[i][1:len(sep[i])-1] - removes the first and the last symbols (on our case - |)
+							tableBuilder.WriteString("<td align=\"center\">" + sep[i][1:len(sep[i])-1] + "</td>")
+							tmpAligned = true
+							break
+						}
+					}
+					for _, rightAlign := range tableRightAlignedRows {
+						if i == rightAlign {
+							// sep[i][1:len(sep[i])-1] - removes the first and the last symbols (on our case - |)
+							tableBuilder.WriteString("<td align=\"right\">" + sep[i][1:len(sep[i])-1] + "</td>")
+							tmpAligned = true
+							break
+						}
+					}
+
+					if !tmpAligned {
+						// sep[i][1:len(sep[i])-1] - removes the first and the last symbols (on our case - |)
+						tableBuilder.WriteString("<td>" + sep[i][1:len(sep[i])-1] + "</td>")
+						tmpAligned = false
+					}
+				}
+				tableBuilder.WriteString("</tr>")
+			}
+
+			// This triggers on the empty string with a newline on the end
+			// Also this means that we have to close our tbody and table tags
+			if !tmpIsThisAHeaderSeparator && !tableLikeHeader.MatchString(l) {
+				tableMode = false
+				inCurrentTableTBodyIsAlreadyExists = false
+				tableHeaderAlreadyBuilt = false
+				tableBuilder.WriteString("</tbody>")
+				tableBuilder.WriteString("</table>")
+				rv = append(rv, tableBuilder.String())
+				tableBuilder.Reset()
+			} else {
+				continue
+			}
+		}
 		if preMode {
 			switch {
 			case preRegexp.MatchString(l):
@@ -92,6 +203,9 @@ func Convert(gmi string, wrap bool) string {
 			}
 		} else {
 			switch {
+			case tableLikeHeader.MatchString(l):
+				tableMode = true
+				tableHeaderTmp = l
 			case blockquoteRegexp.MatchString(l):
 				clearUlMode(&ulMode, &rv)
 				matches := blockquoteRegexp.FindStringSubmatch(l)
