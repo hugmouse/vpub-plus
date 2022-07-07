@@ -95,8 +95,9 @@ func Convert(gmi string, wrap bool) string {
 
 	// Remove \r from existence
 	gmi = strings.ReplaceAll(gmi, "\r\n", "\n")
+	separatedGmi := strings.Split(gmi, "\n")
 
-	for _, l := range strings.Split(gmi, "\n") {
+	for index, l := range separatedGmi {
 		// If tableMode detected, then we sure hope that the current string
 		// is either a header separator, or a continuous table
 		if tableMode {
@@ -175,9 +176,17 @@ func Convert(gmi string, wrap bool) string {
 				tableBuilder.WriteString("</tr>")
 			}
 
+			// Sometimes tables ends without an \n at the end!
+			// This stuff checks if we are on the end of our soulless existence
+			// and if we are (at the end of the string without an \n) - we set
+			// our table mode to false
+			if len(separatedGmi) == index+1 {
+				tableMode = false
+			}
+
 			// This triggers on the empty string with a newline on the end
 			// Also this means that we have to close our tbody and table tags
-			if !tmpIsThisAHeaderSeparator && !tableLikeHeader.MatchString(l) {
+			if !tmpIsThisAHeaderSeparator && !tableLikeHeader.MatchString(l) || !tableMode {
 				tableMode = false
 				inCurrentTableTBodyIsAlreadyExists = false
 				tableHeaderAlreadyBuilt = false
@@ -185,9 +194,9 @@ func Convert(gmi string, wrap bool) string {
 				tableBuilder.WriteString("</table>")
 				rv = append(rv, tableBuilder.String())
 				tableBuilder.Reset()
-			} else {
-				continue
 			}
+
+			continue
 		}
 		if preMode {
 			switch {
