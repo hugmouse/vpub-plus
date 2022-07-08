@@ -81,7 +81,7 @@ func generateMap(target string, pkg string, mapName string, srcFiles []string) {
 
 func main() {
 	generateMap(path.Join("storage", "sql.go"), "storage", "SqlMap", glob("storage/sql/*.sql"))
-	generateMap(path.Join("web", "handler", "html.go"), "handler", "TplMap", glob("web/handler/html/*.html"))
-	generateMap(path.Join("web", "handler", "common.go"), "handler", "TplCommonMap", glob("web/handler/html/common/*.html"))
+	generateMap(path.Join("web", "handler", "html.go"), "handler", "TplMap", glob("web/handler/html/*.gohtml"))
+	generateMap(path.Join("web", "handler", "common.go"), "handler", "TplCommonMap", glob("web/handler/html/common/*.gohtml"))
 	generateMap(path.Join("assets", "static_stylesheet.go"), "assets", "AssetsMap", glob("assets/*.css"))
 }
