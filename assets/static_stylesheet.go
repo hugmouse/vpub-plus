@@ -197,6 +197,10 @@ blockquote {
 	font-style: italic;
 }
 
+blockquote::before {
+	content: "> ";
+}
+
 .center { text-align: center; }
 .grow { width: 100%; }
 

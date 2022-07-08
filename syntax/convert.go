@@ -214,7 +214,7 @@ func Convert(gmi string, wrap bool) string {
 			case blockquoteRegexp.MatchString(l):
 				clearUlMode(&ulMode, &rv)
 				matches := blockquoteRegexp.FindStringSubmatch(l)
-				rv = append(rv, "<blockquote>> "+sanitize(matches[1])+"</blockquote>")
+				rv = append(rv, "<blockquote>"+sanitize(matches[1])+"</blockquote>")
 			case preRegexp.MatchString(l):
 				clearUlMode(&ulMode, &rv)
 				rv = append(rv, "<pre>")
