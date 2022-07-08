@@ -4,13 +4,13 @@ Simple message board software and also a fork.
 
 ## Examples
 
-![forum.status.cafe](https://user-images.githubusercontent.com/44648612/176660262-f386251f-12f2-4e97-9e6e-c540640728bf.png)
-
 [Status Cafe Forum][example-vpub]
 
-----
+<img width="640" src="https://user-images.githubusercontent.com/44648612/176660262-f386251f-12f2-4e97-9e6e-c540640728bf.png">
 
 [Turkey forum][example-mysh]
+
+<img width="640" src="https://user-images.githubusercontent.com/44648612/178062763-0d0978f9-6604-4d0e-b55f-e040218ecbf7.png">
 
 ## Installation
 
