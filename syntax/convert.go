@@ -98,6 +98,10 @@ func Convert(gmi string, wrap bool) string {
 	separatedGmi := strings.Split(gmi, "\n")
 
 	for index, l := range separatedGmi {
+		if len(l) >= 4 && l[0:4] == "----" {
+			rv = append(rv, "<hr>")
+			continue
+		}
 		// If tableMode detected, then we sure hope that the current string
 		// is either a header separator, or a continuous table
 		if tableMode {
