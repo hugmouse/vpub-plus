@@ -18,6 +18,7 @@ func (h *Handler) showAdminSettingsView(w http.ResponseWriter, r *http.Request) 
 		Footer:  settings.Footer,
 		PerPage: settings.PerPage,
 		URL:     settings.URL,
+		Lang:    settings.Lang,
 	}
 
 	v := NewView(w, r, "admin_settings_edit")

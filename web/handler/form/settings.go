@@ -12,6 +12,7 @@ type SettingsForm struct {
 	Footer  string
 	PerPage int64
 	URL     string
+	Lang    string
 }
 
 func NewSettingsForm(r *http.Request) *SettingsForm {
@@ -21,6 +22,7 @@ func NewSettingsForm(r *http.Request) *SettingsForm {
 		Css:     r.FormValue("css"),
 		Footer:  r.FormValue("footer"),
 		URL:     r.FormValue("url"),
+		Lang:    r.FormValue("lang"),
 		PerPage: perPage,
 	}
 }

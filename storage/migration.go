@@ -7,11 +7,14 @@ import (
 	"strconv"
 )
 
-const schemaVersion = 7
+const schemaVersion = 8
 
 func Migrate(db *sql.DB) {
 	var currentVersion int
-	db.QueryRow(`SELECT version FROM schema_version`).Scan(&currentVersion)
+	err := db.QueryRow(`SELECT version FROM schema_version`).Scan(&currentVersion)
+	if err != nil {
+		log.Fatal("[Migrate] ", err)
+	}
 
 	fmt.Println("Current schema version:", currentVersion)
 	fmt.Println("Latest schema version:", schemaVersion)

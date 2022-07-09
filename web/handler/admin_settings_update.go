@@ -16,6 +16,7 @@ func (h *Handler) updateAdminSettings(w http.ResponseWriter, r *http.Request) {
 		Footer:  settingsForm.Footer,
 		PerPage: settingsForm.PerPage,
 		URL:     settingsForm.URL,
+		Lang:    settingsForm.Lang,
 	}); err != nil {
 		serverError(w, err)
 		return

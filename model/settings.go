@@ -6,4 +6,5 @@ type Settings struct {
 	Footer  string
 	PerPage int64
 	URL     string
+	Lang    string
 }

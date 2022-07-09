@@ -7,7 +7,7 @@ func (s *Storage) Settings() (model.Settings, error) {
 
 	err := s.db.QueryRow(`
         SELECT
-            name, css, footer, per_page, url
+            name, css, footer, per_page, url, lang
         FROM
             settings;
     `).Scan(
@@ -16,6 +16,7 @@ func (s *Storage) Settings() (model.Settings, error) {
 		&settings.Footer,
 		&settings.PerPage,
 		&settings.URL,
+		&settings.Lang,
 	)
 
 	return settings, err
@@ -28,7 +29,8 @@ func (s *Storage) UpdateSettings(settings model.Settings) error {
             css=$2,
             footer=$3,
             per_page=$4,
-            url=$5;
+            url=$5,
+            lang=$6;
     `
 
 	_, err := s.db.Exec(
@@ -38,6 +40,7 @@ func (s *Storage) UpdateSettings(settings model.Settings) error {
 		settings.Footer,
 		&settings.PerPage,
 		&settings.URL,
+		&settings.Lang,
 	)
 
 	return err
