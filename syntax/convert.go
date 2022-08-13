@@ -102,6 +102,31 @@ func Convert(gmi string, wrap bool) string {
 			rv = append(rv, "<hr>")
 			continue
 		}
+
+		// Because of the semantics of the current document,
+		// there a <h1> that already exists with the topic
+		// name, and we can't use multiple <h1> in one document.
+		//
+		// So # means <h2>, ## = <h3> and so on.
+		//
+		// Also this implementation allows this syntax: "#header",
+		// which is not typically allowed.
+		if len(l) >= 1 && l[0:1] == "#" {
+			c := 0
+			for i, char := range l {
+				if char == '#' {
+					continue
+				} else {
+					c = i
+					break
+				}
+			}
+			if c >= 1 && c <= 5 {
+				rv = append(rv, fmt.Sprintf("<h%d>%v</h%d>", c+1, l[c:], c+1))
+			}
+			continue
+		}
+
 		// If tableMode detected, then we sure hope that the current string
 		// is either a header separator, or a continuous table
 		if tableMode {
