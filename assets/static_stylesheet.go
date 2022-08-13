@@ -24,6 +24,10 @@ var AssetsMap = map[string]string{
 	max-width: 100%;
 }
 
+.topic p a {
+	overflow-wrap: anywhere;
+}
+
 main {
 	margin-bottom: 1em;
 }

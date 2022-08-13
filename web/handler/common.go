@@ -64,51 +64,57 @@ var TplCommonMap = map[string]string{
 </nav>
 {{ end }}`,
 	"layout": `{{ define "layout" }}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/style.css"/>
-    <title>{{ .settings.Name }}</title>
-    {{ template "head" . }}
-</head>
-<body>
+    <!DOCTYPE html>
+    <html lang="{{ .settings.Lang }}">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:description" content="{{ .board.Description }}">
+        <link rel="stylesheet" href="/style.css"/>
+        {{ if .board.Description}}
+            <title>{{ .settings.Name }} - {{ .forum.Topic }}</title>
+        {{ else }}
+            <title>{{ .settings.Name }}</title>
+        {{ end }}
+        {{ template "head" . }}
+    </head>
+    <body>
     <header>
         <nav>
             <a href="/">home</a> <a href="/posts">posts</a> <a href="/feed.atom">atom</a>
             {{ if logged }}
-            <a href="/users/{{ .logged.Id }}">{{ .logged.Name }}</a> <a href="/account">account</a> <a href="/logout">logout</a>
+                <a href="/users/{{ .logged.Id }}">{{ .logged.Name }}</a> <a href="/account">account</a> <a
+                        href="/logout">logout</a>
             {{ else }}
-            <a href="/login">login</a> <a href="/register">register</a>
+                <a href="/login">login</a> <a href="/register">register</a>
             {{ end }}
         </nav>
     </header>
     {{ if .errors }}
-    <div class="errors flash">
-        <ul>
-        {{ range .errors }}
-        <li>{{ . }}</li>
-        {{ end }}
-        </ul>
-    </div>
+        <div class="errors flash">
+            <ul>
+                {{ range .errors }}
+                    <li>{{ . }}</li>
+                {{ end }}
+            </ul>
+        </div>
     {{ end }}
     {{ if .info }}
-    <div class="info flash">
-    <ul>
-        {{ range .info }}
-        <li>{{ . }}</li>
-        {{ end }}
-    </ul>
-    </div>
+        <div class="info flash">
+            <ul>
+                {{ range .info }}
+                    <li>{{ . }}</li>
+                {{ end }}
+            </ul>
+        </div>
     {{ end }}
     <main>
-    {{ template "content" . }}
+        {{ template "content" . }}
     </main>
     {{ if .settings.Footer }}
-    <footer>
-        {{ html .settings.Footer }}
-    </footer>
+        <footer>
+            {{ html .settings.Footer }}
+        </footer>
     {{ end }}
 </body>
 </html>

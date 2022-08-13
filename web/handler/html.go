@@ -151,7 +151,7 @@ var TplMap = map[string]string{
 <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
 
-Are you sure you you want to delete the following board?
+Are you sure you want to delete the following board?
 <p>{{ .board.Name }}</p>
 <form action="/admin/boards/{{ .board.Id }}/remove" method="post">
     {{ .csrfField }}
@@ -262,7 +262,7 @@ Are you sure you you want to delete the following board?
 <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
 
-Are you sure you you want to delete the following forum?
+Are you sure you want to delete the following forum?
 <p>{{ .forum.Name }}</p>
 <form action="/admin/forums/{{ .forum.Id }}/remove" method="post">
     {{ .csrfField }}
@@ -333,6 +333,10 @@ Are you sure you you want to delete the following forum?
     <div class="field">
         <label for="name">URL</label>
         <input type="url" name="url" id="url" value="{{ .form.URL }}" autocomplete="off"/>
+    </div>
+    <div class="field">
+        <label for="lang">Site language</label>
+        <input type="text" name="lang" id="lang" value="{{ .form.Lang }}" autocomplete="off" maxlength="2"/>
     </div>
     <div class="field">
         <label for="css">Footer</label>
@@ -425,7 +429,7 @@ Are you sure you you want to delete the following forum?
     <p class="errors">{{ .errorMessage }}</p>
 {{ end }}
 
-Are you sure you you want to delete the following user?
+Are you sure you want to delete the following user?
 <p>{{ .user.Name }}</p>
 <form action="/admin/users/{{ .user.Id }}/remove" method="post">
     {{ .csrfField }}
@@ -525,7 +529,7 @@ Are you sure you you want to delete the following user?
         <p class="errors">{{ .errorMessage }}</p>
     {{ end }}
 
-    Are you sure you you want to delete the following post?
+    Are you sure you want to delete the following post?
     <p>{{ syntax .post.Content }}</p>
     <form action="/posts/{{ .post.Id }}/remove" method="post">
         {{ .csrfField }}

@@ -366,4 +366,6 @@ BEGIN
     delete from users where id=_uid;
 END;
 $$ LANGUAGE plpgsql;`,
+	"schema_version_8": `ALTER TABLE settings
+ADD lang text default 'en'::text NOT NULL;`,
 }
