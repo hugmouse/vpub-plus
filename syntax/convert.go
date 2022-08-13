@@ -10,13 +10,13 @@ import (
 var blockquoteRegexp = regexp.MustCompile("^> (.*)$")
 var preRegexp = regexp.MustCompile("^```.*$")
 var bulletRegexp = regexp.MustCompile(`^\* (.*)$`)
-var urlRegexp = regexp.MustCompile(`https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)`)
-var imgRegexp = regexp.MustCompile(`!\[(.*?)\]\((.*?)\)`)
-var linkRegexp = regexp.MustCompile(`\[(.*?)\]\((.*?)\)`)
+var urlRegexp = regexp.MustCompile(`https?://(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)`)
+var imgRegexp = regexp.MustCompile(`!\[(.*?)]\((.*?)\)`)
+var linkRegexp = regexp.MustCompile(`\[(.*?)]\((.*?)\)`)
 var boldRegexp = regexp.MustCompile(`\*\*(.*?)\*\*`)
 var italicsRegexp = regexp.MustCompile(`\*(.*?)\*`)
 var tableLikeHeader = regexp.MustCompile(`^\|\s.+\s\|$`)
-var tableSeparator = regexp.MustCompile(`(?::?-.-+:?)`)
+var tableSeparator = regexp.MustCompile(`(:?-.-+:?)`)
 
 func clearUlMode(ulMode *bool, rv *[]string) {
 	if *ulMode {
@@ -83,11 +83,11 @@ func Convert(gmi string, wrap bool) string {
 
 	// Table parser logic
 	var tableHeaderTmp string
-	var tableHeaderAlreadyBuilt bool = false
+	var tableHeaderAlreadyBuilt = false
 	var tableBuilder strings.Builder
 	var tableCenteredRows []int
 	var tableRightAlignedRows []int
-	var inCurrentTableTBodyIsAlreadyExists bool = false
+	var inCurrentTableTBodyIsAlreadyExists = false
 	tableMode := false
 
 	preMode := false
