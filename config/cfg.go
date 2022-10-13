@@ -11,6 +11,7 @@ type (
 		SessionKey  string
 		CSRFKey     string
 		Title       string
+		Address     string
 	}
 )
 
@@ -21,6 +22,7 @@ func New() *Config {
 		CSRFKey:     os.Getenv("CSRF_KEY"),
 		Title:       os.Getenv("TITLE"),
 		Port:        os.Getenv("PORT"),
+		Address:     os.Getenv("ADDRESS"),
 	}
 	if os.Getenv("PORT") == "" {
 		cfg.Port = "8080"

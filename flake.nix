@@ -80,14 +80,27 @@
               (makeTest {
                 name = "vpub-plus-plus-test";
                 nodes = {
+
+                  # For testing with a graphical web browser
+                  # client = {
+                  #   users.users.client = { isNormalUser = true; password = "test"; };
+                  #   services.xserver.enable = true;
+                  #   services.xserver.desktopManager.xfce.enable = true;
+                  #   environment.systemPackages = [ pkgs.firefox ];
+                  # };
+
                   server = {
                     imports = [ self.nixosModules.vpub-plus-plus ];
                     services.vpub-plus-plus = {
                       port = "1234";
+                      address = "0.0.0.0";
                       envFile = "env.example";
                       enable = true;
                       title = "test-forum";
                     };
+
+                    # Open firewall for testing
+                    networking.firewall.allowedTCPPorts = [ 1234 ];
                   };
                 };
 

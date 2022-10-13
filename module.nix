@@ -13,6 +13,13 @@ in {
       description = "Title of the forum";
     };
 
+    address = mkOption {
+      type = types.str;
+      default = "127.0.0.1";
+      example = "0.0.0.0";
+      description = "Address to listen on";
+    };
+
     port = mkOption {
       type = types.str;
       default = "1234";
@@ -23,11 +30,6 @@ in {
     DBUri = mkOption {
       type = types.str;
       default = "postgres:///vpub?host=/run/postgresql&sslmode=disable";
-      # default = "postgres://localhost/vpub?host=/run/postgresql&sslmode=disable";
-
-      # default = "postgres://vupb:vupb@localhost/vpub?sslmode=disable";
-      # postgres://localhost/outline?host=/run/postgresql
-      # example = "127.0.0.1";
       description = "Postgres connection URI";
     };
 
@@ -66,6 +68,8 @@ in {
           TITLE = cfg.title;
           # What port is going to be used by a vpub HTTP server
           PORT = cfg.port;
+          # Address to listen on
+          ADDRESS= cfg.address;
         };
       serviceConfig = {
 
