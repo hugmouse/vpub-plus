@@ -13,7 +13,7 @@ func Migrate(db *sql.DB) {
 	var currentVersion int
 	err := db.QueryRow(`SELECT version FROM schema_version`).Scan(&currentVersion)
 	if err != nil {
-		log.Fatal("[Migrate] ", err)
+		log.Println("[Migrate] ", err)
 	}
 
 	fmt.Println("Current schema version:", currentVersion)

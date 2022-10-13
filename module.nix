@@ -22,10 +22,11 @@ in {
 
     DBUri = mkOption {
       type = types.str;
-      default = "postgres://localhost/vpub?host=/run/postgresql&sslmode=disable";
+      default = "postgres:///vpub?host=/run/postgresql&sslmode=disable";
+      # default = "postgres://localhost/vpub?host=/run/postgresql&sslmode=disable";
 
       # default = "postgres://vupb:vupb@localhost/vpub?sslmode=disable";
-# postgres://localhost/outline?host=/run/postgresql
+      # postgres://localhost/outline?host=/run/postgresql
       # example = "127.0.0.1";
       description = "Postgres connection URI";
     };
@@ -58,17 +59,17 @@ in {
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];
       description = "vpub-plus-plus";
+      environment = {
+          # Postgresql connection URL
+          DATABASE_URL = cfg.DBUri;
+          # Your forum name
+          TITLE = cfg.title;
+          # What port is going to be used by a vpub HTTP server
+          PORT = cfg.port;
+        };
       serviceConfig = {
 
         EnvironmentFile = [ cfg.envFile ];
-        Environment = [
-          # Postgresql connection URL
-          "DATABASE_URL='${cfg.DBUri}'"
-          # Your forum name
-          "TITLE='${cfg.title}'"
-          # What port is going to be used by a vpub HTTP server
-          "PORT='${cfg.port}'"
-        ];
 
         User = "vpub";
         ExecStart = "${pkgs.vpub-plus-plus}/bin/vpub";
