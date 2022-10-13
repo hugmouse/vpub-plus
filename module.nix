@@ -22,7 +22,10 @@ in {
 
     DBUri = mkOption {
       type = types.str;
-      default = "postgres://vpub@127.0.0.1/vpub?sslmode=disable";
+      default = "postgres://localhost/vpub?host=/run/postgresql&sslmode=disable";
+
+      # default = "postgres://vupb:vupb@localhost/vpub?sslmode=disable";
+# postgres://localhost/outline?host=/run/postgresql
       # example = "127.0.0.1";
       description = "Postgres connection URI";
     };
@@ -41,14 +44,14 @@ in {
   config = mkIf cfg.enable {
 
     # User and group
-    users.users.vpub-plus-plus = {
+    users.users.vpub = {
       isSystemUser = true;
       description = "vpub-plus-plus user";
-      extraGroups = [ "vpub-plus-plus" ];
-      group = "vpub-plus-plus";
+      extraGroups = [ "vpub" ];
+      group = "vpub";
     };
 
-    users.groups.vpub-plus-plus.name = "vpub-plus-plus";
+    users.groups.vpub-plus-plus.name = "vpub";
 
     # Service
     systemd.services.vpub-plus-plus = {
@@ -67,14 +70,27 @@ in {
           "PORT='${cfg.port}'"
         ];
 
-        User = "vpub-plus-plus";
-        ExecStart = "${pkgs.vpub-plus-plus}/bin/vpub-plus-plus";
+        User = "vpub";
+        ExecStart = "${pkgs.vpub-plus-plus}/bin/vpub";
         Restart = "on-failure";
         RestartSec = "5s";
       };
     };
 
     # TODO Postgres config
+    services.postgresql = {
+      enable = true;
+
+      ensureUsers = [{
+        name = "vpub";
+        ensurePermissions = {
+          "DATABASE vpub" = "ALL PRIVILEGES";
+        };
+      }];
+
+      ensureDatabases = [ "vpub" ];
+    };
+
 
     # TODO nginx config
 
