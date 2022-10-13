@@ -5,4 +5,5 @@ users
 bin
 db.sql
 *midnight.local*
-Makefile2
+Makefile
+result

@@ -55,6 +55,7 @@ Now you have to set those environment variables:
 * `CSRF_KEY` - 32 bytes longs CSRF key
 * `TITLE` - Your forum name
 * `PORT` - What port is going to be used by a `vpub` HTTP server
+* `ADDRESS` - What IP address is going to be used by a `vpub` HTTP server
 
 You can check the example configuration in systemd config!
 
@@ -83,6 +84,7 @@ Environment=DATABASE_URL=postgres://vpub@127.0.0.1/vpub?sslmode=disable
 
 # Default port 8080
 Environment=PORT=1337
+Environment=ADDRESS=127.0.0.1
 
 # Those keys should be 32 bytes long
 Environment=SESSION_KEY=CHANGE ME
