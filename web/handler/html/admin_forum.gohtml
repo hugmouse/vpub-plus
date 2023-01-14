@@ -1,42 +1,42 @@
 {{ define "content"}}
-<nav class="breadcrumb">
-    <ul>
-        <li>
-            <a href="/admin">Admin</a>
-            <ul>
-                <li>
-                    Forums
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
-<h1>Forums</h1>
-<p><a href="/admin/forums/new">New forum</a></p>
-<table>
-    <thead>
-    <tr>
-        <th class="grow">Forum</th>
-        <th>Edit</th>
-        <th>Delete</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{ if .forums }}
-    {{ range .forums }}
-    <tr>
-        <td colspan="grow">
-            {{ .Name }}
-        </td>
-        <td class="center"><a href="/admin/forums/{{ .Id }}/edit">Edit</a></td>
-        <td class="center"><a href="/admin/forums/{{ .Id }}/remove">Delete</a></td>
-    </tr>
-    {{ end }}
-    {{ else }}
-    <tr>
-        <td colspan="2">No forums yet.</td>
-    </tr>
-    {{ end }}
-    </tbody>
-</table>
+    <nav class="breadcrumb">
+        <ul>
+            <li>
+                <a href="/admin">Admin</a>
+                <ul>
+                    <li>
+                        Forums
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <h1>Forums</h1>
+    <p><a href="/admin/forums/new">New forum</a></p>
+    <table>
+        <thead>
+        <tr>
+            <th class="grow">Forum</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{ if .forums }}
+            {{ range .forums }}
+                <tr>
+                    <td colspan="grow">
+                        {{ .Name }}
+                    </td>
+                    <td class="center"><a href="/admin/forums/{{ .Id }}/edit">Edit</a></td>
+                    <td class="center"><a href="/admin/forums/{{ .Id }}/remove">Delete</a></td>
+                </tr>
+            {{ end }}
+        {{ else }}
+            <tr>
+                <td colspan="2">No forums yet.</td>
+            </tr>
+        {{ end }}
+        </tbody>
+    </table>
 {{ end }}

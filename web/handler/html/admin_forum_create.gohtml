@@ -1,27 +1,27 @@
 {{ define "title" }}New forum{{ end }}
 {{ define "content" }}
-<nav class="breadcrumb">
-    <ul>
-        <li>
-            <a href="/admin">Admin</a>
-            <ul>
-                <li>
-                    <a href="/admin/forums">Forums</a>
-                    <ul>
-                        <li>Create forum</li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
-<h1>Create forum</h1>
-{{ if .errorMessage }}
-    <p class="errors">{{ .errorMessage }}</p>
-{{ end }}
-<form action="/admin/forums/save" method="post">
-    {{ .csrfField }}
-    {{ template "forum_form" .form }}
-    <input type="submit" value="Submit">
-</form>
+    <nav class="breadcrumb">
+        <ul>
+            <li>
+                <a href="/admin">Admin</a>
+                <ul>
+                    <li>
+                        <a href="/admin/forums">Forums</a>
+                        <ul>
+                            <li>Create forum</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <h1>Create forum</h1>
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
+    <form action="/admin/forums/save" method="post">
+        {{ .csrfField }}
+        {{ template "forum_form" .form }}
+        <input type="submit" value="Submit">
+    </form>
 {{ end }}

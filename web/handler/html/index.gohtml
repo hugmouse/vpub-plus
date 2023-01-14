@@ -1,46 +1,46 @@
 {{ define "content"}}
-{{ if .settings.Name }}
-<h1>{{ .settings.Name }}</h1>
-{{ else }}
-<h1>Forums</h1>
-{{ end }}
-<table>
-    <thead>
+    {{ if .settings.Name }}
+        <h1>{{ .settings.Name }}</h1>
+    {{ else }}
+        <h1>Forums</h1>
+    {{ end }}
+    <table>
+        <thead>
         <tr>
             <th class="grow">Forum</th>
             <th>Topics</th>
             <th>Posts</th>
             <th>Updated</th>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
         {{ if .forums }}
-        {{ range .forums }}
-        <tr class="forum">
-            <td colspan="4"><a href="/forums/{{ .Id }}">{{ .Name }}</a></td>
-        </tr>
-        {{ range .Boards }}
-        <tr>
-            <td colspan="grow">
-                <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
-            </td>
-            <td class="center">{{ .Topics }}</td>
-            <td class="center">{{ .Posts }}</td>
-            <td class="center">
-                {{ if .Topics }}
-                <a href="/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a>
-                {{ else }}
-                {{ iso8601 .UpdatedAt }}
+            {{ range .forums }}
+                <tr class="forum">
+                    <td colspan="4"><a href="/forums/{{ .Id }}">{{ .Name }}</a></td>
+                </tr>
+                {{ range .Boards }}
+                    <tr>
+                        <td colspan="grow">
+                            <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+                        </td>
+                        <td class="center">{{ .Topics }}</td>
+                        <td class="center">{{ .Posts }}</td>
+                        <td class="center">
+                            {{ if .Topics }}
+                                <a href="/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a>
+                            {{ else }}
+                                {{ iso8601 .UpdatedAt }}
+                            {{ end }}
+                        </td>
+                    </tr>
                 {{ end }}
-            </td>
-        </tr>
-        {{ end }}
-        {{ end }}
+            {{ end }}
         {{ else }}
-        <tr>
-            <td colspan="4">No forums yet.</td>
-        </tr>
+            <tr>
+                <td colspan="4">No forums yet.</td>
+            </tr>
         {{ end }}
-    </tbody>
-</table>
+        </tbody>
+    </table>
 {{ end }}

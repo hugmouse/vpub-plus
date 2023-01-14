@@ -1,53 +1,53 @@
 {{ define "content"}}
-<nav class="breadcrumb">
-    <ul>
-        <li>
-            <a href="/admin">Admin</a>
-            <ul>
-                <li>
-                    Boards
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
-<h1>Boards</h1>
-<p>
-    {{ if .hasForums }}
-    <a href="/admin/boards/new">New board</a>
-    {{ else }}
-    <a href="/admin/forums">Create a forum</a> to create boards
-    {{ end }}
-</p>
-<table>
-    <thead>
-    <tr>
-        <th class="grow">Board</th>
-        <th>Edit</th>
-        <th>Delete</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{ if .forums }}
-    {{ range .forums }}
-    <tr class="forum">
-        <td colspan="4">{{ .Name }}</td>
-    </tr>
-    {{ range .Boards }}
-    <tr>
-        <td colspan="grow">
-            <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
-        </td>
-        <td class="center"><a href="/admin/boards/{{ .Id }}/edit">Edit</a></td>
-        <td class="center"><a href="/admin/boards/{{ .Id }}/remove">Delete</a></td>
-    </tr>
-    {{ end }}
-    {{ end }}
-    {{ else }}
-    <tr>
-        <td colspan="2">No boards yet.</td>
-    </tr>
-    {{ end }}
-    </tbody>
-</table>
+    <nav class="breadcrumb">
+        <ul>
+            <li>
+                <a href="/admin">Admin</a>
+                <ul>
+                    <li>
+                        Boards
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <h1>Boards</h1>
+    <p>
+        {{ if .hasForums }}
+            <a href="/admin/boards/new">New board</a>
+        {{ else }}
+            <a href="/admin/forums">Create a forum</a> to create boards
+        {{ end }}
+    </p>
+    <table>
+        <thead>
+        <tr>
+            <th class="grow">Board</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{ if .forums }}
+            {{ range .forums }}
+                <tr class="forum">
+                    <td colspan="4">{{ .Name }}</td>
+                </tr>
+                {{ range .Boards }}
+                    <tr>
+                        <td colspan="grow">
+                            <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+                        </td>
+                        <td class="center"><a href="/admin/boards/{{ .Id }}/edit">Edit</a></td>
+                        <td class="center"><a href="/admin/boards/{{ .Id }}/remove">Delete</a></td>
+                    </tr>
+                {{ end }}
+            {{ end }}
+        {{ else }}
+            <tr>
+                <td colspan="2">No boards yet.</td>
+            </tr>
+        {{ end }}
+        </tbody>
+    </table>
 {{ end }}

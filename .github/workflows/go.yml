@@ -1,6 +1,6 @@
 on:
   release:
-    types: [created]
+    types: [ created ]
 
 jobs:
   releases-matrix:
@@ -10,8 +10,8 @@ jobs:
       matrix:
         # build and publish in parallel a lot of binaries
         # https://golang.org/doc/install/source#environment See supported Go OS/Arch pairs here
-        goos: [linux, darwin, openbsd, netbsd, dragonfly, plan9, windows]
-        goarch: [amd64, arm64]
+        goos: [ linux, darwin, openbsd, netbsd, dragonfly, plan9, windows ]
+        goarch: [ amd64, arm64 ]
         exclude:
           - goarch: arm64
             goos: windows
@@ -20,12 +20,12 @@ jobs:
           - goarch: arm64
             goos: plan9
     steps:
-    - uses: actions/checkout@v2
-    - uses: wangyoucao577/go-release-action@v1.29
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        goos: ${{ matrix.goos }}
-        goarch: ${{ matrix.goarch }}
-        binary_name: "vpub-plus"
-        extra_files: LICENSE README.md
-        ldflags: "-s -w"
+      - uses: actions/checkout@v2
+      - uses: wangyoucao577/go-release-action@v1.29
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          binary_name: "vpub-plus"
+          extra_files: LICENSE README.md
+          ldflags: "-s -w"

@@ -1,45 +1,46 @@
 {{ define "breadcrumb" }} > <a href="/admin">Admin</a> > Settings{{ end }}
 {{ define "content"}}
-<nav class="breadcrumb">
-    <ul>
-        <li>
-            <a href="/admin">Admin</a>
-            <ul>
-                <li>
-                    Edit Settings
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
-<h1>Edit Settings</h1>
-<form action="/admin/settings/update" method="post">
-    {{ .csrfField }}
-    <div class="field">
-        <label for="name">Name</label>
-        <input type="text" name="name" id="name" value="{{ .form.Name }}" autocomplete="off" maxlength="120" autofocus/>
-    </div>
-    <div class="field">
-        <label for="name">URL</label>
-        <input type="url" name="url" id="url" value="{{ .form.URL }}" autocomplete="off"/>
-    </div>
-    <div class="field">
-        <label for="lang">Site language</label>
-        <input type="text" name="lang" id="lang" value="{{ .form.Lang }}" autocomplete="off" maxlength="2"/>
-    </div>
-    <div class="field">
-        <label for="css">Footer</label>
-        <textarea class="editor" name="footer" id="footer">{{ .form.Footer }}</textarea>
-    </div>
-    <div class="field">
-        <label for="css">CSS</label>
-        <textarea class="editor" name="css" id="css">{{ .form.Css }}</textarea>
-    </div>
-    <div class="field">
-        <label for="per-page">Per page</label>
-        <input type="number" name="per-page" id="per-page" value="{{ .form.PerPage }}" autocomplete="off" required/>
-    </div>
-    <input type="submit" value="Submit">
-</form>
-</table>
+    <nav class="breadcrumb">
+        <ul>
+            <li>
+                <a href="/admin">Admin</a>
+                <ul>
+                    <li>
+                        Edit Settings
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <h1>Edit Settings</h1>
+    <form action="/admin/settings/update" method="post">
+        {{ .csrfField }}
+        <div class="field">
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" value="{{ .form.Name }}" autocomplete="off" maxlength="120"
+                   autofocus/>
+        </div>
+        <div class="field">
+            <label for="name">URL</label>
+            <input type="url" name="url" id="url" value="{{ .form.URL }}" autocomplete="off"/>
+        </div>
+        <div class="field">
+            <label for="lang">Site language</label>
+            <input type="text" name="lang" id="lang" value="{{ .form.Lang }}" autocomplete="off" maxlength="2"/>
+        </div>
+        <div class="field">
+            <label for="css">Footer</label>
+            <textarea class="editor" name="footer" id="footer">{{ .form.Footer }}</textarea>
+        </div>
+        <div class="field">
+            <label for="css">CSS</label>
+            <textarea class="editor" name="css" id="css">{{ .form.Css }}</textarea>
+        </div>
+        <div class="field">
+            <label for="per-page">Per page</label>
+            <input type="number" name="per-page" id="per-page" value="{{ .form.PerPage }}" autocomplete="off" required/>
+        </div>
+        <input type="submit" value="Submit">
+    </form>
+    </table>
 {{ end }}

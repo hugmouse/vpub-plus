@@ -1,35 +1,35 @@
 {{ define "content"}}
-{{ template "forum_nav" .navigation }}
-<h1>{{ .forum.Name }}</h1>
-{{ if .forum.IsLocked }}
-<p>This forum is locked.</p>
-{{ end }}
-<table>
-    <thead>
-    <tr>
-        <th class="grow">Board</th>
-        <th>Topics</th>
-        <th>Posts</th>
-        <th>Updated</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{ if .boards }}
-    {{ range .boards }}
-    <tr>
-        <td colspan="grow">
-            <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
-        </td>
-        <td class="center">{{ .Topics }}</td>
-        <td class="center">{{ .Posts }}</td>
-        <td class="center"><a href="/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
-    </tr>
+    {{ template "forum_nav" .navigation }}
+    <h1>{{ .forum.Name }}</h1>
+    {{ if .forum.IsLocked }}
+        <p>This forum is locked.</p>
     {{ end }}
-    {{ else }}
-    <tr>
-        <td colspan="4">No boards yet.</td>
-    </tr>
-    {{ end }}
-    </tbody>
-</table>
+    <table>
+        <thead>
+        <tr>
+            <th class="grow">Board</th>
+            <th>Topics</th>
+            <th>Posts</th>
+            <th>Updated</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{ if .boards }}
+            {{ range .boards }}
+                <tr>
+                    <td colspan="grow">
+                        <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+                    </td>
+                    <td class="center">{{ .Topics }}</td>
+                    <td class="center">{{ .Posts }}</td>
+                    <td class="center"><a href="/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
+                </tr>
+            {{ end }}
+        {{ else }}
+            <tr>
+                <td colspan="4">No boards yet.</td>
+            </tr>
+        {{ end }}
+        </tbody>
+    </table>
 {{ end }}

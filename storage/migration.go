@@ -31,7 +31,7 @@ func Migrate(db *sql.DB) {
 		if rawSQL == "" {
 			log.Fatalf("[Migrate] missing migration %d", version)
 		}
-		_, err = tx.Exec(string(rawSQL))
+		_, err = tx.Exec(rawSQL)
 		if err != nil {
 			tx.Rollback()
 			log.Fatal("[Migrate] ", err)

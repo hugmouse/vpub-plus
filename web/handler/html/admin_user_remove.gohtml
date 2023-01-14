@@ -1,13 +1,13 @@
 {{ define "content" }}
 
-{{ if .errorMessage }}
-    <p class="errors">{{ .errorMessage }}</p>
-{{ end }}
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
 
-Are you sure you want to delete the following user?
-<p>{{ .user.Name }}</p>
-<form action="/admin/users/{{ .user.Id }}/remove" method="post">
-    {{ .csrfField }}
-    <input type="submit" value="Submit">
-</form>
+    Are you sure you want to delete the following user?
+    <p>{{ .user.Name }}</p>
+    <form action="/admin/users/{{ .user.Id }}/remove" method="post">
+        {{ .csrfField }}
+        <input type="submit" value="Submit">
+    </form>
 {{ end }}

@@ -1,39 +1,39 @@
 {{ define "title" }}Keys{{ end }}
 {{ define "content" }}
-<nav class="breadcrumb">
-    <ul>
-        <li>
-            <a href="/admin">Admin</a>
-            <ul>
-                <li>
-                    Keys
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
-<h1>Keys</h1>
-<form action="/admin/keys/save" method="post" class="action">
-    {{ .csrfField }}
-    <input type="submit" value="Create key">
-</form>
+    <nav class="breadcrumb">
+        <ul>
+            <li>
+                <a href="/admin">Admin</a>
+                <ul>
+                    <li>
+                        Keys
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <h1>Keys</h1>
+    <form action="/admin/keys/save" method="post" class="action">
+        {{ .csrfField }}
+        <input type="submit" value="Create key">
+    </form>
 
-<table>
-    <thead>
-    <tr>
-        <th class="grow">Key</th>
-        <th>Created</th>
-        <th>Delete</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{ range .keys }}
-    <tr>
-        <td colspan="grow">{{ .Key }}</td>
-        <td class="center">{{ iso8601 .CreatedAt }}</td>
-        <td class="center"><a href="/admin/keys/{{ .Id }}/remove">Delete</a></td>
-    </tr>
-    {{ end }}
-    </tbody>
-</table>
+    <table>
+        <thead>
+        <tr>
+            <th class="grow">Key</th>
+            <th>Created</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{ range .keys }}
+            <tr>
+                <td colspan="grow">{{ .Key }}</td>
+                <td class="center">{{ iso8601 .CreatedAt }}</td>
+                <td class="center"><a href="/admin/keys/{{ .Id }}/remove">Delete</a></td>
+            </tr>
+        {{ end }}
+        </tbody>
+    </table>
 {{ end }}

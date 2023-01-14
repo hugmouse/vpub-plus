@@ -1,35 +1,35 @@
 {{ define "title" }}Create Post{{ end }}
 {{ define "content" }}
-<nav class="breadcrumb">
-  <ul>
-    <li>
-      <a href="/">All forums</a>
-      <ul>
-        <li>
-          <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
-          <ul>
+    <nav class="breadcrumb">
+        <ul>
             <li>
-              <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
-              <ul>
-                <li>{{ .topic.Post.Subject }}</li>
-              </ul>
+                <a href="/">All forums</a>
+                <ul>
+                    <li>
+                        <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                        <ul>
+                            <li>
+                                <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+                                <ul>
+                                    <li>{{ .topic.Post.Subject }}</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
             </li>
-          </ul>
-        </li>
-      </ul>
-    </li>
-  </ul>
-</nav>
+        </ul>
+    </nav>
 
-<h1>Create Post</h1>
+    <h1>Create Post</h1>
 
-{{ if .errorMessage }}
-    <p class="errors">{{ .errorMessage }}</p>
-{{ end }}
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
 
-<form action="/posts/save" method="post">
-  {{ .csrfField }}
-  {{ template "post_form" .form }}
-  <input type="submit" value="Reply">
-</form>
+    <form action="/posts/save" method="post">
+        {{ .csrfField }}
+        {{ template "post_form" .form }}
+        <input type="submit" value="Reply">
+    </form>
 {{ end }}

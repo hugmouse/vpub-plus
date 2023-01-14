@@ -1,28 +1,29 @@
 {{ define "title" }}Register{{ end }}
 
 {{ define "content" }}
-<h1>Register</h1>
-{{ if .errorMessage }}
-    <p class="errors">{{ .errorMessage }}</p>
-{{ end }}
-<form action="/register" method="post" class="auth-form">
-    {{ .csrfField }}
-    <div class="field">
-        <label for="name">Username</label>
-        <input type="text" id="name" name="name" autocomplete="off" value="{{ .form.Username }}" maxlength="15" required/>
-    </div>
-    <div class="field">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required/>
-    </div>
-    <div class="field">
-        <label for="confirm">Confirm password</label>
-        <input type="password" id="confirm" name="confirm" required/>
-    </div>
-    <div class="field">
-        <label for="key">Key</label>
-        <input type="text" id="key" name="key" required/>
-    </div>
-    <input type="submit" value="Submit">
-</form>
+    <h1>Register</h1>
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
+    <form action="/register" method="post" class="auth-form">
+        {{ .csrfField }}
+        <div class="field">
+            <label for="name">Username</label>
+            <input type="text" id="name" name="name" autocomplete="off" value="{{ .form.Username }}" maxlength="15"
+                   required/>
+        </div>
+        <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required/>
+        </div>
+        <div class="field">
+            <label for="confirm">Confirm password</label>
+            <input type="password" id="confirm" name="confirm" required/>
+        </div>
+        <div class="field">
+            <label for="key">Key</label>
+            <input type="text" id="key" name="key" required/>
+        </div>
+        <input type="submit" value="Submit">
+    </form>
 {{ end }}

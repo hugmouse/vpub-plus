@@ -1,72 +1,76 @@
-{{ define "head" }}<link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}/topics/{{ .topic.Id }}/feed.atom"/>{{ end }}
+{{ define "head" }}
+<link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}/topics/{{ .topic.Id }}/feed.atom"/>{{ end }}
 {{ define "content"}}
-{{ template "forum_nav" .navigation }}
-<h1>{{ .topic.Post.Subject }}</h1>
-<table class="topic">
-    <thead>
-        <th>Author</th>
-        <th>Topic</th>
-    </thead>
-    <tbody>
-    {{ range .posts }}
-    <tr id="{{ .Id }}">
-        <td class="col-author">
-            <a href="/users/{{ .User.Id }}">{{ .User.Name }}</a>
-            <p><img src="{{ .User.Picture }}" width="80"/></p>
-        </td>
-        <td>
-            <div class="posted">
-                Posted {{ iso8601Time .CreatedAt }}
-                {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
-                <a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
-                {{ else }}
-                {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
-                <a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
-                {{ end }}
-                {{ end }}
-                <hr/>
-            </div>
-            <div>{{ syntax .Content }}</div>
-            {{ if ne .CreatedAt .UpdatedAt }}
-            <div><p><i>Last edited on {{ iso8601Time .UpdatedAt }}</i></p></div>
-            {{ end }}
-            {{ if .User.About }}
-            <div class="signature">
-                {{ sig .User.About }}
-            </div>
-            {{ end }}
-        </td>
-    </tr>
+    {{ template "forum_nav" .navigation }}
+    <h1>{{ .topic.Post.Subject }}</h1>
+    <table class="topic">
+        <thead>
+        <tr>
+            <th>Author</th>
+            <th>Topic</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{ range .posts }}
+            <tr id="{{ .Id }}">
+                <td class="col-author">
+                    <a href="/users/{{ .User.Id }}">{{ .User.Name }}</a>
+                    <p><img src="{{ .User.Picture }}" width="80"/></p>
+                </td>
+                <td>
+                    <div class="posted">
+                        Posted {{ iso8601Time .CreatedAt }}
+                        {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
+                            <a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a
+                                    href="/posts/{{ .Id }}/remove">remove</a>
+                        {{ else }}
+                            {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
+                                <a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
+                            {{ end }}
+                        {{ end }}
+                        <hr/>
+                    </div>
+                    <div>{{ syntax .Content }}</div>
+                    {{ if ne .CreatedAt .UpdatedAt }}
+                        <div><p><i>Last edited on {{ iso8601Time .UpdatedAt }}</i></p></div>
+                    {{ end }}
+                    {{ if .User.About }}
+                        <div class="signature">
+                            {{ sig .User.About }}
+                        </div>
+                    {{ end }}
+                </td>
+            </tr>
+        {{ end }}
+        </tbody>
+    </table>
+    {{ if .board.Forum.IsLocked }}
+        <p>This forum is locked.</p>
     {{ end }}
-    </tbody>
-</table>
-{{ if .board.Forum.IsLocked }}
-<p>This forum is locked.</p>
-{{ end }}
-{{ if .board.IsLocked }}
-<p>This board is locked.</p>
-{{ end }}
-{{ if .topic.IsLocked }}
-<p>This topic is locked.</p>
-{{ end }}
-{{ if logged }}
-{{ if or (and (not .topic.IsLocked) (not .board.IsLocked) (not .board.Forum.IsLocked)) .logged.IsAdmin }}
-<section style="margin-top: 1em;">
-    {{ if .errorMessage }}
-        <p class="errors">{{ .errorMessage }}</p>
+    {{ if .board.IsLocked }}
+        <p>This board is locked.</p>
     {{ end }}
-    <form action="/posts/save" method="post">
-        {{ .csrfField }}
-        <input type="hidden" name="topicId" value="{{ .topic.Id }}">
-        <input type="hidden" name="boardId" value="{{ .board.Id }}">
-        <input type="hidden" name="subject" value="Re: {{ .topic.Post.Subject }}">
-        <div class="field">
-            <label for="content">Reply to this topic</label>
-            <textarea name="content" id="content" style="height: 150px;"></textarea>
-        </div>
-        <input type="submit" value="Reply">
-    </form>
-</section>
-{{ end }}
-{{ end }}
+    {{ if .topic.IsLocked }}
+        <p>This topic is locked.</p>
+    {{ end }}
+    {{ if logged }}
+        {{ if or (and (not .topic.IsLocked) (not .board.IsLocked) (not .board.Forum.IsLocked)) .logged.IsAdmin }}
+            <section style="margin-top: 1em;">
+                {{ if .errorMessage }}
+                    <p class="errors">{{ .errorMessage }}</p>
+                {{ end }}
+                <form action="/posts/save" method="post">
+                    {{ .csrfField }}
+                    <input type="hidden" name="topicId" value="{{ .topic.Id }}">
+                    <input type="hidden" name="boardId" value="{{ .board.Id }}">
+                    <input type="hidden" name="subject" value="Re: {{ .topic.Post.Subject }}">
+                    <div class="field">
+                        <label for="content">Reply to this topic</label>
+                        <textarea name="content" id="content" style="height: 150px;"></textarea>
+                    </div>
+                    <input type="submit" value="Reply">
+                </form>
+            </section>
+        {{ end }}
+    {{ end }}
 {{ end }}

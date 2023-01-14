@@ -1,21 +1,21 @@
 {{ define "topic_form" }}
-<details>
-    <summary>Admin options</summary>
-    <div class="field">
-        <label for="newBoardId">Board</label>
-        <select name="newBoardId" id="newBoardId">
-            {{ range .Boards }}
-            <option value="{{ .Id }}" {{ if eq .Id $.BoardId }}selected{{ end }}>{{ .Name }}</option>
-            {{ end }}
-        </select>
-    </div>
-    <div>
-        <input type="checkbox" id="sticky" name="sticky" {{ if .IsSticky }}checked{{ end }}>
-        <label for="sticky">Sticky</label>
-    </div>
-    <div>
-        <input type="checkbox" id="locked" name="locked" {{ if .IsLocked }}checked{{ end }}>
-        <label for="locked">Locked</label>
-    </div>
-</details>
+    <details>
+        <summary>Admin options</summary>
+        <div class="field">
+            <label for="newBoardId">Board</label>
+            <select name="newBoardId" id="newBoardId">
+                {{ range .Boards }}
+                    <option value="{{ .Id }}" {{ if eq .Id $.BoardId }}selected{{ end }}>{{ .Name }}</option>
+                {{ end }}
+            </select>
+        </div>
+        <div>
+            <input type="checkbox" id="sticky" name="sticky" {{ if .IsSticky }}checked{{ end }}>
+            <label for="sticky">Sticky</label>
+        </div>
+        <div>
+            <input type="checkbox" id="locked" name="locked" {{ if .IsLocked }}checked{{ end }}>
+            <label for="locked">Locked</label>
+        </div>
+    </details>
 {{ end }}

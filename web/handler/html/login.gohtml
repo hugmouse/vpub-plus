@@ -1,20 +1,20 @@
 {{ define "title" }}Login{{ end }}
 
 {{ define "content" }}
-<h1>Login</h1>
-{{ if .errorMessage }}
-    <p class="errors">{{ .errorMessage }}</p>
-{{ end }}
-<form action="/login" method="post" class="auth-form">
-    {{ .csrfField }}
-    <div class="field">
-        <label for="name">Username</label>
-        <input type="text" name="name" id="name" autocomplete="off" required/>
-    </div>
-    <div class="field">
-        <label for="password">Password</label>
-        <input type="password" name="password" id="password" required/>
-    </div>
-    <input type="submit" value="Login">
-</form>
+    <h1>Login</h1>
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
+    <form action="/login" method="post" class="auth-form">
+        {{ .csrfField }}
+        <div class="field">
+            <label for="name">Username</label>
+            <input type="text" name="name" id="name" autocomplete="off" required/>
+        </div>
+        <div class="field">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required/>
+        </div>
+        <input type="submit" value="Login">
+    </form>
 {{ end }}

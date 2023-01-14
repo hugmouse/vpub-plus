@@ -3,13 +3,13 @@ package handler
 import (
 	"encoding/xml"
 	"net/http"
+	"strconv"
 	"time"
-  "strconv"
 	"vpub/web/handler/request"
 )
 
 func (h *Handler) showTopicFeed(w http.ResponseWriter, r *http.Request) {
-  topicId := RouteInt64Param(r, "topicId")
+	topicId := RouteInt64Param(r, "topicId")
 	settings := request.GetSettingsContextKey(r)
 	feed := Feed{
 		Title:   settings.Name,

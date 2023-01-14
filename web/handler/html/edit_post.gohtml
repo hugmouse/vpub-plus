@@ -1,16 +1,16 @@
 {{ define "title" }}Edit Post{{ end }}
 {{ define "content" }}
-{{ template "forum_nav" .navigation }}
+    {{ template "forum_nav" .navigation }}
 
-<h1>Edit Post</h1>
+    <h1>Edit Post</h1>
 
-{{ if .errorMessage }}
-    <p class="errors">{{ .errorMessage }}</p>
-{{ end }}
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
 
-<form action="/posts/{{ .post.Id }}/update" method="post">
-    {{ .csrfField }}
-    {{ template "post_form" .form }}
-    <input type="submit" value="Submit">
-</form>
+    <form action="/posts/{{ .post.Id }}/update" method="post">
+        {{ .csrfField }}
+        {{ template "post_form" .form }}
+        <input type="submit" value="Submit">
+    </form>
 {{ end }}

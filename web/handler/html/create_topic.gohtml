@@ -1,17 +1,17 @@
 {{ define "title" }}New topic{{ end }}
 {{ define "content" }}
-{{ template "forum_nav" .navigation }}
-<h1>New topic</h1>
-{{ if .errorMessage }}
-    <p class="errors">{{ .errorMessage }}</p>
-{{ end }}
-<form action="/boards/{{ .board.Id }}/save-topic" method="post">
-    {{ .csrfField }}
-    <input type="hidden" name="boardId" value="{{ .form.BoardId }}">
-    {{ template "post_form" .form.PostForm }}
-    {{ if .logged.IsAdmin }}
-    {{ template "topic_form" .form }}
+    {{ template "forum_nav" .navigation }}
+    <h1>New topic</h1>
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
     {{ end }}
-    <input type="submit" value="Submit">
-</form>
+    <form action="/boards/{{ .board.Id }}/save-topic" method="post">
+        {{ .csrfField }}
+        <input type="hidden" name="boardId" value="{{ .form.BoardId }}">
+        {{ template "post_form" .form.PostForm }}
+        {{ if .logged.IsAdmin }}
+            {{ template "topic_form" .form }}
+        {{ end }}
+        <input type="submit" value="Submit">
+    </form>
 {{ end }}

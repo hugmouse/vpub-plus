@@ -1,35 +1,36 @@
 {{ define "title" }}Edit user{{ end }}
 {{ define "content" }}
-<nav class="breadcrumb">
-    <ul>
-        <li>
-            <a href="/admin">Admin</a>
-            <ul>
-                <li>
-                    <a href="/admin/users">Users</a>
-                    <ul>
-                        <li>Edit users</li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
-<h1>Edit user</h1>
-<form action="/admin/users/{{ .user.Id }}/update" method="post">
-    {{ .csrfField }}
-    <div class="field">
-        <label for="name">Name</label>
-        <input type="text" name="name" id="name" value="{{ .form.Username }}" autocomplete="off" maxlength="120" required autofocus/>
-    </div>
-    <div class="field">
-        <label for="name">Picture</label>
-        <input type="text" name="picture" id="picture" value="{{ .form.Picture }}" autocomplete="off"/>
-    </div>
-    <div class="field">
-        <label for="about">About</label>
-        <textarea class="editor" name="about" id="about">{{ .form.About }}</textarea>
-    </div>
-    <input type="submit" value="Submit">
-</form>
+    <nav class="breadcrumb">
+        <ul>
+            <li>
+                <a href="/admin">Admin</a>
+                <ul>
+                    <li>
+                        <a href="/admin/users">Users</a>
+                        <ul>
+                            <li>Edit users</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <h1>Edit user</h1>
+    <form action="/admin/users/{{ .user.Id }}/update" method="post">
+        {{ .csrfField }}
+        <div class="field">
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" value="{{ .form.Username }}" autocomplete="off" maxlength="120"
+                   required autofocus/>
+        </div>
+        <div class="field">
+            <label for="name">Picture</label>
+            <input type="text" name="picture" id="picture" value="{{ .form.Picture }}" autocomplete="off"/>
+        </div>
+        <div class="field">
+            <label for="about">About</label>
+            <textarea class="editor" name="about" id="about">{{ .form.About }}</textarea>
+        </div>
+        <input type="submit" value="Submit">
+    </form>
 {{ end }}

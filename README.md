@@ -6,15 +6,16 @@ Simple message board software and also a fork.
 
 [Status Cafe Forum][example-vpub]
 
-<img width="640" src="https://user-images.githubusercontent.com/44648612/176660262-f386251f-12f2-4e97-9e6e-c540640728bf.png">
+<img alt="An example of a forum" width="640" src="https://user-images.githubusercontent.com/44648612/176660262-f386251f-12f2-4e97-9e6e-c540640728bf.png">
 
 [Turkey forum][example-mysh]
 
-<img width="640" src="https://user-images.githubusercontent.com/44648612/178062763-0d0978f9-6604-4d0e-b55f-e040218ecbf7.png">
+<img alt="An example of a forum, but in Turkey!" width="640" src="https://user-images.githubusercontent.com/44648612/178062763-0d0978f9-6604-4d0e-b55f-e040218ecbf7.png">
 
 ## Installation
 
 To host it and install it you have to have:
+
 * Golang
 * Postgresql
 * Git
@@ -24,6 +25,7 @@ To host it and install it you have to have:
 ### Compiling vpub-plus from the source
 
 Here is how to build vpub:
+
 1. `git clone https://github.com/hugmouse/vpub-plus.git`
 2. `cd vpub-plus`
 3. `make`
@@ -104,7 +106,7 @@ At this point a `vpub` service should be running on a 1337 port without HTTPS.
 
 ## Credentials
 
-On the first run `vpub` will create an admin user with the password "admin". 
+On the first run `vpub` will create an admin user with the password "admin".
 Log in and change it by navigating to `/admin/users` route.
 
 ## Registering new users
@@ -112,6 +114,9 @@ Log in and change it by navigating to `/admin/users` route.
 To register you have to have a unique key! Create one on `/admin/keys` page and use it to create a new user account.
 
 [postgres]: https://www.postgresql.org/download/
+
 [postgres-url-format]: https://stackoverflow.com/q/3582552
+
 [example-mysh]: https://turkey.mysh.dev/
+
 [example-vpub]: https://forum.status.cafe/

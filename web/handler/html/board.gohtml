@@ -1,52 +1,53 @@
-{{ define "head" }}<link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}/boards/{{ .board.Id }}/feed.atom"/>{{ end }}
+{{ define "head" }}
+<link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}/boards/{{ .board.Id }}/feed.atom"/>{{ end }}
 {{ define "content" }}
-{{ template "forum_nav" .navigation }}
-<h1>{{ .board.Name }}</h1>
+    {{ template "forum_nav" .navigation }}
+    <h1>{{ .board.Name }}</h1>
 
-{{ if logged }}
-{{ if .board.Forum.IsLocked }}
-<p>This forum is locked.</p>
-{{ end }}
-{{ if .board.IsLocked }}
-<p>This board is locked.</p>
-{{ end }}
-{{ if or (and (not .board.IsLocked) (not .board.Forum.IsLocked)) .logged.IsAdmin }}
-<form action="/boards/{{ .board.Id }}/new-topic" method="get" class="action">
-    <input type="submit" value="New topic">
-</form>
-{{ end }}
-{{ end }}
+    {{ if logged }}
+        {{ if .board.Forum.IsLocked }}
+            <p>This forum is locked.</p>
+        {{ end }}
+        {{ if .board.IsLocked }}
+            <p>This board is locked.</p>
+        {{ end }}
+        {{ if or (and (not .board.IsLocked) (not .board.Forum.IsLocked)) .logged.IsAdmin }}
+            <form action="/boards/{{ .board.Id }}/new-topic" method="get" class="action">
+                <input type="submit" value="New topic">
+            </form>
+        {{ end }}
+    {{ end }}
 
-<section>
-    <table>
-        <thead>
-        <tr>
-            <th class="grow">Subject</th>
-            <th>Author</th>
-            <th>Replies</th>
-            <th>Updated</th>
-        </tr>
-        </thead>
-        <tbody>
-        {{ if .topics }}
-        {{ range .topics }}
-        <tr>
-            <td colspan="grow">
-                {{ if .IsSticky }}<span class="sticky">[Sticky]</span>{{ end }}
-                <a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a>
-            </td>
-            <td class="center"><a href="/users/{{ .Post.User.Id }}">{{ .Post.User.Name }}</a></td>
-            <td class="center">{{ dec .Posts }}</td>
-            <td><a href="/topics/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
-        </tr>
-        {{ end }}
-        {{ else }}
-        <tr>
-            <td colspan="4">No topics yet.</td>
-        </tr>
-        {{ end }}
-        </tbody>
-    </table>
-    {{ template "pagination" .pagination }}
-</section>
+    <section>
+        <table>
+            <thead>
+            <tr>
+                <th class="grow">Subject</th>
+                <th>Author</th>
+                <th>Replies</th>
+                <th>Updated</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{ if .topics }}
+                {{ range .topics }}
+                    <tr>
+                        <td colspan="grow">
+                            {{ if .IsSticky }}<span class="sticky">[Sticky]</span>{{ end }}
+                            <a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a>
+                        </td>
+                        <td class="center"><a href="/users/{{ .Post.User.Id }}">{{ .Post.User.Name }}</a></td>
+                        <td class="center">{{ dec .Posts }}</td>
+                        <td><a href="/topics/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
+                    </tr>
+                {{ end }}
+            {{ else }}
+                <tr>
+                    <td colspan="4">No topics yet.</td>
+                </tr>
+            {{ end }}
+            </tbody>
+        </table>
+        {{ template "pagination" .pagination }}
+    </section>
 {{ end }}

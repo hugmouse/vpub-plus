@@ -1,27 +1,27 @@
 {{ define "title" }}Edit board{{ end }}
 {{ define "content" }}
-<nav class="breadcrumb">
-    <ul>
-        <li>
-            <a href="{{ .root }}/admin">Admin</a>
-            <ul>
-                <li>
-                    <a href="/admin/boards">Boards</a>
-                    <ul>
-                        <li>Edit board</li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ul>
-</nav>
-<h1>Edit board</h1>
-{{ if .errorMessage }}
-    <p class="errors">{{ .errorMessage }}</p>
-{{ end }}
-<form action="/admin/boards/{{ .board.Id }}/update" method="post">
-    {{ .csrfField }}
-    {{ template "board_form" .form }}
-    <input type="submit" value="Submit">
-</form>
+    <nav class="breadcrumb">
+        <ul>
+            <li>
+                <a href="{{ .root }}/admin">Admin</a>
+                <ul>
+                    <li>
+                        <a href="/admin/boards">Boards</a>
+                        <ul>
+                            <li>Edit board</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <h1>Edit board</h1>
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
+    <form action="/admin/boards/{{ .board.Id }}/update" method="post">
+        {{ .csrfField }}
+        {{ template "board_form" .form }}
+        <input type="submit" value="Submit">
+    </form>
 {{ end }}
