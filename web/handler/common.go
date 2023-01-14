@@ -4,64 +4,66 @@ package handler
 
 var TplCommonMap = map[string]string{
 	"board_form": `{{ define "board_form" }}
-<div class="field">
-    <label for="forumId">Forum</label>
-    <select name="forumId" id="forumId">
-        {{ range .Forums }}
-        <option value="{{ .Id }}" {{ if eq .Id $.ForumId }}selected{{ end }}>{{ .Name }}</option>
-        {{ end }}
-    </select>
-</div>
-<div class="field">
-    <label for="name">Name</label>
-    <input type="text" name="name" id="name" value="{{ .Name }}" autocomplete="off" maxlength="120" required autofocus/>
-</div>
-<div class="field">
-    <label for="description">Description</label>
-    <textarea class="editor" name="description" id="description" required>{{ .Description }}</textarea>
-</div>
-<div class="field">
-    <label for="name">Position</label>
-    <input type="number" name="position" id="position" value="{{ .Position }}" autocomplete="off" required/>
-</div>
-<div class="field">
-    <label for="locked">Locked</label>
-    <select name="locked" id="locked">
-        <option value="false">false</option>
-        <option value="true" {{ if .IsLocked }}selected{{ end }}>true</option>
-    </select>
-</div>
+    <div class="field">
+        <label for="forumId">Forum</label>
+        <select name="forumId" id="forumId">
+            {{ range .Forums }}
+                <option value="{{ .Id }}" {{ if eq .Id $.ForumId }}selected{{ end }}>{{ .Name }}</option>
+            {{ end }}
+        </select>
+    </div>
+    <div class="field">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" value="{{ .Name }}" autocomplete="off" maxlength="120" required
+               autofocus/>
+    </div>
+    <div class="field">
+        <label for="description">Description</label>
+        <textarea class="editor" name="description" id="description" required>{{ .Description }}</textarea>
+    </div>
+    <div class="field">
+        <label for="name">Position</label>
+        <input type="number" name="position" id="position" value="{{ .Position }}" autocomplete="off" required/>
+    </div>
+    <div class="field">
+        <label for="locked">Locked</label>
+        <select name="locked" id="locked">
+            <option value="false">false</option>
+            <option value="true" {{ if .IsLocked }}selected{{ end }}>true</option>
+        </select>
+    </div>
 {{ end }}`,
 	"forum_form": `{{ define "forum_form" }}
-<div class="field">
-  <label for="name">Name</label>
-  <input type="text" name="name" id="name" value="{{ .Name }}" autocomplete="off" maxlength="120" required autofocus/>
-</div>
-<div class="field">
-  <label for="name">Position</label>
-  <input type="number" name="position" id="position" value="{{ .Position }}" autocomplete="off" required/>
-</div>
-<div>
-  <input type="checkbox" id="locked" name="locked" {{ if .IsLocked }}checked{{ end }}>
-  <label for="locked">Locked</label>
-</div>
+    <div class="field">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" value="{{ .Name }}" autocomplete="off" maxlength="120" required
+               autofocus/>
+    </div>
+    <div class="field">
+        <label for="name">Position</label>
+        <input type="number" name="position" id="position" value="{{ .Position }}" autocomplete="off" required/>
+    </div>
+    <div>
+        <input type="checkbox" id="locked" name="locked" {{ if .IsLocked }}checked{{ end }}>
+        <label for="locked">Locked</label>
+    </div>
 {{ end }}`,
 	"forum_nav": `{{ define "forum_nav" }}
-<nav class="breadcrumb">
-    <a href="/">Forums</a>
-    {{ if .Forum.Name }}
-    {{ if .Board.Name }}
-    › <a href="/forums/{{ .Forum.Id }}">{{ .Forum.Name }}</a>
-    {{ if .Topic }}
-    › <a href="/boards/{{ .Board.Id }}">{{ .Board.Name }}</a> › {{ .Topic }}
-    {{ else }}
-    › {{ .Board.Name }}
-    {{ end }}
-    {{ else }}
-    › {{ .Forum.Name }}
-    {{ end }}
-    {{ end }}
-</nav>
+    <nav class="breadcrumb">
+        <a href="/">Forums</a>
+        {{ if .Forum.Name }}
+            {{ if .Board.Name }}
+                › <a href="/forums/{{ .Forum.Id }}">{{ .Forum.Name }}</a>
+                {{ if .Topic }}
+                    › <a href="/boards/{{ .Board.Id }}">{{ .Board.Name }}</a> › {{ .Topic }}
+                {{ else }}
+                    › {{ .Board.Name }}
+                {{ end }}
+            {{ else }}
+                › {{ .Forum.Name }}
+            {{ end }}
+        {{ end }}
+    </nav>
 {{ end }}`,
 	"layout": `{{ define "layout" }}
     <!DOCTYPE html>
@@ -71,7 +73,7 @@ var TplCommonMap = map[string]string{
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta property="og:description" content="{{ .board.Description }}">
         <link rel="stylesheet" href="/style.css"/>
-        {{ if .board.Description}}
+        {{ if .board.Description }}
             <title>{{ .settings.Name }} - {{ .forum.Topic }}</title>
         {{ else }}
             <title>{{ .settings.Name }}</title>
@@ -116,53 +118,54 @@ var TplCommonMap = map[string]string{
             {{ html .settings.Footer }}
         </footer>
     {{ end }}
-</body>
-</html>
+    </body>
+    </html>
 {{ end }}
 {{ define "head" }}{{ end }}
 {{ define "breadcrumb" }}{{ end }}`,
 	"pagination": `{{ define "pagination" }}
-{{ if or (ne 1 .Page) .HasMore }}
-<p>
-    {{ if ne 1 .Page }}
-    <a href="?page={{ dec .Page }}">Previous page</a>
+    {{ if or (ne 1 .Page) .HasMore }}
+        <p>
+            {{ if ne 1 .Page }}
+                <a href="?page={{ dec .Page }}">Previous page</a>
+            {{ end }}
+            {{ if .HasMore }}
+                <a href="?page={{ inc .Page }}">Next page</a>
+            {{ end }}
+        </p>
     {{ end }}
-    {{ if .HasMore }}
-    <a href="?page={{ inc .Page }}">Next page</a>
-    {{ end }}
-</p>
-{{ end }}
 {{ end }}`,
 	"post_form": `{{ define "post_form" }}
-<input type="hidden" name="topicId" value="{{ .TopicId }}">
-<div class="field">
-    <label for="subject">Subject</label>
-    <input type="text" name="subject" id="subject" value="{{ .Subject }}" autocomplete="off" maxlength="115" required autofocus/>
-</div>
-<div class="field">
-    <label for="content">Content</label>
-    <textarea class="editor" name="content" id="content" required>{{ .Content }}</textarea>
-</div>
+    <input type="hidden" name="topicId" value="{{ .TopicId }}">
+    <div class="field">
+        <label for="subject">Subject</label>
+        <input type="text" name="subject" id="subject" value="{{ .Subject }}" autocomplete="off" maxlength="115"
+               required autofocus/>
+    </div>
+    <div class="field">
+        <label for="content">Content</label>
+        <textarea class="editor" name="content" id="content" required>{{ .Content }}</textarea>
+    </div>
 {{ end }}`,
 	"topic_form": `{{ define "topic_form" }}
-<details>
-    <summary>Admin options</summary>
-    <div class="field">
-        <label for="newBoardId">Board</label>
-        <select name="newBoardId" id="newBoardId">
-            {{ range .Boards }}
-            <option value="{{ .Id }}" {{ if eq .Id $.BoardId }}selected{{ end }}>{{ .Name }}</option>
-            {{ end }}
-        </select>
-    </div>
-    <div>
-        <input type="checkbox" id="sticky" name="sticky" {{ if .IsSticky }}checked{{ end }}>
-        <label for="sticky">Sticky</label>
-    </div>
-    <div>
-        <input type="checkbox" id="locked" name="locked" {{ if .IsLocked }}checked{{ end }}>
-        <label for="locked">Locked</label>
-    </div>
-</details>
+    <details>
+        <summary>Admin options</summary>
+        <div class="field">
+            <label for="newBoardId">Board</label>
+            <select name="newBoardId" id="newBoardId">
+                {{ range .Boards }}
+                    <option value="{{ .Id }}" {{ if eq .Id $.BoardId }}selected{{ end }}>{{ .Name }}</option>
+                {{ end }}
+            </select>
+        </div>
+        <div>
+            <input type="checkbox" id="sticky" name="sticky" {{ if .IsSticky }}checked{{ end }}>
+            <label for="sticky">Sticky</label>
+        </div>
+        <div>
+            <input type="checkbox" id="locked" name="locked" {{ if .IsLocked }}checked{{ end }}>
+            <label for="locked">Locked</label>
+        </div>
+    </details>
 {{ end }}`,
 }
