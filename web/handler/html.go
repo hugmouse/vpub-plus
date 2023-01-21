@@ -332,7 +332,7 @@ var TplMap = map[string]string{
                    autofocus/>
         </div>
         <div class="field">
-            <label for="name">URL</label>
+            <label for="url">URL</label>
             <input type="url" name="url" id="url" value="{{ .form.URL }}" autocomplete="off"/>
         </div>
         <div class="field">
@@ -340,7 +340,7 @@ var TplMap = map[string]string{
             <input type="text" name="lang" id="lang" value="{{ .form.Lang }}" autocomplete="off" maxlength="2"/>
         </div>
         <div class="field">
-            <label for="css">Footer</label>
+            <label for="footer">Footer</label>
             <textarea class="editor" name="footer" id="footer">{{ .form.Footer }}</textarea>
         </div>
         <div class="field">
@@ -414,7 +414,7 @@ var TplMap = map[string]string{
                    required autofocus/>
         </div>
         <div class="field">
-            <label for="name">Picture</label>
+            <label for="picture">Picture</label>
             <input type="text" name="picture" id="picture" value="{{ .form.Picture }}" autocomplete="off"/>
         </div>
         <div class="field">
@@ -792,7 +792,7 @@ var TplMap = map[string]string{
             <tr id="{{ .Id }}">
                 <td class="col-author">
                     <a href="/users/{{ .User.Id }}">{{ .User.Name }}</a>
-                    <p><img src="{{ .User.Picture }}" width="80"/></p>
+                    <p><img alt="{{ .User.Name }}'s profile picture" src="{{ .User.Picture }}" width="80"/></p>
                 </td>
                 <td>
                     <div class="posted">

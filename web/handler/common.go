@@ -22,7 +22,7 @@ var TplCommonMap = map[string]string{
         <textarea class="editor" name="description" id="description" required>{{ .Description }}</textarea>
     </div>
     <div class="field">
-        <label for="name">Position</label>
+        <label for="position">Position</label>
         <input type="number" name="position" id="position" value="{{ .Position }}" autocomplete="off" required/>
     </div>
     <div class="field">
@@ -40,7 +40,7 @@ var TplCommonMap = map[string]string{
                autofocus/>
     </div>
     <div class="field">
-        <label for="name">Position</label>
+        <label for="position">Position</label>
         <input type="number" name="position" id="position" value="{{ .Position }}" autocomplete="off" required/>
     </div>
     <div>
@@ -72,7 +72,7 @@ var TplCommonMap = map[string]string{
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta property="og:description" content="{{ .board.Description }}">
-        <link rel="stylesheet" href="/style.css"/>
+        <link rel="stylesheet" href="/style.css">
         {{ if .board.Description }}
             <title>{{ .settings.Name }} - {{ .forum.Topic }}</title>
         {{ else }}
