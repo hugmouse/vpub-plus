@@ -39,13 +39,13 @@ func (s *Session) SetUserId(id int64) {
 }
 
 func (s *Session) GetFlashErrors() []string {
-	var errors []string
+	var errorsArray []string
 	if msgs := s.session.Flashes("errors"); len(msgs) > 0 {
 		for _, m := range msgs {
-			errors = append(errors, m.(string))
+			errorsArray = append(errorsArray, m.(string))
 		}
 	}
-	return errors
+	return errorsArray
 }
 
 func (s *Session) GetFlashInfo() []string {

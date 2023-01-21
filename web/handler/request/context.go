@@ -21,11 +21,11 @@ func GetSettingsContextKey(r *http.Request) model.Settings {
 }
 
 func GetSessionContextKey(r *http.Request) *session.Session {
-	session, ok := r.Context().Value(SessionKey).(*session.Session)
+	sessionFromContext, ok := r.Context().Value(SessionKey).(*session.Session)
 	if !ok {
 		return nil
 	}
-	return session
+	return sessionFromContext
 }
 
 func GetUserContextKey(r *http.Request) model.User {

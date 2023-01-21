@@ -43,7 +43,7 @@ func serverError(w http.ResponseWriter, err error) {
 func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user, _ := h.session.GetUser(r)
-		session, err := h.session.GetSession(r)
+		sessionResult, err := h.session.GetSession(r)
 		if err != nil {
 			fmt.Println("Unable to create session: " + err.Error())
 		}
@@ -53,7 +53,7 @@ func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
 			return
 		}
 		ctx := r.Context()
-		ctx = context.WithValue(ctx, request.SessionKey, session)
+		ctx = context.WithValue(ctx, request.SessionKey, sessionResult)
 		ctx = context.WithValue(ctx, request.UserKey, user)
 		ctx = context.WithValue(ctx, request.SettingsKey, settings)
 		next.ServeHTTP(w, r.WithContext(ctx))
