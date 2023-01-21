@@ -29,7 +29,7 @@
         <tbody>
         {{ range .keys }}
             <tr>
-                <td colspan="grow">{{ .Key }}</td>
+                <td>{{ .Key }}</td>
                 <td class="center">{{ iso8601 .CreatedAt }}</td>
                 <td class="center"><a href="/admin/keys/{{ .Id }}/remove">Delete</a></td>
             </tr>

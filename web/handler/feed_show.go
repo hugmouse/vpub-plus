@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/xml"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"path"
@@ -99,7 +98,7 @@ func createAtomEntryFromPost(url string, post model.Post) *Entry {
 
 func (h *Handler) showFeed(w http.ResponseWriter, r *http.Request) {
 	settings := request.GetSettingsContextKey(r)
-	log.Println(settings.Name)
+
 	feed := Feed{
 		Title:   settings.Name,
 		ID:      settings.URL,

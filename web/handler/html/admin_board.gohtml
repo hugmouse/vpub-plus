@@ -35,7 +35,7 @@
                 </tr>
                 {{ range .Boards }}
                     <tr>
-                        <td colspan="grow">
+                        <td>
                             <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
                         </td>
                         <td class="center"><a href="/admin/boards/{{ .Id }}/edit">Edit</a></td>

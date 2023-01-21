@@ -73,7 +73,7 @@ var TplMap = map[string]string{
                 </tr>
                 {{ range .Boards }}
                     <tr>
-                        <td colspan="grow">
+                        <td>
                             <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
                         </td>
                         <td class="center"><a href="/admin/boards/{{ .Id }}/edit">Edit</a></td>
@@ -185,7 +185,7 @@ var TplMap = map[string]string{
         {{ if .forums }}
             {{ range .forums }}
                 <tr>
-                    <td colspan="grow">
+                    <td>
                         {{ .Name }}
                     </td>
                     <td class="center"><a href="/admin/forums/{{ .Id }}/edit">Edit</a></td>
@@ -300,7 +300,7 @@ var TplMap = map[string]string{
         <tbody>
         {{ range .keys }}
             <tr>
-                <td colspan="grow">{{ .Key }}</td>
+                <td>{{ .Key }}</td>
                 <td class="center">{{ iso8601 .CreatedAt }}</td>
                 <td class="center"><a href="/admin/keys/{{ .Id }}/remove">Delete</a></td>
             </tr>
@@ -379,7 +379,7 @@ var TplMap = map[string]string{
         <tbody>
         {{ range .users }}
             <tr>
-                <td colspan="grow">{{ .Name }}</td>
+                <td>{{ .Name }}</td>
                 <td class="center"><a href="/admin/users/{{ .Id }}/edit">Edit</a></td>
                 <td class="center"><a href="/reset-password?hash={{ .Hash }}">Reset</a></td>
                 <td class="center"><a href="/admin/users/{{ .Id }}/remove">Delete</a></td>
@@ -472,7 +472,7 @@ var TplMap = map[string]string{
             {{ if .topics }}
                 {{ range .topics }}
                     <tr>
-                        <td colspan="grow">
+                        <td>
                             {{ if .IsSticky }}<span class="sticky">[Sticky]</span>{{ end }}
                             <a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a>
                         </td>
@@ -511,7 +511,7 @@ var TplMap = map[string]string{
         {{ if .boards }}
             {{ range .boards }}
                 <tr>
-                    <td colspan="grow">
+                    <td>
                         <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
                     </td>
                     <td class="center">{{ .Topics }}</td>
@@ -650,7 +650,7 @@ var TplMap = map[string]string{
                 </tr>
                 {{ range .Boards }}
                     <tr>
-                        <td colspan="grow">
+                        <td>
                             <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
                         </td>
                         <td class="center">{{ .Topics }}</td>
@@ -709,7 +709,7 @@ var TplMap = map[string]string{
             {{ if .posts }}
                 {{ range .posts }}
                     <tr>
-                        <td colspan="grow"><a href="/topics/{{ .TopicId }}#{{ .Id }}">{{ .Subject }}</a></td>
+                        <td><a href="/topics/{{ .TopicId }}#{{ .Id }}">{{ .Subject }}</a></td>
                         <td class="center"><a href="/users/{{ .User.Id }}">{{ .User.Name }}</a></td>
                         <td class="center">{{ iso8601 .CreatedAt }}</td>
                     </tr>

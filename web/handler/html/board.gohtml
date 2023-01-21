@@ -32,7 +32,7 @@
             {{ if .topics }}
                 {{ range .topics }}
                     <tr>
-                        <td colspan="grow">
+                        <td>
                             {{ if .IsSticky }}<span class="sticky">[Sticky]</span>{{ end }}
                             <a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a>
                         </td>

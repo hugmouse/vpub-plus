@@ -17,7 +17,7 @@
         {{ if .boards }}
             {{ range .boards }}
                 <tr>
-                    <td colspan="grow">
+                    <td>
                         <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
                     </td>
                     <td class="center">{{ .Topics }}</td>
