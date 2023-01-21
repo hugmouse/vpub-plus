@@ -15,7 +15,7 @@
             <tr id="{{ .Id }}">
                 <td class="col-author">
                     <a href="/users/{{ .User.Id }}">{{ .User.Name }}</a>
-                    <p><img src="{{ .User.Picture }}" width="80"/></p>
+                    <p><img alt="{{ .User.Name }}'s profile picture" src="{{ .User.Picture }}" width="80"/></p>
                 </td>
                 <td>
                     <div class="posted">
