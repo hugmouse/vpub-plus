@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 )
 
@@ -33,18 +34,30 @@ func Migrate(db *sql.DB) {
 		}
 		_, err = tx.Exec(rawSQL)
 		if err != nil {
-			tx.Rollback()
-			log.Fatal("[Migrate] ", err)
+			log.Println("[Migrate] ", err)
+			err = tx.Rollback()
+			if err != nil {
+				log.Fatal("[Migrate] Failed to rollback: ", err)
+			}
+			os.Exit(1)
 		}
 
 		if _, err := tx.Exec(`delete from schema_version`); err != nil {
-			tx.Rollback()
-			log.Fatal("[Migrate] ", err)
+			log.Println("[Migrate] ", err)
+			err = tx.Rollback()
+			if err != nil {
+				log.Fatal("[Migrate] Failed to rollback: ", err)
+			}
+			os.Exit(1)
 		}
 
 		if _, err := tx.Exec(`INSERT INTO schema_version (version) VALUES ($1)`, version); err != nil {
-			tx.Rollback()
-			log.Fatal("[Migrate] ", err)
+			log.Println("[Migrate] ", err)
+			err = tx.Rollback()
+			if err != nil {
+				log.Fatal("[Migrate] Failed to rollback: ", err)
+			}
+			os.Exit(1)
 		}
 
 		if err := tx.Commit(); err != nil {

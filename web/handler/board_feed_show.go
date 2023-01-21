@@ -82,5 +82,8 @@ func (h *Handler) showBoardFeed(w http.ResponseWriter, r *http.Request) {
 		serverError(w, err)
 	}
 
-	w.Write([]byte(xml.Header + string(data)))
+	_, err = w.Write([]byte(xml.Header + string(data)))
+	if err != nil {
+		serverError(w, err)
+	}
 }

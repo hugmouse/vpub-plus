@@ -8,7 +8,10 @@ import (
 func (h *Handler) removeAdminKey(w http.ResponseWriter, r *http.Request) {
 	id := RouteInt64Param(r, "keyId")
 
-	h.storage.DeleteKey(id)
+	err := h.storage.DeleteKey(id)
+	if err != nil {
+		serverError(w, err)
+	}
 
 	http.Redirect(w, r, fmt.Sprintf("/admin/keys"), http.StatusFound)
 }
