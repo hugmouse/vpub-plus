@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/xml"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"path"
@@ -98,6 +99,7 @@ func createAtomEntryFromPost(url string, post model.Post) *Entry {
 
 func (h *Handler) showFeed(w http.ResponseWriter, r *http.Request) {
 	settings := request.GetSettingsContextKey(r)
+	log.Println(settings.Name)
 	feed := Feed{
 		Title:   settings.Name,
 		ID:      settings.URL,
@@ -125,7 +127,7 @@ func (h *Handler) showFeed(w http.ResponseWriter, r *http.Request) {
 		feed.Entry = append(feed.Entry, createAtomEntryFromPost(settings.URL, post))
 	}
 
-	w.Header().Set("Content-Type", "application/atom+xml")
+	w.Header().Set("Content-Type", "application/atom+xml; charset=utf-8")
 
 	var data []byte
 	data, err = xml.MarshalIndent(&feed, "", "    ")
@@ -133,5 +135,8 @@ func (h *Handler) showFeed(w http.ResponseWriter, r *http.Request) {
 		serverError(w, err)
 	}
 
-	w.Write([]byte(xml.Header + string(data)))
+	_, err = w.Write([]byte(xml.Header + string(data)))
+	if err != nil {
+		serverError(w, err)
+	}
 }
