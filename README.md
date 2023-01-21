@@ -113,6 +113,12 @@ Log in and change it by navigating to `/admin/users` route.
 
 To register you have to have a unique key! Create one on `/admin/keys` page and use it to create a new user account.
 
+## Atom feed
+
+You need to change the `URL` in settings to pass the atom feed check.
+
+Specify your domain name in `/admin/settings/edit` like this: `https://example.com/`.
+
 [postgres]: https://www.postgresql.org/download/
 
 [postgres-url-format]: https://stackoverflow.com/q/3582552
