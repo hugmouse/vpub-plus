@@ -1,9 +1,10 @@
 {{ define "head" }}
-<link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}/boards/{{ .board.Id }}/feed.atom"/>{{ end }}
+    <link type="application/atom+xml" rel="alternate"
+          href="{{ .settings.URL}}boards/{{ .board.Id }}/feed.atom"/>
+{{ end }}
 {{ define "content" }}
     {{ template "forum_nav" .navigation }}
     <h1>{{ .board.Name }}</h1>
-
     {{ if logged }}
         {{ if .board.Forum.IsLocked }}
             <p>This forum is locked.</p>
