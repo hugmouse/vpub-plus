@@ -105,12 +105,24 @@ func (h *Handler) initTpl() {
 						return "1 hour ago"
 					}
 					return fmt.Sprintf("%d hours ago", hours)
-				} else {
+				} else if d.Hours() < 730 {
 					days := int(d.Hours()) / 24
 					if days == 1 {
 						return "1 day ago"
 					}
 					return fmt.Sprintf("%d days ago", days)
+				} else if d.Hours() < 8760 {
+					months := int(d.Hours()) / 730
+					if months == 1 {
+						return "1 month ago"
+					}
+					return fmt.Sprintf("%d months ago", months)
+				} else {
+					years := int(d.Hours()) / 8760
+					if years == 1 {
+						return "1 year ago"
+					}
+					return fmt.Sprintf("%d years ago", years)
 				}
 			},
 			"inc": func(v int64) int64 {
