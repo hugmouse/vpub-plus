@@ -73,9 +73,9 @@ var TplCommonMap = map[string]string{
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         {{ if .board.Description }}
             {{ if not .navigation.Topic }}
-            <meta property="description" content="{{ .board.Description }}">
-            <meta property="og:description" content="{{ .board.Description }}">
-                {{ end }}
+                <meta property="description" content="{{ .board.Description }}">
+                <meta property="og:description" content="{{ .board.Description }}">
+            {{ end }}
         {{ end }}
         <link rel="stylesheet" href="/style.css">
         {{ if .navigation.Forum.Name }}

@@ -439,11 +439,10 @@ var TplMap = map[string]string{
     </form>
 {{ end }}`,
 	"board": `{{ define "head" }}
-<link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}/boards/{{ .board.Id }}/feed.atom"/>{{ end }}
+<link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}boards/{{ .board.Id }}/feed.atom"/>{{ end }}
 {{ define "content" }}
     {{ template "forum_nav" .navigation }}
     <h1>{{ .board.Name }}</h1>
-
     {{ if logged }}
         {{ if .board.Forum.IsLocked }}
             <p>This forum is locked.</p>
@@ -776,7 +775,13 @@ var TplMap = map[string]string{
     </form>
 {{ end }}`,
 	"topic": `{{ define "head" }}
-<link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}/topics/{{ .topic.Id }}/feed.atom"/>{{ end }}
+    <link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}topics/{{ .topic.Id }}/feed.atom"/>
+    <meta property="article:published_time" content="{{ iso8601Time (index .posts 0).CreatedAt }}">
+    {{ if ne .CreatedAt .UpdatedAt }}
+        <meta property="article:modified_time" content="{{ iso8601Time (index .posts 0).UpdatedAt }}">
+    {{ end }}
+    <meta property="article:author" content="{{ (index .posts 0).User.Name }}">
+{{ end }}
 {{ define "content"}}
     {{ template "forum_nav" .navigation }}
     <h1>{{ .topic.Post.Subject }}</h1>
