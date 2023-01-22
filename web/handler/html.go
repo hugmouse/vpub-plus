@@ -803,7 +803,7 @@ var TplMap = map[string]string{
                 </td>
                 <td>
                     <div class="posted">
-                        <span>Posted <time datetime="{{ iso8601Time .CreatedAt }}"
+                        <span>Posted on <time datetime="{{ iso8601Time .CreatedAt }}"
                                            title="{{ timeAgo .CreatedAt }}">{{ iso8601Time .CreatedAt }}</time></span>
                         {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
                             <a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a
