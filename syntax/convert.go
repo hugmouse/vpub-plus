@@ -17,6 +17,7 @@ var boldRegexp = regexp.MustCompile(`\*\*(.*?)\*\*`)
 var italicsRegexp = regexp.MustCompile(`\*(.*?)\*`)
 var tableLikeHeader = regexp.MustCompile(`^\|\s.+\s\|$`)
 var tableSeparator = regexp.MustCompile(`(:?-.-+:?)`)
+var codeRegexp = regexp.MustCompile("`(.*)`")
 
 func clearUlMode(ulMode *bool, rv *[]string) {
 	if *ulMode {
@@ -70,11 +71,22 @@ func processItalics(input string) string {
 	return input
 }
 
+func processCode(input string) string {
+	if codeRegexp.MatchString(input) {
+		matches := codeRegexp.FindAllStringSubmatch(input, -1)
+		for _, m := range matches {
+			input = strings.Replace(input, m[0], fmt.Sprintf("<code>%s</code>", m[1]), 1)
+		}
+	}
+	return input
+}
+
 // Returns a sanitized output
 func processDecoration(input string) string {
 	sane := processLinks(input)
 	sane = processBold(sane)
 	sane = processItalics(sane)
+	sane = processCode(sane)
 	return sane
 }
 

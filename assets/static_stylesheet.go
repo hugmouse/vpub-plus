@@ -248,5 +248,11 @@ hr {
 .small {
     font-size: 14px;
     color: grey;
+}
+
+code {
+    font-family: monospace;
+    background-color: whitesmoke;
+    padding: 3px;
 }`,
 }
