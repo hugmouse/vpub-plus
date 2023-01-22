@@ -19,6 +19,7 @@ var tableLikeHeader = regexp.MustCompile(`^\|\s.+\s\|$`)
 var tableSeparator = regexp.MustCompile(`(:?-.-+:?)`)
 var codeRegexp = regexp.MustCompile("`(.*)`")
 var strikethroughRegexp = regexp.MustCompile(`~~(.*?)~~`)
+var taskListRegexp = regexp.MustCompile(`^- \[(x| )\] (.*)$`)
 
 func clearUlMode(ulMode *bool, rv *[]string) {
 	if *ulMode {
@@ -280,6 +281,23 @@ func Convert(gmi string, wrap bool) string {
 					continue
 				}
 				rv = append(rv, "<ul>\n<li>"+sane+"</li>")
+				ulMode = true
+			case taskListRegexp.MatchString(l):
+				matches := taskListRegexp.FindStringSubmatch(l)
+				sane := processDecoration(matches[2])
+				if ulMode {
+					if matches[1] == "x" {
+						rv = append(rv, "<li><input type=\"checkbox\" checked=\"checked\" disabled=\"disabled\" >"+sane+"</li>")
+					} else {
+						rv = append(rv, "<li>"+matches[1]+"<input type=\"checkbox\" disabled=\"disabled\" >"+sane+"</li>")
+					}
+					continue
+				}
+				if matches[1] == "x" {
+					rv = append(rv, "<li><input type=\"checkbox\" checked=\"checked\" disabled=\"disabled\" >"+sane+"</li>")
+				} else {
+					rv = append(rv, "<li><input type=\"checkbox\" checked=\"checked\" disabled=\"disabled\" >"+sane+"</li>")
+				}
 				ulMode = true
 			default:
 				clearUlMode(&ulMode, &rv)
