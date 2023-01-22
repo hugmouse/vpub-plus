@@ -803,7 +803,8 @@ var TplMap = map[string]string{
                 </td>
                 <td>
                     <div class="posted">
-                        <span title="{{ timeAgo .CreatedAt }}">Posted {{ iso8601Time .CreatedAt }}</span>
+                        <span>Posted <time datetime="{{ iso8601Time .CreatedAt }}"
+                                           title="{{ timeAgo .CreatedAt }}">{{ iso8601Time .CreatedAt }}</time></span>
                         {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
                             <a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a
                                     href="/posts/{{ .Id }}/remove">remove</a>
@@ -816,7 +817,14 @@ var TplMap = map[string]string{
                     </div>
                     <div>{{ syntax .Content }}</div>
                     {{ if ne .CreatedAt .UpdatedAt }}
-                        <div><p><i title="{{ timeAgo .UpdatedAt }}">Last edited on {{ iso8601Time .UpdatedAt }}</i></p></div>
+                        <div>
+                            <p>
+                                <i>Last edited on
+                                    <time datetime="{{ iso8601Time .UpdatedAt }}"
+                                          title="{{ timeAgo .UpdatedAt }}">{{ iso8601Time .UpdatedAt }}</time>
+                                </i>
+                            </p>
+                        </div>
                     {{ end }}
                     {{ if .User.About }}
                         <div class="signature">
