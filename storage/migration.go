@@ -2,7 +2,9 @@ package storage
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"github.com/lib/pq"
 	"log"
 	"os"
 	"strconv"
@@ -14,7 +16,13 @@ func Migrate(db *sql.DB) {
 	var currentVersion int
 	err := db.QueryRow(`SELECT version FROM schema_version`).Scan(&currentVersion)
 	if err != nil {
-		log.Fatal("[Migrate] ", err)
+		var postgresErr *pq.Error
+		// 42P01 is PostgreSQL error code for "table does not exist"
+		if errors.As(err, &postgresErr) && postgresErr.Code == "42P01" {
+			log.Println("[Migrate] schema_version table doesn't exist, treating current version as 0")
+		} else {
+			log.Fatal("[Migrate] ", err)
+		}
 	}
 
 	fmt.Println("Current schema version:", currentVersion)
