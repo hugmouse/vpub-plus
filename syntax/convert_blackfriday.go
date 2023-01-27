@@ -11,7 +11,7 @@ import (
 
 func Convert(gmi string, wrap bool) string {
 	clearedString := strings.ReplaceAll(gmi, "\r\n", "\n")
-	unsafeString := blackfriday.Run([]byte(clearedString))
+	unsafeString := blackfriday.Run([]byte(clearedString), blackfriday.WithExtensions(blackfriday.CommonExtensions))
 	saferString := bluemonday.UGCPolicy().SanitizeBytes(unsafeString)
 	return string(saferString)
 }
