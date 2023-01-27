@@ -1,3 +1,6 @@
+//go:build !blackfriday
+// +build !blackfriday
+
 package syntax
 
 import (
