@@ -55,6 +55,7 @@ Now you have to set those environment variables:
 * `DATABASE_URL` - [Postgresql connection URL][postgres-url-format]
 * `SESSION_KEY` - 32 bytes long session key
 * `CSRF_KEY` - 32 bytes longs CSRF key
+* `CSRF_SECURE` - Makes CSRF cookies secure (`true`/`false`)
 * `TITLE` - Your forum name
 * `PORT` - What port is going to be used by a `vpub` HTTP server
 
@@ -89,6 +90,9 @@ Environment=PORT=1337
 # Those keys should be 32 bytes long
 Environment=SESSION_KEY=CHANGE ME
 Environment=CSRF_KEY=CHANGE ME
+
+# If you are going to use HTTPS, then use secure cookies
+Environment=CSRF_SECURE=true
 
 Environment=TITLE="My very own forum"
 ```
