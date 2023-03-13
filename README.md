@@ -56,7 +56,6 @@ Now you have to set those environment variables:
 * `SESSION_KEY` - 32 bytes long session key
 * `CSRF_KEY` - 32 bytes longs CSRF key
 * `CSRF_SECURE` - Makes CSRF cookies secure (`true`/`false`)
-* `TITLE` - Your forum name
 * `PORT` - What port is going to be used by a `vpub` HTTP server
 
 You can check the example configuration in systemd config!
@@ -93,8 +92,6 @@ Environment=CSRF_KEY=CHANGE ME
 
 # If you are going to use HTTPS, then use secure cookies
 Environment=CSRF_SECURE=true
-
-Environment=TITLE="My very own forum"
 ```
 
 After that you just can run it like any other systemd service: `systemctl enable --now vpub`
