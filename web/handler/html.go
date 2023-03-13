@@ -454,6 +454,7 @@ var TplMap = map[string]string{
         {{ end }}
         {{ if or (and (not .board.IsLocked) (not .board.Forum.IsLocked)) .logged.IsAdmin }}
             <form action="/boards/{{ .board.Id }}/new-topic" method="get" class="action">
+                {{ .csrfField }}
                 <input type="submit" value="New topic">
             </form>
         {{ end }}
