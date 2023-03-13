@@ -19,6 +19,12 @@ func Serve(cfg *config.Config, data *storage.Storage) error {
 		log.Fatal(err)
 	}
 	fmt.Printf("Starting HTTP server on localhost:%s\n", cfg.Port)
-	CSRF := csrf.Protect([]byte(cfg.CSRFKey), csrf.MaxAge(0), csrf.Path("/"))
+	var CSRF func(http.Handler) http.Handler
+	if cfg.CSRFSecure {
+		fmt.Println("INFO: CSRF: Secure cookie is disabled")
+		CSRF = csrf.Protect([]byte(cfg.CSRFKey), csrf.MaxAge(0), csrf.Path("/"), csrf.Secure(false))
+	} else {
+		CSRF = csrf.Protect([]byte(cfg.CSRFKey), csrf.MaxAge(0), csrf.Path("/"))
+	}
 	return http.ListenAndServe(":"+cfg.Port, CSRF(s))
 }
