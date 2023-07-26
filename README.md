@@ -8,10 +8,6 @@ Simple message board software and also a fork.
 
 <img alt="An example of a forum" width="640" src="https://user-images.githubusercontent.com/44648612/176660262-f386251f-12f2-4e97-9e6e-c540640728bf.png">
 
-[Turkey forum][example-mysh]
-
-<img alt="An example of a forum, but in Turkey!" width="640" src="https://user-images.githubusercontent.com/44648612/178062763-0d0978f9-6604-4d0e-b55f-e040218ecbf7.png">
-
 ## Installation
 
 To host it and install it you have to have:
@@ -123,7 +119,5 @@ Specify your domain name in `/admin/settings/edit` like this: `https://example.c
 [postgres]: https://www.postgresql.org/download/
 
 [postgres-url-format]: https://stackoverflow.com/q/3582552
-
-[example-mysh]: https://turkey.mysh.dev/
 
 [example-vpub]: https://forum.status.cafe/
