@@ -20,8 +20,8 @@ jobs:
           - goarch: arm64
             goos: plan9
     steps:
-      - uses: actions/checkout@v2
-      - uses: wangyoucao577/go-release-action@v1.29
+      - uses: actions/checkout@v4
+      - uses: wangyoucao577/go-release-action@v1.51
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
