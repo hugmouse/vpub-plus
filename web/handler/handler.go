@@ -2,8 +2,10 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
+	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -35,9 +37,59 @@ func notFound(w http.ResponseWriter) {
 	http.Error(w, "Page Not Found", http.StatusNotFound)
 }
 
+var errorTemplate = template.Must(template.New("error").Parse(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Server Error</title>
+	<style>
+		body {
+			background-color: #1a1a1a;
+			color: #e0e0e0;
+			font-family: 'Inter', Arial, sans-serif;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			min-height: 100vh;
+			margin: 0;
+		}
+		.container {
+			background-color: #2a2a2a;
+			padding: 30px;
+			max-width: 600px;
+			width: 90%;
+		}
+		h1 {
+			font-size: 2em;
+			color: #ff4c4c;
+			margin-bottom: 0.5em;
+		}
+		p {
+			font-size: 1.2em;
+			color: #cccccc;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>Server Error</h1>
+		<p>{{.ErrorMessage}}</p>
+	</div>
+</body>
+</html>
+`))
+
 func serverError(w http.ResponseWriter, err error) {
 	log.Println("[server error]", err)
-	http.Error(w, fmt.Sprintf("server error: %s", err), http.StatusInternalServerError)
+	w.WriteHeader(http.StatusInternalServerError)
+	if tplErr := errorTemplate.Execute(w, struct {
+		ErrorMessage string
+	}{
+		ErrorMessage: err.Error(),
+	}); tplErr != nil {
+		http.Error(w, "An unexpected error occurred.", http.StatusInternalServerError)
+	}
 }
 
 func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
@@ -45,7 +97,9 @@ func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
 		user, _ := h.session.GetUser(r)
 		sessionResult, err := h.session.GetSession(r)
 		if err != nil {
-			fmt.Println("Unable to create session: " + err.Error())
+			fmt.Println("Unable to get session: " + err.Error())
+			serverError(w, errors.New("An error occurred! Please try to clean cookies and then refresh the page. Context: "+err.Error()))
+			return
 		}
 		settings, err := h.storage.Settings()
 		if err != nil {
