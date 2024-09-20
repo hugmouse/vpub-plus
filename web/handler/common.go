@@ -51,20 +51,31 @@ var TplCommonMap = map[string]string{
 	"forum_nav": `{{ define "forum_nav" }}
     <nav class="breadcrumb">
         <a href="/">Forums</a>
+
         {{ if .Forum.Name }}
+            <span>›</span>
             {{ if .Board.Name }}
-                › <a href="/forums/{{ .Forum.Id }}">{{ .Forum.Name }}</a>
-                {{ if .Topic }}
-                    › <a href="/boards/{{ .Board.Id }}">{{ .Board.Name }}</a> › {{ .Topic }}
-                {{ else }}
-                    › {{ .Board.Name }}
-                {{ end }}
+                <a href="/forums/{{ .Forum.Id }}">{{ .Forum.Name }}</a>
             {{ else }}
-                › {{ .Forum.Name }}
+                {{ .Forum.Name }}
             {{ end }}
         {{ end }}
+
+        {{ if .Board.Name }}
+            <span>›</span>
+            {{ if .Topic }}
+                <a href="/boards/{{ .Board.Id }}">{{ .Board.Name }}</a>
+            {{ else }}
+                {{ .Board.Name }}
+            {{ end }}
+        {{ end }}
+
+        {{ if .Topic }}
+            <span>›</span> {{ .Topic }}
+        {{ end }}
     </nav>
-{{ end }}`,
+{{ end }}
+`,
 	"layout": `{{ define "layout" }}
     <!DOCTYPE html>
     <html lang="{{ .settings.Lang }}">
