@@ -3,6 +3,7 @@ FROM golang:1.20-alpine AS builder
 
 WORKDIR /app
 ADD . /app
+RUN go generate
 RUN go build -o bin/vpub main.go
 
 # Simulate running this thing as a user,
