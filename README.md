@@ -10,6 +10,18 @@ Simple message board software and also a fork.
 
 ## Installation
 
+### Using `Docker` and `Docker Compose`
+
+You can try it out using `Docker`, for testing purposes you can skip configuring `.env` file and just run:
+
+```bash
+docker-compose up -d
+```
+
+And then you can navigate to `localhost:1337` to see your very own forum!
+
+### Compiling vpub-plus from the source
+
 To host it and install it you have to have:
 
 * Golang
@@ -17,8 +29,6 @@ To host it and install it you have to have:
 * Git
 * Make
 * Systemd (optional)
-
-### Compiling vpub-plus from the source
 
 Here is how to build vpub:
 
