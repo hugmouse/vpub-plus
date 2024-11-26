@@ -34,8 +34,6 @@ var TplMap = map[string]string{
         </div>
         <input type="submit" value="Submit">
     </form>
-
-    <pre><code>{{ printf "%+v" . }}</code></pre>
     </section>
 {{ end }}
 `,
