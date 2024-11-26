@@ -10,9 +10,23 @@ var TplMap = map[string]string{
 
     <form action="/update-account" method="post">
         {{ .csrfField }}
+        {{ if .form.Picture }}
+            <img alt="{{ .form.PictureAlt }}" src="{{ .form.Picture }}" width="80" height="80" style="object-fit: contain;"/>
+        {{ else }}
+            <svg width="80" height="80" xmlns="http://www.w3.org/2000/svg">
+                <rect width="80" height="80" fill="#cccccc"/>
+                <text x="40" y="40" font-size="30" font-family="Sans-Serif" font-weight="bold" fill="#ffffff"
+                      text-anchor="middle" alignment-baseline="middle">{{ printf "%c" (index .logged.Name 0) }}
+                </text>
+            </svg>
+        {{ end }}
         <div class="field">
-            <label for="picture">Picture</label>
+            <label for="picture">Picture URL</label>
             <input type="url" name="picture" id="picture" value="{{ .form.Picture }}">
+        </div>
+        <div class="field">
+            <label for="picture-alt">Picture alt text</label>
+            <input type="text" name="picture-alt" id="picture-alt" value="{{ .form.PictureAlt }}">
         </div>
         <div class="field">
             <label for="about">About</label>
@@ -20,6 +34,8 @@ var TplMap = map[string]string{
         </div>
         <input type="submit" value="Submit">
     </form>
+
+    <pre><code>{{ printf "%+v" . }}</code></pre>
     </section>
 {{ end }}
 `,
@@ -800,12 +816,23 @@ var TplMap = map[string]string{
             <tr id="{{ .Id }}">
                 <td class="col-author">
                     <a href="/users/{{ .User.Id }}">{{ .User.Name }}</a>
-                    <p><img alt="{{ .User.Name }}'s profile picture" src="{{ .User.Picture }}" width="80"/></p>
+                    <p>
+                        {{ if .User.Picture }}
+                            <img alt="{{ .User.PictureAlt }}" src="{{ .User.Picture }}" width="80" height="80" style="object-fit: contain;"/>
+                        {{ else }}
+                            <svg width="80" height="80" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="80" height="80" fill="#cccccc"/>
+                                <text x="40" y="40" font-size="30" font-family="Sans-Serif" font-weight="bold" fill="#ffffff"
+                                      text-anchor="middle" alignment-baseline="middle">{{ printf "%c" (index .User.Name 0) }}
+                                </text>
+                            </svg>
+                        {{ end }}
+                    </p>
                 </td>
                 <td>
                     <div class="posted">
                         <span>Posted on <time datetime="{{ iso8601Time .CreatedAt }}"
-                                           title="{{ timeAgo .CreatedAt }}">{{ iso8601Time .CreatedAt }}</time></span>
+                                              title="{{ timeAgo .CreatedAt }}">{{ iso8601Time .CreatedAt }}</time></span>
                         {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
                             <a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a
                                     href="/posts/{{ .Id }}/remove">remove</a>

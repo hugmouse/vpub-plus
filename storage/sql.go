@@ -398,4 +398,6 @@ END;
 $$ LANGUAGE plpgsql;`,
 	"schema_version_8": `ALTER TABLE settings
     ADD lang text default 'en'::text NOT NULL;`,
+	"schema_version_9": `ALTER TABLE users
+    ADD picture_alt TEXT NOT NULL DEFAULT '';`,
 }
