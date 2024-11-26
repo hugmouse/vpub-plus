@@ -5,13 +5,14 @@ import (
 )
 
 type User struct {
-	Id       int64
-	Name     string
-	Password string
-	Hash     string
-	IsAdmin  bool
-	About    string
-	Picture  string
+	Id         int64
+	Name       string
+	Password   string
+	Hash       string
+	IsAdmin    bool
+	About      string
+	Picture    string
+	PictureAlt string
 }
 
 // UserCreationRequest represents the request to create a user.
