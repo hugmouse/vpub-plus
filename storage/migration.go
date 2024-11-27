@@ -4,10 +4,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/lib/pq"
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/lib/pq"
 )
 
 const schemaVersion = 8
@@ -21,7 +22,7 @@ func Migrate(db *sql.DB) {
 		if errors.As(err, &postgresErr) && postgresErr.Code == "42P01" {
 			log.Println("[Migrate] schema_version table doesn't exist, treating current version as 0")
 		} else {
-			log.Fatal("[Migrate] ", err)
+			log.Fatal("[Migrate] failed to select version from schema_version: ", err)
 		}
 	}
 
@@ -42,34 +43,34 @@ func Migrate(db *sql.DB) {
 		}
 		_, err = tx.Exec(rawSQL)
 		if err != nil {
-			log.Println("[Migrate] ", err)
+			log.Println("[Migrate] Error executing migration for version", version, ":", err)
 			err = tx.Rollback()
 			if err != nil {
-				log.Fatal("[Migrate] Failed to rollback: ", err)
+				log.Fatal("[Migrate] Failed to rollback after error in version", version, ":", err)
 			}
 			os.Exit(1)
 		}
 
 		if _, err := tx.Exec(`delete from schema_version`); err != nil {
-			log.Println("[Migrate] ", err)
+			log.Println("[Migrate] Error deleting previous schema version record:", err)
 			err = tx.Rollback()
 			if err != nil {
-				log.Fatal("[Migrate] Failed to rollback: ", err)
+				log.Fatal("[Migrate] Failed to rollback after error in deletion:", err)
 			}
 			os.Exit(1)
 		}
 
 		if _, err := tx.Exec(`INSERT INTO schema_version (version) VALUES ($1)`, version); err != nil {
-			log.Println("[Migrate] ", err)
+			log.Println("[Migrate] Error inserting new schema version", version, ":", err)
 			err = tx.Rollback()
 			if err != nil {
-				log.Fatal("[Migrate] Failed to rollback: ", err)
+				log.Fatal("[Migrate] Failed to rollback after error in insertion:", err)
 			}
 			os.Exit(1)
 		}
 
 		if err := tx.Commit(); err != nil {
-			log.Fatal("[Migrate] ", err)
+			log.Fatal("[Migrate] Failed to commit migration for version", version, ":", err)
 		}
 	}
 }
