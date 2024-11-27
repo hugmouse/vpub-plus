@@ -176,6 +176,12 @@ tbody {
     background-color: white;
 }
 
+/* Add this rule to prevent <pre> tags from overflowing */
+table td pre {
+    overflow: auto;
+    width:0;
+    min-width:100%;
+}
 
 .content h1 {
     font-size: 1.5em;

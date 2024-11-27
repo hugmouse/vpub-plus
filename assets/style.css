@@ -171,6 +171,11 @@ tbody {
     background-color: white;
 }
 
+table td pre {
+    overflow: auto;
+    width:0;
+    min-width:100%;
+}
 
 .content h1 {
     font-size: 1.5em;
