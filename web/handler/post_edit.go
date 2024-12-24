@@ -19,6 +19,10 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	board, err := h.storage.BoardById(topic.BoardId)
+	if err != nil {
+		serverError(w, err)
+		return
+	}
 
 	postForm := form.PostForm{
 		Subject: post.Subject,

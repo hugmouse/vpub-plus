@@ -11,7 +11,11 @@ func ValidateForumCreation(store *storage.Storage, request model.ForumRequest) e
 		return errors.New("Forum name can't be empty")
 	}
 
-	if store.ForumNameExists(request.Name) {
+	forumNameExists, err := store.ForumNameExists(request.Name)
+	if err != nil {
+		return err
+	}
+	if forumNameExists {
 		return errors.New("Forum name already exists")
 	}
 
@@ -23,7 +27,11 @@ func ValidateForumModification(store *storage.Storage, forumId int64, request mo
 		return errors.New("Forum name can't be empty")
 	}
 
-	if store.AnotherForumExists(forumId, request.Name) {
+	anotherForumNameExists, err := store.AnotherForumExists(forumId, request.Name)
+	if err != nil {
+		return err
+	}
+	if anotherForumNameExists {
 		return errors.New("A forum with that name already exists")
 	}
 

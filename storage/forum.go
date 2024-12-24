@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"vpub/model"
@@ -72,18 +73,26 @@ WHERE id=$4
 	return nil
 }
 
-func (s *Storage) ForumNameExists(name string) bool {
-	var result bool
+func (s *Storage) ForumNameExists(name string) (result bool, err error) {
 	query := `SELECT true FROM forums WHERE lower(name)=lower($1) LIMIT 1`
-	s.db.QueryRow(query, name).Scan(&result)
-	return result
+	err = s.db.QueryRow(query, name).Scan(&result)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+	return result, nil
 }
 
-func (s *Storage) AnotherForumExists(id int64, name string) bool {
-	var result bool
+func (s *Storage) AnotherForumExists(id int64, name string) (result bool, err error) {
 	query := `SELECT true FROM forums WHERE id != $1 AND lower(name)=lower($2) LIMIT 1`
-	s.db.QueryRow(query, id, name).Scan(&result)
-	return result
+	err = s.db.QueryRow(query, id, name).Scan(&result)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+	return result, nil
 }
 
 func (s *Storage) RemoveForum(id int64) error {

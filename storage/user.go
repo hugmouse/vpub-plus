@@ -2,6 +2,9 @@ package storage
 
 import (
 	"context"
+	"database/sql"
+	"errors"
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"vpub/model"
 )
@@ -31,22 +34,40 @@ func (s *Storage) queryUser(q string, params ...interface{}) (user model.User, e
 	return
 }
 
-func (s *Storage) HasAdmin() bool {
-	var rv bool
-	s.db.QueryRow(`SELECT true FROM users WHERE is_admin=true limit 1`).Scan(&rv)
-	return rv
+func (s *Storage) HasAdmin() (bool, error) {
+	var exists bool
+	err := s.db.QueryRow(`SELECT true FROM users WHERE is_admin=true LIMIT 1`).Scan(&exists)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, nil
+		}
+		return false, err
+	}
+	return exists, nil
 }
 
-func (s *Storage) UserHashExists(hash string) bool {
-	var rv bool
-	s.db.QueryRow(`SELECT true FROM users WHERE hash=$1`, hash).Scan(&rv)
-	return rv
+func (s *Storage) UserHashExists(hash string) (bool, error) {
+	var exists bool
+	err := s.db.QueryRow(`SELECT true FROM users WHERE hash=$1`, hash).Scan(&exists)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, nil
+		}
+		return false, err
+	}
+	return exists, nil
 }
 
-func (s *Storage) UserExists(name string) bool {
-	var rv bool
-	s.db.QueryRow(`SELECT true FROM users WHERE name=lower($1)`, name).Scan(&rv)
-	return rv
+func (s *Storage) UserExists(name string) (bool, error) {
+	var exists bool
+	err := s.db.QueryRow(`SELECT true FROM users WHERE name=LOWER($1)`, name).Scan(&exists)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, nil
+		}
+		return false, err
+	}
+	return exists, nil
 }
 
 func (s *Storage) VerifyUser(user model.User) (model.User, error) {
@@ -82,24 +103,39 @@ func (s *Storage) CreateUser(key string, request model.UserCreationRequest) (int
 	}
 	var keyId int64
 	if err := tx.QueryRowContext(ctx, `select id from keys where key=$1 and user_id is null`, key).Scan(&keyId); err != nil {
-		tx.Rollback()
+		rbErr := tx.Rollback()
+		if rbErr != nil {
+			return userId, errors.Join(err, fmt.Errorf("rollback in CreateUser failed: %w", rbErr))
+		}
 		return userId, err
 	}
 	var exists bool
 	if err := tx.QueryRowContext(ctx, `select exists(select 1 from users where name=$1)`, request.Name).Scan(&exists); err != nil {
-		tx.Rollback()
+		rbErr := tx.Rollback()
+		if rbErr != nil {
+			return userId, errors.Join(err, fmt.Errorf("rollback in CreateTopic failed: %w", rbErr))
+		}
 		return userId, err
 	}
 	if exists {
-		tx.Rollback()
+		rbErr := tx.Rollback()
+		if rbErr != nil {
+			return userId, errors.Join(err, fmt.Errorf("rollback in CreateTopic failed: %w", rbErr))
+		}
 		return userId, ErrUserExists{}
 	}
 	if err := tx.QueryRowContext(ctx, `insert into users (name, hash, is_admin) values (lower($1), $2, $3) returning id`, request.Name, string(hash), request.IsAdmin).Scan(&userId); err != nil {
-		tx.Rollback()
+		rbErr := tx.Rollback()
+		if rbErr != nil {
+			return userId, errors.Join(err, fmt.Errorf("rollback in CreateTopic failed: %w", rbErr))
+		}
 		return userId, err
 	}
 	if _, err := tx.ExecContext(ctx, `update keys set user_id=$1 where id=$2`, userId, keyId); err != nil {
-		tx.Rollback()
+		rbErr := tx.Rollback()
+		if rbErr != nil {
+			return userId, errors.Join(err, fmt.Errorf("rollback in CreateTopic failed: %w", rbErr))
+		}
 		return userId, err
 	}
 	err = tx.Commit()

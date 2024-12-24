@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"database/sql"
 	"errors"
 	"vpub/model"
 )
@@ -107,18 +108,26 @@ func (s *Storage) UpdateBoard(id int64, request model.BoardRequest) error {
 	return nil
 }
 
-func (s *Storage) BoardNameExists(name string) bool {
-	var result bool
+func (s *Storage) BoardNameExists(name string) (result bool, err error) {
 	query := `SELECT true FROM boards WHERE lower(name)=lower($1) LIMIT 1`
-	s.db.QueryRow(query, name).Scan(&result)
-	return result
+	err = s.db.QueryRow(query, name).Scan(&result)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+	return result, nil
 }
 
-func (s *Storage) AnotherBoardExists(id int64, name string) bool {
-	var result bool
+func (s *Storage) AnotherBoardExists(id int64, name string) (result bool, err error) {
 	query := `SELECT true FROM boards WHERE id != $1 AND lower(name)=lower($2) LIMIT 1`
-	s.db.QueryRow(query, id, name).Scan(&result)
-	return result
+	err = s.db.QueryRow(query, id, name).Scan(&result)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+	return result, nil
 }
 
 func (s *Storage) RemoveBoard(id int64) error {

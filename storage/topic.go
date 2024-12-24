@@ -2,6 +2,8 @@ package storage
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"vpub/model"
 )
 
@@ -14,17 +16,26 @@ func (s *Storage) CreateTopic(userId int64, request model.TopicRequest) (int64, 
 	}
 	if err := tx.QueryRowContext(ctx, `INSERT INTO topics (is_sticky, is_locked, board_id, post_id) VALUES ($1, $2, $3, -1) RETURNING id`,
 		request.IsSticky, request.IsLocked, request.BoardId).Scan(&topicId); err != nil {
-		tx.Rollback()
+		rbErr := tx.Rollback()
+		if rbErr != nil {
+			return topicId, errors.Join(err, fmt.Errorf("rollback in CreateTopic failed: %w", rbErr))
+		}
 		return topicId, err
 	}
 	var postId int64
 	if err := tx.QueryRowContext(ctx, `INSERT INTO posts (subject, content, topic_id, user_id) VALUES ($1, $2, $3, $4) RETURNING id`,
 		request.Subject, request.Content, topicId, userId).Scan(&postId); err != nil {
-		tx.Rollback()
+		rbErr := tx.Rollback()
+		if rbErr != nil {
+			return topicId, errors.Join(err, fmt.Errorf("rollback in CreateTopic failed: %w", rbErr))
+		}
 		return topicId, err
 	}
 	if _, err := tx.ExecContext(ctx, `UPDATE topics set post_id=$1 where id=$2`, postId, topicId); err != nil {
-		tx.Rollback()
+		rbErr := tx.Rollback()
+		if rbErr != nil {
+			return topicId, errors.Join(err, fmt.Errorf("rollback in CreateTopic failed: %w", rbErr))
+		}
 		return topicId, err
 	}
 	err = tx.Commit()
@@ -50,7 +61,10 @@ func (s *Storage) UpdateTopic(id int64, request model.TopicRequest) error {
 		request.BoardId,
 		id,
 	).Scan(&postId); err != nil {
-		tx.Rollback()
+		rbErr := tx.Rollback()
+		if rbErr != nil {
+			return errors.Join(err, fmt.Errorf("rollback inside UpdateTopic failed: %w", rbErr))
+		}
 		return err
 	}
 	if _, err := tx.ExecContext(ctx, `
@@ -64,7 +78,10 @@ func (s *Storage) UpdateTopic(id int64, request model.TopicRequest) error {
 		request.Content,
 		postId,
 	); err != nil {
-		tx.Rollback()
+		rbErr := tx.Rollback()
+		if rbErr != nil {
+			return errors.Join(err, fmt.Errorf("rollback inside UpdateTopic failed: %w", rbErr))
+		}
 		return err
 	}
 	err = tx.Commit()

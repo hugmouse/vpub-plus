@@ -20,11 +20,21 @@ func ValidateUserCreation(store *storage.Storage, key string, r model.UserCreati
 		return errors.New("Only lowercase letters and digits are accepted for username")
 	}
 
-	if store.UserExists(r.Name) {
+	userExists, err := store.UserExists(r.Name)
+	if err != nil {
+		return err
+	}
+
+	if userExists {
 		return errors.New("Username already exists")
 	}
 
-	if !store.KeyExists(key) {
+	keyExists, err := store.KeyExists(key)
+	if err != nil {
+		return err
+	}
+
+	if !keyExists {
 		return errors.New("Key not found or already used")
 	}
 

@@ -11,7 +11,11 @@ func ValidateBoardCreation(store *storage.Storage, request model.BoardRequest) e
 		return errors.New("Board name can't be empty")
 	}
 
-	if store.BoardNameExists(request.Name) {
+	boardExists, err := store.BoardNameExists(request.Name)
+	if err != nil {
+		return err
+	}
+	if boardExists {
 		return errors.New("Board name already exists")
 	}
 
@@ -23,7 +27,11 @@ func ValidateBoardModification(store *storage.Storage, boardId int64, request mo
 		return errors.New("Board name can't be empty")
 	}
 
-	if store.AnotherBoardExists(boardId, request.Name) {
+	anotherBoardExists, err := store.AnotherBoardExists(boardId, request.Name)
+	if err != nil {
+		return err
+	}
+	if anotherBoardExists {
 		return errors.New("Board name already exists")
 	}
 

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"vpub/model"
@@ -18,11 +19,12 @@ func (h *Handler) checkLogin(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		v := NewView(w, r, "login")
 		v.Set("form", loginForm)
-		switch err.(type) {
-		case storage.ErrUserNotFound:
+		if errors.As(err, &storage.ErrUserExists{}) {
 			v.Set("errorMessage", fmt.Sprintf("User %s not found", loginForm.Username))
-		case storage.ErrWrongPassword:
+		} else if errors.As(err, &storage.ErrWrongPassword{}) {
 			v.Set("errorMessage", "Wrong password")
+		} else {
+			v.Set("errorMessage", fmt.Errorf("unknown error occurred: %w", err))
 		}
 		v.Render()
 		return

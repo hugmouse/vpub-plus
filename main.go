@@ -19,7 +19,8 @@ func main() {
 		log.Fatal(err)
 	}
 	data := storage.New(db)
-	if !data.HasAdmin() {
+	adminExists, err := data.HasAdmin()
+	if !adminExists {
 		if _, err := data.CreateUser("admin", model.UserCreationRequest{
 			Name:     "admin",
 			Password: "admin",

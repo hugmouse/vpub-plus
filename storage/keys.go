@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"database/sql"
 	"errors"
 	"math/rand"
 	"vpub/model"
@@ -61,8 +62,12 @@ func (s *Storage) DeleteKey(id int64) error {
 	return nil
 }
 
-func (s *Storage) KeyExists(key string) bool {
-	var rv bool
-	s.db.QueryRow(`SELECT true FROM keys WHERE key=$1 and user_id is null`, key).Scan(&rv)
-	return rv
+func (s *Storage) KeyExists(key string) (rv bool, err error) {
+	err = s.db.QueryRow(`SELECT true FROM keys WHERE key=$1 and user_id is null`, key).Scan(&rv)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+	return rv, nil
 }
