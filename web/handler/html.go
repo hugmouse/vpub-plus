@@ -14,7 +14,7 @@ var TplMap = map[string]string{
             <img alt="{{ .form.PictureAlt }}" src="{{ .form.Picture }}" width="80" height="80" style="object-fit: contain;"/>
         {{ else }}
             <svg width="80" height="80" xmlns="http://www.w3.org/2000/svg">
-                <rect width="80" height="80" fill="#cccccc"/>
+                <rect width="80" height="80" fill="rgba(0,0,0,40%)"/>
                 <text x="40" y="40" font-size="30" font-family="Sans-Serif" font-weight="bold" fill="#ffffff"
                       text-anchor="middle" alignment-baseline="middle">{{ printf "%c" (index .logged.Name 0) }}
                 </text>
@@ -797,7 +797,15 @@ var TplMap = map[string]string{
     {{ if ne (index .posts 0).CreatedAt (index .posts 0).UpdatedAt }}
         <meta property="article:modified_time" content="{{ iso8601Time (index .posts 0).UpdatedAt }}">
     {{ end }}
-    <meta property="article:author" content="{{ (index .posts 0).User.Name }}">
+    <meta property="article:author" content="{{ .settings.URL}}users/{{ (index .posts 0).User.Id }}">
+    <meta property="author" content="{{ (index .posts 0).User.Name }}">
+    <meta property="og:description" content="{{ printf "%.100s" (index .posts 0).Content }}">
+    <meta property="og:title" content="{{ (index .posts 0).Subject }}">
+    <meta property="og:site_name" content="{{ .settings.Name }}">
+    <meta property="og:locale" content="{{ .settings.Lang }}">
+    <meta property="article:section" content="{{ .board.Name }}">
+
+    <meta property="raw" content="{{ printf "%+v" . }}">
 {{ end }}
 {{ define "content"}}
     {{ template "forum_nav" .navigation }}
@@ -819,7 +827,7 @@ var TplMap = map[string]string{
                             <img alt="{{ .User.PictureAlt }}" src="{{ .User.Picture }}" width="80" height="80" style="object-fit: contain;"/>
                         {{ else }}
                             <svg width="80" height="80" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="80" height="80" fill="#cccccc"/>
+                                <rect width="80" height="80" fill="rgba(0, 0, 0, 40%)"/>
                                 <text x="40" y="40" font-size="30" font-family="Sans-Serif" font-weight="bold" fill="#ffffff"
                                       text-anchor="middle" alignment-baseline="middle">{{ printf "%c" (index .User.Name 0) }}
                                 </text>

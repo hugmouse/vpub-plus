@@ -3,27 +3,89 @@
 package assets
 
 var AssetsMap = map[string]string{
-	"style": `body {
+	"style": `*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+:root {
+    /* Background Colors */
+    --color-bg-page: mintcream;
+    --color-bg-error: mistyrose;
+    --color-bg-info: palegreen;
+    --color-bg-table-row: whitesmoke;
+    --color-bg-header-aside: paleturquoise;
+    --color-bg-forum: cornsilk;
+    --color-bg-post-article: white;
+    --color-bg-code: whitesmoke;
+
+    /* Text Colors */
+    --color-text-body: black;
+    --color-text-error: red;
+    --color-text-info: green;
+    --color-text-secondary: gray;
+
+    /* Border Colors */
+    --color-border: var(--color-text-secondary);
+
+    /* Fonts */
+    --font-size-base: 16px;
+    --line-height-base: 1.4;
+
+    /* Spacing */
+    --spacing-small: 5px;
+    --spacing-medium: 1em;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Background Colors */
+        --color-bg-page: #121212; /* Dark background */
+        --color-bg-error: #cf6679; /* Darker red */
+        --color-bg-info: #81c784; /* Softer green */
+        --color-bg-table-row: #1b1b1b; /* Dark table rows */
+        --color-bg-header-aside: #2c2c2c; /* Dark header/aside */
+        --color-bg-forum: #1f1f1f; /* Dark forum background */
+        --color-bg-post-article: #1e1e1e; /* Dark post/article */
+        --color-bg-code: #2d2d2d; /* Dark code blocks */
+
+        /* Text Colors */
+        --color-text-body: white;
+        --color-text-error: #ff6b6b; /* Lighter red */
+        --color-text-info: #66bb6a; /* Lighter green */
+        --color-text-secondary: #b0b0b0; /* Lighter gray */
+
+        --color-border: #333;
+    }
+}
+
+/* Body */
+body {
     max-width: 800px;
-    margin: auto;
-    padding: 5px;
-    font: 16px/1.4 system-ui, sans-serif;
-    background-color: mintcream;
+    margin: 0 auto;
+    padding: var(--spacing-small);
+    font: var(--font-size-base)/var(--line-height-base) system-ui, sans-serif;
+    background-color: var(--color-bg-page);
+    color: var(--color-text-body);
+}
+
+a {
+    color: var(--color-text-body);
 }
 
 /* Lists ************************************************************/
 .errors {
-    background-color: mistyrose;
-    color: red;
+    background-color: var(--color-bg-error);
+    color: var(--color-text-error);
 }
 
 .info {
-    background-color: palegreen;
-    color: green;
+    background-color: var(--color-bg-info);
+    color: var(--color-text-info);
 }
 
 .topic img {
     max-width: 100%;
+    height: auto;
 }
 
 .topic p a {
@@ -31,7 +93,7 @@ var AssetsMap = map[string]string{
 }
 
 main {
-    margin-bottom: 1em;
+    margin-bottom: var(--spacing-medium);
 }
 
 ol.posts, ol.replies {
@@ -39,16 +101,13 @@ ol.posts, ol.replies {
     list-style: none;
 }
 
-/*ol.posts > li:not(:last-child),*/
 ol.replies > li:not(:last-child) {
     margin-bottom: 1em;
 }
 
 /* Posts ************************************************************/
-
-
-.topic > tbody > tr:nth-child(2n) {
-    background-color: whitesmoke;
+.topic tbody tr:nth-child(even) {
+    background-color: var(--color-bg-table-row);
 }
 
 .signature > * {
@@ -56,8 +115,8 @@ ol.replies > li:not(:last-child) {
 }
 
 .signature {
-    border-top: 1px solid gray;
-    padding-top: 8px;
+    border-top: 1px solid var(--color-text-secondary);
+    padding-top: 0.5em;
 }
 
 .action {
@@ -66,7 +125,7 @@ ol.replies > li:not(:last-child) {
 
 nav.breadcrumb {
     padding: 1em;
-    border: 1px solid;
+    border: 1px solid var(--color-border);
     margin: 1em 0;
 }
 
@@ -86,23 +145,23 @@ nav.breadcrumb {
 }
 
 table.post {
-    background-color: white;
+    background-color: var(--color-bg-post-article);
 }
 
 table.post .header {
-    background-color: paleturquoise;
+    background-color: var(--color-bg-header-aside);
 }
 
 article {
-    border: 1px solid;
-    background-color: white;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg-post-article);
     margin-bottom: 1em;
 }
 
 article > header {
-    background-color: paleturquoise;
-    border-bottom: 1px solid;
-    padding: 5px 1em;
+    background-color: var(--color-bg-header-aside);
+    border-bottom: 1px solid var(--color-text-secondary);
+    padding: 0.3125em 1em;
 }
 
 article > div {
@@ -110,7 +169,7 @@ article > div {
 }
 
 .forum {
-    background-color: cornsilk;
+    background-color: var(--color-bg-forum);
 }
 
 /* Start post */
@@ -118,7 +177,7 @@ article > div {
 .post-aside {
     text-align: center;
     width: 150px;
-    background-color: paleturquoise;
+    background-color: var(--color-bg-header-aside);
 }
 
 .post-body {
@@ -134,65 +193,46 @@ article > div {
     background-color: inherit;
 }
 
-/* With articles */
-/*article {*/
-/*	padding: 5px;*/
-/*	border: 1px solid;*/
-/*	margin-bottom: 1em;*/
-/*}*/
-/*article:after {*/
-/*	clear: both;*/
-/*	content: "";*/
-/*	display: block;*/
-/*	visibility: hidden;*/
-/*}*/
-/*.post-aside {*/
-/*	text-align: center;*/
-/*	width: 150px;*/
-/*	float: left;*/
-/*}*/
-/*.post-content {*/
-/*	max-width: 650px;*/
-/*	margin-left: 150px;*/
-/*}*/
-/* End */
 table {
     border-collapse: collapse;
-    border: 1px solid;
+    border: 1px solid var(--color-border);
     width: 100%;
 }
 
 tr, td, th {
     vertical-align: top;
-    border: 1px solid;
-    padding: .5em;
+    border: 1px solid var(--color-border);
+    padding: 0.5em;
 }
 
 thead {
-    background-color: paleturquoise;
+    background-color: var(--color-bg-header-aside);
 }
 
 tbody {
-    background-color: white;
+    background-color: var(--color-bg-post-article);
 }
 
-/* Add this rule to prevent <pre> tags from overflowing */
 table td pre {
     overflow: auto;
-    width:0;
-    min-width:100%;
+    width: 0;
+    min-width: 100%;
+    white-space: pre-wrap;
 }
 
 .content h1 {
     font-size: 1.5em;
+    margin-bottom: 0.5em;
 }
 
 .content h2 {
     font-size: 1.2em;
+    margin-bottom: 0.5em;
 }
 
 .content h3 {
     font-size: 1em;
+    margin-bottom: 0.5em;
 }
 
 .content {
@@ -200,7 +240,6 @@ table td pre {
 }
 
 /* Forms ************************************************************/
-
 .auth-form {
     max-width: 200px;
 }
@@ -211,25 +250,34 @@ table td pre {
 
 .field label {
     display: block;
+    margin-bottom: 0.5em;
 }
 
-input[type=text], input[type=password] {
+input[type="text"],
+input[type="password"],
+input[type="url"],
+input[type="number"],
+textarea {
     width: 100%;
+    padding: 0.5em;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
     box-sizing: border-box;
+    background-color: var(--color-bg-post-article);
+    color: var(--color-text-body);
 }
 
 textarea {
-    width: 100%;
     height: 250px;
-    display: block;
-    box-sizing: border-box;
+    resize: vertical;
 }
 
 /* Misc *************************************************************/
-
 blockquote {
-    margin: 0;
-    color: green;
+    margin: 1em 0;
+    padding-left: 1em;
+    border-left: 4px solid var(--color-text-info);
+    color: var(--color-text-info);
     font-style: italic;
 }
 
@@ -248,17 +296,63 @@ blockquote::before {
 hr {
     border: none;
     height: 1px;
-    background-color: grey;
+    background-color: var(--color-text-secondary);
 }
 
 .small {
-    font-size: 14px;
-    color: grey;
+    font-size: 0.875em;
+    color: var(--color-text-secondary);
 }
 
-code {
+pre, code {
     font-family: monospace;
-    background-color: whitesmoke;
-    padding: 3px;
-}`,
+    background-color: var(--color-bg-code);
+    padding: 0.1875em;
+    border-radius: 3px;
+    border: 1px solid var(--color-border);
+}
+
+/* Insane hacks for the table styling on mobile devices */
+@media (max-width: 600px) {
+    body {
+        padding: 0.5em;
+    }
+    header nav {
+        text-align: center;
+    }
+
+    table.topic thead {
+        display: none; /* Hide the table header for mobile */
+    }
+
+    table.topic tbody, table.topic tr, table.topic td {
+        display: block;
+        width: 100%;
+    }
+
+    table.topic td {
+        border: none;
+        padding: 0;
+    }
+
+    tbody tr td.col-author {
+        display: flex;
+        justify-content: start;
+        align-items: center;
+        gap: 0.5em;
+        flex-direction: row-reverse;
+    }
+    td.col-author p {
+        margin: 0;
+    }
+}
+
+a:focus,
+button:focus,
+input:focus,
+textarea:focus {
+    outline: 2px solid var(--color-bg-header-aside);
+    outline-offset: 2px;
+}
+`,
 }
