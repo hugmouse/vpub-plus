@@ -4,7 +4,14 @@
     {{ if ne (index .posts 0).CreatedAt (index .posts 0).UpdatedAt }}
         <meta property="article:modified_time" content="{{ iso8601Time (index .posts 0).UpdatedAt }}">
     {{ end }}
-    <meta property="article:author" content="{{ (index .posts 0).User.Name }}">
+    <meta property="article:author" content="{{ .settings.URL}}users/{{ (index .posts 0).User.Id }}">
+    <meta property="author" content="{{ (index .posts 0).User.Name }}">
+    <meta property="og:description" content="{{ printf "%.160s" (index .posts 0).Content }}">
+    <meta property="og:title" content="{{ (index .posts 0).Subject }}">
+    <meta property="og:site_name" content="{{ .settings.Name }}">
+    <meta property="og:locale" content="{{ .settings.Lang }}">
+    <meta property="og:type" content="website">
+    <meta property="article:section" content="{{ .board.Name }}">
 {{ end }}
 {{ define "content"}}
     {{ template "forum_nav" .navigation }}
