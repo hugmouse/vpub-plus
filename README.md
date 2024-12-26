@@ -4,9 +4,22 @@ Simple message board software and also a fork.
 
 ## Examples
 
-[Status Cafe Forum][example-vpub]
-
-<img alt="An example of a forum" width="640" src="https://user-images.githubusercontent.com/44648612/176660262-f386251f-12f2-4e97-9e6e-c540640728bf.png">
+<table>
+  <tr>
+    <td>
+      <a href="https://github.com/user-attachments/assets/4ded261a-f2c3-4f8f-b474-be268aa61ff7">
+        <img alt="Status Cafe Forum - vpub instance" width="640" src="https://github.com/user-attachments/assets/4ded261a-f2c3-4f8f-b474-be268aa61ff7">
+      </a>
+      <p><a href="#example-vpub">Status Cafe Forum - vpub instance</a></p>
+    </td>
+    <td>
+      <a href="https://github.com/user-attachments/assets/6e65c795-6ef6-40f3-b222-18f4c3f48548">
+        <img alt="Vpub Plus Forum - vpub-plus instance" width="640" src="https://github.com/user-attachments/assets/6e65c795-6ef6-40f3-b222-18f4c3f48548">
+      </a>
+      <p><a href="#example-vpub-plus">Vpub Plus Forum - vpub-plus instance</a></p>
+    </td>
+  </tr>
+</table>
 
 ## Installation
 
@@ -131,3 +144,4 @@ Specify your domain name in `/admin/settings/edit` like this: `https://example.c
 [postgres-url-format]: https://stackoverflow.com/q/3582552
 
 [example-vpub]: https://forum.status.cafe/
+[example-vpub-plus]: https://vpub.mysh.dev/
