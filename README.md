@@ -10,13 +10,13 @@ Simple message board software and also a fork.
       <a href="https://github.com/user-attachments/assets/4ded261a-f2c3-4f8f-b474-be268aa61ff7">
         <img alt="Status Cafe Forum - vpub instance" width="640" src="https://github.com/user-attachments/assets/4ded261a-f2c3-4f8f-b474-be268aa61ff7">
       </a>
-      <p><a href="#example-vpub">Status Cafe Forum - vpub instance</a></p>
+      <p><a href="https://forum.status.cafe">Status Cafe Forum - vpub instance</a></p>
     </td>
     <td>
       <a href="https://github.com/user-attachments/assets/6e65c795-6ef6-40f3-b222-18f4c3f48548">
         <img alt="Vpub Plus Forum - vpub-plus instance" width="640" src="https://github.com/user-attachments/assets/6e65c795-6ef6-40f3-b222-18f4c3f48548">
       </a>
-      <p><a href="#example-vpub-plus">Vpub Plus Forum - vpub-plus instance</a></p>
+      <p><a href="https://vpub.mysh.dev">Vpub Plus Forum - vpub-plus instance</a></p>
     </td>
   </tr>
 </table>
