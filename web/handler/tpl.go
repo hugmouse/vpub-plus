@@ -2,12 +2,13 @@ package handler
 
 import (
 	"fmt"
-	"github.com/gorilla/csrf"
 	"html/template"
 	"net/http"
 	"time"
 	"vpub/syntax"
 	"vpub/web/handler/request"
+
+	"github.com/gorilla/csrf"
 )
 
 var views = make(map[string]*template.Template)
@@ -132,38 +133,5 @@ func (h *Handler) initTpl() {
 				return v - 1
 			},
 		}).Parse(commonTemplates + content))
-	}
-}
-
-func (h *Handler) renderLayout(w http.ResponseWriter, r *http.Request, view string, params map[string]interface{}) {
-	user := request.GetUserContextKey(r)
-	data := make(map[string]interface{})
-	if params != nil {
-		for k, v := range params {
-			data[k] = v
-		}
-	}
-	data["logged"] = user
-	settings, err := h.storage.Settings()
-	if err != nil {
-		fmt.Println(err)
-	}
-	data["settings"] = settings
-	session, err := h.session.GetSession(r)
-	if err != nil {
-		fmt.Println(err)
-	}
-	data["errors"] = session.GetFlashErrors()
-	data["info"] = session.GetFlashInfo()
-	session.Save(r, w)
-	if err := views[view].Funcs(template.FuncMap{
-		"hasPermission": func(name string) bool {
-			return user.Name == name
-		},
-		"logged": func() bool {
-			return user.Name != ""
-		},
-	}).ExecuteTemplate(w, "layout", data); err != nil {
-		fmt.Println(err)
 	}
 }
