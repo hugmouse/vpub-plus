@@ -16,7 +16,7 @@ var TplMap = map[string]string{
             <svg width="80" height="80" xmlns="http://www.w3.org/2000/svg">
                 <rect width="80" height="80" fill="rgba(0,0,0,40%)"/>
                 <text x="40" y="40" font-size="30" font-family="Sans-Serif" font-weight="bold" fill="#ffffff"
-                      text-anchor="middle" alignment-baseline="middle">{{ printf "%c" (index .logged.Name 0) }}
+                      text-anchor="middle" dominant-baseline="middle">{{ printf "%c" (index .logged.Name 0) }}
                 </text>
             </svg>
         {{ end }}
@@ -799,13 +799,12 @@ var TplMap = map[string]string{
     {{ end }}
     <meta property="article:author" content="{{ .settings.URL}}users/{{ (index .posts 0).User.Id }}">
     <meta property="author" content="{{ (index .posts 0).User.Name }}">
-    <meta property="og:description" content="{{ printf "%.100s" (index .posts 0).Content }}">
+    <meta property="og:description" content="{{ printf "%.160s" (index .posts 0).Content }}">
     <meta property="og:title" content="{{ (index .posts 0).Subject }}">
     <meta property="og:site_name" content="{{ .settings.Name }}">
     <meta property="og:locale" content="{{ .settings.Lang }}">
+    <meta property="og:type" content="website">
     <meta property="article:section" content="{{ .board.Name }}">
-
-    <meta property="raw" content="{{ printf "%+v" . }}">
 {{ end }}
 {{ define "content"}}
     {{ template "forum_nav" .navigation }}
@@ -829,7 +828,7 @@ var TplMap = map[string]string{
                             <svg width="80" height="80" xmlns="http://www.w3.org/2000/svg">
                                 <rect width="80" height="80" fill="rgba(0, 0, 0, 40%)"/>
                                 <text x="40" y="40" font-size="30" font-family="Sans-Serif" font-weight="bold" fill="#ffffff"
-                                      text-anchor="middle" alignment-baseline="middle">{{ printf "%c" (index .User.Name 0) }}
+                                      text-anchor="middle" dominant-baseline="middle">{{ printf "%c" (index .User.Name 0) }}
                                 </text>
                             </svg>
                         {{ end }}
