@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -13,5 +12,5 @@ func (h *Handler) removeAdminKey(w http.ResponseWriter, r *http.Request) {
 		serverError(w, err)
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/admin/keys"), http.StatusFound)
+	http.Redirect(w, r, "/admin/keys", http.StatusFound)
 }
