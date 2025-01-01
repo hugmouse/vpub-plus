@@ -23,6 +23,10 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	board, err := h.storage.BoardById(topic.BoardId)
+	if err != nil {
+		notFound(w)
+		return
+	}
 
 	v := NewView(w, r, "edit_post")
 	v.Set("form", postForm)

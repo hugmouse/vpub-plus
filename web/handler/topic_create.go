@@ -13,6 +13,10 @@ func (h *Handler) showCreateTopicView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	boards, err := h.storage.Boards()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
 	topicForm := form.TopicForm{
 		BoardId: board.Id,
 		Boards:  boards,

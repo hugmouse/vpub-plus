@@ -11,7 +11,15 @@ func (h *Handler) showTopicView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	board, err := h.storage.BoardById(topic.BoardId)
+	if err != nil {
+		serverError(w, err)
+		return
+	}
 	posts, _, err := h.storage.PostsByTopicId(topic.Id)
+	if err != nil {
+		serverError(w, err)
+		return
+	}
 
 	v := NewView(w, r, "topic")
 	v.Set("navigation", navigation{

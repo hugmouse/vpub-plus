@@ -21,6 +21,10 @@ func (h *Handler) savePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	board, err := h.storage.BoardById(topic.BoardId)
+	if err != nil {
+		notFound(w)
+		return
+	}
 
 	v := NewView(w, r, "create_post")
 	v.Set("form", postForm)

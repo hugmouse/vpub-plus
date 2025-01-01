@@ -23,6 +23,10 @@ func (h *Handler) showEditTopicView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	boards, err := h.storage.Boards()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
 	topicForm := form.TopicForm{
 		Id:       topic.Id,
 		BoardId:  topic.BoardId,
