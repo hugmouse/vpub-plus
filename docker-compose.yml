@@ -10,6 +10,11 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   vpub:
     build: .
@@ -17,12 +22,16 @@ services:
       - .env
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
+      SESSION_KEY: ${SESSION_KEY}
+      CSRF_KEY: ${CSRF_KEY}
+      CSRF_SECURE: ${CSRF_SECURE}
+      PORT: ${PORT}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
-      - "1337:8080"
+      - "${HOST_PORT}:${PORT}"
     restart: unless-stopped
 
 volumes:
   db_data:
-
