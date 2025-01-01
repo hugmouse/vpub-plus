@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/gorilla/mux"
 	"html/template"
 	"log"
 	"net/http"
@@ -13,6 +12,8 @@ import (
 	"vpub/storage"
 	"vpub/web/handler/request"
 	"vpub/web/session"
+
+	"github.com/gorilla/mux"
 )
 
 func RouteInt64Param(r *http.Request, param string) int64 {
@@ -116,28 +117,14 @@ func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
 
 type Handler struct {
 	session *session.Manager
-	url     string
-	env     string
 	mux     *mux.Router
 	storage *storage.Storage
-	perPage int
 }
 
 func (h *Handler) protect(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := request.GetUserContextKey(r)
 		if user.Name == "" {
-			forbidden(w)
-			return
-		}
-		fn(w, r)
-	}
-}
-
-func (h *Handler) admin(fn http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		user := request.GetUserContextKey(r)
-		if !user.IsAdmin {
 			forbidden(w)
 			return
 		}
