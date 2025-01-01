@@ -1,18 +1,11 @@
-# Build stage
 FROM golang:1.20-alpine AS builder
 
 WORKDIR /app
-ADD . /app
-RUN go generate
-RUN go build -o bin/vpub main.go
+COPY . . 
+RUN go generate && go build -o /vpub main.go
 
-# Simulate running this thing as a user,
-# not really needed though!
-FROM alpine:latest
+FROM scratch
 
-RUN apk --no-cache add ca-certificates
-COPY --from=builder /app/sbin/vpub /usr/local/bin/vpub
-RUN adduser -D -g '' vpub
-USER vpub
+COPY --from=builder /vpub /vpub
 EXPOSE 8080
-ENTRYPOINT ["vpub"]
+ENTRYPOINT ["/vpub"]
