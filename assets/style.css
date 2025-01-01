@@ -39,7 +39,7 @@
         --color-bg-info: #81c784; /* Softer green */
         --color-bg-table-row: #1b1b1b; /* Dark table rows */
         --color-bg-header-aside: #2c2c2c; /* Dark header/aside */
-        --color-bg-forum: #1f1f1f; /* Dark forum background */
+        --color-bg-forum: #191919; /* Dark forum background */
         --color-bg-post-article: #1e1e1e; /* Dark post/article */
         --color-bg-code: #2d2d2d; /* Dark code blocks */
 
@@ -283,10 +283,6 @@ blockquote::before {
 
 .center {
     text-align: center;
-}
-
-.grow {
-    width: 100%;
 }
 
 hr {
