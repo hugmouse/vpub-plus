@@ -1,8 +1,13 @@
 FROM golang:1.20-alpine AS builder
 
 WORKDIR /app
-COPY . . 
-RUN go generate && go build -o /vpub main.go
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+COPY . .
+ENV GOCACHE=/root/.cache/go-build
+RUN --mount=type=cache,target="/root/.cache/go-build" go generate
+RUN --mount=type=cache,target="/root/.cache/go-build" go build -o /vpub main.go
 
 FROM scratch
 

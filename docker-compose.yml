@@ -32,6 +32,10 @@ services:
     ports:
       - "${HOST_PORT}:${PORT}"
     restart: unless-stopped
+    develop:
+      watch:
+        - path: ./
+          action: rebuild
 
 volumes:
   db_data:
