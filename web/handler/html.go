@@ -74,7 +74,7 @@ var TplMap = map[string]string{
     <table>
         <thead>
         <tr>
-            <th>Board</th>
+            <th class="grow">Board</th>
             <th>Edit</th>
             <th>Delete</th>
         </tr>
@@ -190,7 +190,7 @@ var TplMap = map[string]string{
     <table>
         <thead>
         <tr>
-            <th>Forum</th>
+            <th class="grow">Forum</th>
             <th>Edit</th>
             <th>Delete</th>
         </tr>
@@ -306,7 +306,7 @@ var TplMap = map[string]string{
     <table>
         <thead>
         <tr>
-            <th>Key</th>
+            <th class="grow">Key</th>
             <th>Created</th>
             <th>Delete</th>
         </tr>
@@ -384,7 +384,7 @@ var TplMap = map[string]string{
     <table>
         <thead>
         <tr>
-            <th>User</th>
+            <th class="grow">User</th>
             <th>Edit</th>
             <th>Password</th>
             <th>Delete</th>
@@ -478,7 +478,7 @@ var TplMap = map[string]string{
         <table>
             <thead>
             <tr>
-                <th>Subject</th>
+                <th class="grow">Subject</th>
                 <th>Author</th>
                 <th>Replies</th>
                 <th>Updated</th>
@@ -517,7 +517,7 @@ var TplMap = map[string]string{
     <table>
         <thead>
         <tr>
-            <th>Board</th>
+            <th class="grow">Board</th>
             <th>Topics</th>
             <th>Posts</th>
             <th>Updated</th>
@@ -652,7 +652,7 @@ var TplMap = map[string]string{
     <table>
         <thead>
         <tr>
-            <th>Forum</th>
+            <th class="grow">Forum</th>
             <th>Topics</th>
             <th>Posts</th>
             <th>Updated</th>
@@ -716,7 +716,7 @@ var TplMap = map[string]string{
         <table>
             <thead>
             <tr>
-                <th>Subject</th>
+                <th class="grow">Subject</th>
                 <th>Author</th>
                 <th>Posted</th>
             </tr>
