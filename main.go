@@ -55,7 +55,7 @@ func main() {
 
 		boardID, err := data.CreateBoard(model.BoardRequest{
 			Name:        "Your first board",
-			Description: "This is an example board, you can check out what articles it haves.",
+			Description: "This is a sample board.",
 			Position:    0,
 			IsLocked:    false,
 			ForumId:     forumID,
@@ -65,12 +65,12 @@ func main() {
 		}
 
 		_, err = data.CreateTopic(userID, model.TopicRequest{
-			Subject: "Change your admin account password NOW",
-			Content: `Perhaps it would be a good idea to change your default admin password!
+			Subject: "Change your admin account password",
+			Content: `It might be a good idea to change your default Admin password!
 			
-## Changing the password.
+## To change the password.
 			
-Navigate to [/admin/users](/admin/users) route. There, you should be able to find the **admin** user and set a new password to whatever you prefer.`,
+Navigate to [/admin/users](/admin/users). Find the **admin** user and change the password.`,
 			BoardId:  boardID,
 			IsLocked: true,
 			IsSticky: true,
@@ -81,7 +81,7 @@ Navigate to [/admin/users](/admin/users) route. There, you should be able to fin
 
 		_, err = data.CreateTopic(userID, model.TopicRequest{
 			Subject:  "What to do?",
-			Content:  `Navigate to [/admin](/admin) route and see what you can poke in there. Just make sure to not delete yourself, okay? You will be locked in weird state otherwise.`,
+			Content:  `Navigate to the [/admin](/admin) route and see what you can change in there. Just make sure you do not delete yourself, okay? Otherwise you will be locked in a weird state.`,
 			BoardId:  boardID,
 			IsLocked: false,
 			IsSticky: false,
