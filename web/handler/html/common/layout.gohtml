@@ -14,12 +14,12 @@
         {{ if .navigation.Forum.Name }}
             {{ if .navigation.Board.Name }}
                 {{ if .navigation.Topic }}
-                    <title>{{ .navigation.Topic }} | {{ .settings.Name }}</title>
+                    <title aria-label="Topic '{{ .navigation.Topic }}'">{{ .navigation.Topic }} | {{ .settings.Name }}</title>
                 {{ else }}
-                    <title>{{ .navigation.Board.Name }} | {{ .settings.Name }}</title>
+                    <title aria-label="Board '{{ .navigation.Board.Name }}'">{{ .navigation.Board.Name }} | {{ .settings.Name }}</title>
                 {{ end }}
             {{ else }}
-                <title>{{ .navigation.Forum.Name }} | {{ .settings.Name }}</title>
+                <title aria-label="Forum {{ .navigation.Forum.Name }}">{{ .navigation.Forum.Name }} | {{ .settings.Name }}</title>
             {{ end }}
         {{ else }}
             <title>{{ .settings.Name }}</title>
@@ -28,15 +28,19 @@
     </head>
     <body>
     <header>
-        <nav>
-            <a href="/">home</a> <a href="/posts">posts</a> <a href="/feed.atom">atom</a>
+        <nav aria-label="Main">
+            <a href="/">home</a>
+            <a href="/posts">posts</a>
+            <a href="/feed.atom" aria-label="Atom feed">atom</a>
             {{ if logged }}
-                <a href="/users/{{ .logged.Id }}">{{ .logged.Name }}</a> <a href="/account">account</a> <a
-                        href="/logout">logout</a>
+                <a href="/users/{{ .logged.Id }}" aria-label="Logged as {{ .logged.Name }}">{{ .logged.Name }}</a>
+                <a href="/account">account</a>
+                <a href="/logout">logout</a>
             {{ else }}
-                <a href="/login">login</a> <a href="/register">register</a>
+                <a href="/login">login</a>
+                <a href="/register">register</a>
             {{ end }}
-        </nav>
+        </nav>        
     </header>
     {{ if .errors }}
         <div class="errors flash">
