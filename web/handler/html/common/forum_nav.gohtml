@@ -1,27 +1,32 @@
 {{ define "forum_nav" }}
-    <nav class="breadcrumb">
-        <a href="/">Forums</a>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/" aria-label="Go to Forums homepage">Forums</a>
 
-        {{ if .Forum.Name }}
-            <span>›</span>
-            {{ if .Board.Name }}
-                <a href="/forums/{{ .Forum.Id }}">{{ .Forum.Name }}</a>
-            {{ else }}
-                {{ .Forum.Name }}
+        {{ with .Forum }}
+            {{ if .Name }}
+                <span aria-hidden="true">›</span>
+                {{ if $.Board.Name }}
+                    <a href="/forums/{{ .Id | urlquery }}" aria-label="Go to {{ .Name }} forum">{{ .Name }}</a>
+                {{ else }}
+                    <span aria-current="page">{{ .Name }}</span>
+                {{ end }}
             {{ end }}
         {{ end }}
 
-        {{ if .Board.Name }}
-            <span>›</span>
-            {{ if .Topic }}
-                <a href="/boards/{{ .Board.Id }}">{{ .Board.Name }}</a>
-            {{ else }}
-                {{ .Board.Name }}
+        {{ with .Board }}
+            {{ if .Name }}
+                <span aria-hidden="true">›</span>
+                {{ if $.Topic }}
+                    <a href="/boards/{{ .Id | urlquery }}" aria-label="Go to {{ .Name }} board">{{ .Name }}</a>
+                {{ else }}
+                    <span aria-current="page">{{ .Name }}</span>
+                {{ end }}
             {{ end }}
         {{ end }}
 
         {{ if .Topic }}
-            <span>›</span> {{ .Topic }}
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">{{ .Topic }}</span>
         {{ end }}
     </nav>
 {{ end }}
