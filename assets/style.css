@@ -358,3 +358,10 @@ textarea:focus {
     outline: 2px solid var(--color-bg-header-aside);
     outline-offset: 2px;
 }
+
+svg.not-selectable {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
