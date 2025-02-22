@@ -343,27 +343,54 @@ var TplMap = map[string]string{
         <div class="field">
             <label for="name">Name</label>
             <input type="text" name="name" id="name" value="{{ .form.Name }}" autocomplete="off" maxlength="120"
-                   autofocus/>
+                   autofocus aria-describedby="name-desc"/>
+            <p id="name-desc">Name for your instance. It will be displayed in tab's title and also at the main page as a big title.</p>
         </div>
         <div class="field">
             <label for="url">URL</label>
-            <input type="url" name="url" id="url" value="{{ .form.URL }}" autocomplete="off"/>
+            <input type="url" name="url" id="url" value="{{ .form.URL }}" autocomplete="off" aria-describedby="url-desc"/>
+            <p id="url-desc">Absolute URL for your instance.</p>
         </div>
         <div class="field">
             <label for="lang">Site language</label>
-            <input type="text" name="lang" id="lang" value="{{ .form.Lang }}" autocomplete="off" maxlength="2"/>
+            <input type="text" name="lang" id="lang" value="{{ .form.Lang }}" autocomplete="off" aria-describedby="site-language-description"/>
+            <p id="site-language-description">
+                Provide the
+                <a href="https://en.wikipedia.org/wiki/IETF_language_tag" target="_blank">IETF BCP 47 language tag</a>.
+            </p>
+            <script>
+                // Script provides strings with languages from your system
+                // that are BCP 47 compliant
+                let span = document.createElement("span");
+
+                // Wrap each language string in a <code> node
+                let languages = navigator.languages.map(lang => {
+                    let codeNode = document.createElement("code");
+                    codeNode.textContent = lang;
+                    return codeNode.outerHTML; // Convert element to string for joining
+                }).join(", ");
+
+                // Create text node with formatted languages
+                let node = document.createTextNode("Like: ");
+                span.innerHTML = node.textContent + languages + ".";
+
+                document.getElementById('site-language-description').appendChild(span);
+            </script>
         </div>
         <div class="field">
             <label for="footer">Footer</label>
-            <textarea class="editor" name="footer" id="footer">{{ .form.Footer }}</textarea>
+            <textarea class="editor" name="footer" id="footer" aria-describedby="footer-desc">{{ .form.Footer }}</textarea>
+            <p id="footer-desc">This section will be displayed at the bottom of every page. You can use <code>HTML</code> in here.</p>
         </div>
         <div class="field">
             <label for="css">CSS</label>
-            <textarea class="editor" name="css" id="css">{{ .form.Css }}</textarea>
+            <textarea class="editor" name="css" id="css" aria-describedby="css-desc">{{ .form.Css }}</textarea>
+            <p id="css-desc">Custom styles for your instance.</p>
         </div>
         <div class="field">
             <label for="per-page">Per page</label>
-            <input type="number" name="per-page" id="per-page" value="{{ .form.PerPage }}" autocomplete="off" required/>
+            <input type="number" name="per-page" id="per-page" value="{{ .form.PerPage }}" autocomplete="off" required aria-describedby="perpage-desc"/>
+            <p id="perpage-desc">Limits amount of boards sent to a client at once and adds pagination if needed.</p>
         </div>
         <input type="submit" value="Submit">
     </form>
