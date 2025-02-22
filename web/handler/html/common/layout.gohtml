@@ -35,12 +35,15 @@
             {{ if logged }}
                 <a href="/users/{{ .logged.Id }}" aria-label="Logged as {{ .logged.Name }}">{{ .logged.Name }}</a>
                 <a href="/account">account</a>
+                {{ if .logged.IsAdmin }}
+                    <a href="/admin">instance settings</a>
+                {{ end }}
                 <a href="/logout">logout</a>
             {{ else }}
                 <a href="/login">login</a>
                 <a href="/register">register</a>
             {{ end }}
-        </nav>        
+        </nav>
     </header>
     {{ if .errors }}
         <div class="errors flash">
