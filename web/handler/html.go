@@ -13,7 +13,7 @@ var TplMap = map[string]string{
         {{ if .form.Picture }}
             <img alt="{{ .form.PictureAlt }}" src="{{ .form.Picture }}" width="80" height="80" style="object-fit: contain;"/>
         {{ else }}
-            <svg width="80" height="80" xmlns="http://www.w3.org/2000/svg">
+            <svg class="not-selectable" width="80" height="80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <rect width="80" height="80" fill="rgba(0,0,0,40%)"/>
                 <text x="40" y="40" font-size="30" font-family="Sans-Serif" font-weight="bold" fill="#ffffff"
                       text-anchor="middle" dominant-baseline="middle">{{ printf "%c" (index .logged.Name 0) }}
@@ -825,7 +825,7 @@ var TplMap = map[string]string{
                         {{ if .User.Picture }}
                             <img alt="{{ .User.PictureAlt }}" src="{{ .User.Picture }}" width="80" height="80" style="object-fit: contain;"/>
                         {{ else }}
-                            <svg width="80" height="80" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="not-selectable" width="80" height="80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                 <rect width="80" height="80" fill="rgba(0, 0, 0, 40%)"/>
                                 <text x="40" y="40" font-size="30" font-family="Sans-Serif" font-weight="bold" fill="#ffffff"
                                       text-anchor="middle" dominant-baseline="middle">{{ printf "%c" (index .User.Name 0) }}

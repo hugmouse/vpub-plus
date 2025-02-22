@@ -44,7 +44,7 @@ var AssetsMap = map[string]string{
         --color-bg-info: #81c784; /* Softer green */
         --color-bg-table-row: #1b1b1b; /* Dark table rows */
         --color-bg-header-aside: #2c2c2c; /* Dark header/aside */
-        --color-bg-forum: #1f1f1f; /* Dark forum background */
+        --color-bg-forum: #191919; /* Dark forum background */
         --color-bg-post-article: #1e1e1e; /* Dark post/article */
         --color-bg-code: #2d2d2d; /* Dark code blocks */
 
@@ -363,5 +363,11 @@ textarea:focus {
     outline: 2px solid var(--color-bg-header-aside);
     outline-offset: 2px;
 }
-`,
+
+svg.not-selectable {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}`,
 }
