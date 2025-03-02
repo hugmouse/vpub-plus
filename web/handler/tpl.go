@@ -132,6 +132,20 @@ func (h *Handler) initTpl() {
 			"dec": func(v int64) int64 {
 				return v - 1
 			},
+			"unsafeHtml": func(html string) template.HTML {
+				return template.HTML(html)
+			},
+			"unsafeRender": func(text string) template.HTML {
+				return template.HTML(syntax.Convert(text, false))
+			},
+			"tableNameToRoute": func(table string) string {
+				switch table {
+				case "posts":
+					return "topics"
+				default:
+					return table
+				}
+			},
 		}).Parse(commonTemplates + content))
 	}
 }

@@ -190,6 +190,9 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 	// Forum views
 	publicSubRouter := router.PathPrefix("/").Subrouter()
 
+	// Search
+	publicSubRouter.HandleFunc("/search", h.searchShow).Methods(http.MethodGet)
+
 	// Auth
 	publicSubRouter.HandleFunc("/login", h.showLoginView).Methods(http.MethodGet)
 	publicSubRouter.HandleFunc("/login", h.checkLogin).Methods(http.MethodPost)

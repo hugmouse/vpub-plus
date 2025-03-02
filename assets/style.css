@@ -372,3 +372,27 @@ div.field textarea + p{
     opacity: 0.8;
     font-size: 0.80rem;
 }
+
+div.search-result {
+    padding: 1em;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg-post-article);
+    margin: 1em 0;
+}
+
+div.search-result div.content {
+    margin-bottom: 0;
+}
+
+div.search-result div.content * {
+    font-size: 16px!important;
+    display: inline;
+    font-variant: normal;
+}
+
+form.search-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+}

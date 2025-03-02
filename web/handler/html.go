@@ -818,6 +818,37 @@ var TplMap = map[string]string{
         <input type="submit" value="Submit">
     </form>
 {{ end }}`,
+	"search": `{{ define "title" }} Search {{ end }}
+
+{{ define "content" }}
+    <h2>Search</h2>
+
+    {{ if .q }}
+        <p>{{ len .sql }} results found.</p>
+        {{ else }}
+        <p>Enter your search query down below.</p>
+    {{ end }}
+
+    <form action="/search" method="get" class="search-form">
+            <label for="q" style="display: none">Search</label>
+            <input type="text" value="{{ .q }}" name="q" id="q" placeholder="...">
+            <button type="submit">search</button>
+    </form>
+
+    {{ if .sql }}
+        {{ range $index, $element := .sql }}
+            <div class="search-result">
+                <span>[{{ $element.OriginTable }}]</span>
+                <a href="/{{ tableNameToRoute $element.OriginTable }}/{{ $element.ID }}">{{ unsafeHtml $element.HighlightedTitle }}</a>
+                {{ if ne $element.HighlightedContent "" }}
+                    <div class="content">
+                        {{ unsafeRender $element.HighlightedContent }}...
+                    </div>
+                {{ end }}
+            </div>
+        {{ end }}
+    {{ end }}
+{{ end }}`,
 	"topic": `{{ define "head" }}
     <link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}topics/{{ .topic.Id }}/feed.atom"/>
     <meta property="article:published_time" content="{{ iso8601Time (index .posts 0).CreatedAt }}">
