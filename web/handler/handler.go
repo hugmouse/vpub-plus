@@ -43,39 +43,14 @@ var errorTemplate = template.Must(template.New("error").Parse(`
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<link rel="stylesheet" href="/style.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Server Error</title>
-	<style>
-		body {
-			background-color: #1a1a1a;
-			color: #e0e0e0;
-			font-family: 'Inter', Arial, sans-serif;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			min-height: 100vh;
-			margin: 0;
-		}
-		.container {
-			background-color: #2a2a2a;
-			padding: 30px;
-			max-width: 600px;
-			width: 90%;
-		}
-		h1 {
-			font-size: 2em;
-			color: #ff4c4c;
-			margin-bottom: 0.5em;
-		}
-		p {
-			font-size: 1.2em;
-			color: #cccccc;
-		}
-	</style>
 </head>
 <body>
-	<div class="container">
+	<div class="search-result">
 		<h1>Server Error</h1>
-		<p>{{.ErrorMessage}}</p>
+		<pre><code>{{ .ErrorMessage }}</code></pre>
 	</div>
 </body>
 </html>
