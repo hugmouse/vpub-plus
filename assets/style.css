@@ -240,6 +240,15 @@ table td pre {
     max-width: 200px;
 }
 
+.flex {
+    display: flex;
+    gap: 1rem;
+}
+
+.grow {
+    flex-grow: 1;
+}
+
 .field {
     margin-bottom: 1em;
 }
@@ -247,6 +256,10 @@ table td pre {
 .field label {
     display: block;
     margin-bottom: 0.5em;
+}
+
+.field label input {
+    margin-top: 0.5em;
 }
 
 input[type="text"],
@@ -395,4 +408,8 @@ form.search-form {
     gap: 0.5rem;
     align-items: center;
     justify-content: center;
+}
+
+.hint {
+    opacity: 0.8;
 }

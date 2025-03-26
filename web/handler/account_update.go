@@ -17,6 +17,7 @@ func (h *Handler) updateAccount(w http.ResponseWriter, r *http.Request) {
 	user.About = accountForm.About
 	user.Picture = accountForm.Picture
 	user.PictureAlt = accountForm.PictureAlt
+	user.TimeFormat = accountForm.TimeFormat
 
 	if err := h.storage.UpdateUser(user); err != nil {
 		serverError(w, err)

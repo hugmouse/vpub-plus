@@ -15,13 +15,19 @@
                 </text>
             </svg>
         {{ end }}
-        <div class="field">
-            <label for="picture">Picture URL</label>
-            <input type="url" name="picture" id="picture" value="{{ .form.Picture }}">
+        <div class="flex field">
+            <label for="picture" class="grow">Picture URL
+                <input type="url" name="picture" id="picture" value="{{ .form.Picture }}">
+            </label>
+        
+            <label for="picture-alt" class="grow">Picture alt text <span class="hint">(what is on the picture?)</span>
+                <input type="text" name="picture-alt" id="picture-alt" value="{{ .form.PictureAlt }}">
+            </label>
         </div>
         <div class="field">
-            <label for="picture-alt">Picture alt text</label>
-            <input type="text" name="picture-alt" id="picture-alt" value="{{ .form.PictureAlt }}">
+            <label for="time-format">Preferred time format</label>
+            <input type="text" name="time-format" id="time-format" value="{{ .form.TimeFormat }}">
+            <p>Note: you have to use <a href="https://go.dev/src/time/format.go">Go's time format</a>. Otherwise you will see errors/invalid time. For example, <code>Monday, 02-Jan-06 15:04:05 MST</code>.</p>
         </div>
         <div class="field">
             <label for="about">About</label>

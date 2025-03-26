@@ -83,6 +83,9 @@ func (h *Handler) initTpl() {
 			"iso8601Time": func(t time.Time) string {
 				return t.Format("2006-01-02 15:04:05")
 			},
+			"formatTime": func (t time.Time, format string) string {
+				return t.Format(format)
+			},
 			"html": func(s string) template.HTML {
 				return template.HTML(s)
 			},

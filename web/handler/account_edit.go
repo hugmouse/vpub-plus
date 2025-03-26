@@ -10,8 +10,10 @@ func (h *Handler) showAccountEditPage(w http.ResponseWriter, r *http.Request) {
 	user := request.GetUserContextKey(r)
 
 	accountForm := form.AccountForm{
-		Picture: user.Picture,
-		About:   user.About,
+		Picture:    user.Picture,
+		PictureAlt: user.PictureAlt,
+		TimeFormat: user.TimeFormat,
+		About:      user.About,
 	}
 
 	v := NewView(w, r, "account")

@@ -5,8 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
 	"vpub/model"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 const queryFindName = `SELECT id, name, hash, about, is_admin, picture FROM users WHERE name=lower($1);`
@@ -30,7 +31,7 @@ func (u ErrUserExists) Error() string {
 }
 
 func (s *Storage) queryUser(q string, params ...interface{}) (user model.User, err error) {
-	err = s.db.QueryRow(q, params...).Scan(&user.Id, &user.Name, &user.Hash, &user.About, &user.IsAdmin, &user.Picture)
+	err = s.db.QueryRow(q, params...).Scan(&user.Id, &user.Name, &user.Hash, &user.About, &user.IsAdmin, &user.Picture, &user.PictureAlt, &user.TimeFormat)
 	return
 }
 
@@ -86,7 +87,7 @@ func (s *Storage) UserByName(name string) (model.User, error) {
 }
 
 func (s *Storage) UserById(id int64) (model.User, error) {
-	return s.queryUser(`SELECT id, name, hash, about, is_admin, picture FROM users WHERE id=$1;`, id)
+	return s.queryUser(`SELECT id, name, hash, about, is_admin, picture, picture_alt, time_format FROM users WHERE id=$1;`, id)
 }
 
 func hashPassword(password string) ([]byte, error) {
@@ -160,11 +161,11 @@ func (s *Storage) Users() ([]model.User, error) {
 }
 
 func (s *Storage) UpdateUser(user model.User) error {
-	stmt, err := s.db.Prepare(`UPDATE users SET name=$1, about=$2, picture=$3 WHERE id = $4;`)
+	stmt, err := s.db.Prepare(`UPDATE users SET name=$1, about=$2, picture=$3, picture_alt=$4, time_format=$5 WHERE id = $6;`)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(user.Name, user.About, user.Picture, user.Id)
+	_, err = stmt.Exec(user.Name, user.About, user.Picture, user.PictureAlt, user.TimeFormat, user.Id)
 	return err
 }
 
