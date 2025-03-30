@@ -49,29 +49,34 @@ var TplCommonMap = map[string]string{
     </div>
 {{ end }}`,
 	"forum_nav": `{{ define "forum_nav" }}
-    <nav class="breadcrumb">
-        <a href="/">Forums</a>
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/" aria-label="Go to Forums homepage">Forums</a>
 
-        {{ if .Forum.Name }}
-            <span>›</span>
-            {{ if .Board.Name }}
-                <a href="/forums/{{ .Forum.Id }}">{{ .Forum.Name }}</a>
-            {{ else }}
-                {{ .Forum.Name }}
+        {{ with .Forum }}
+            {{ if .Name }}
+                <span aria-hidden="true">›</span>
+                {{ if $.Board.Name }}
+                    <a href="/forums/{{ .Id | urlquery }}" aria-label="Go to {{ .Name }} forum">{{ .Name }}</a>
+                {{ else }}
+                    <span aria-current="page">{{ .Name }}</span>
+                {{ end }}
             {{ end }}
         {{ end }}
 
-        {{ if .Board.Name }}
-            <span>›</span>
-            {{ if .Topic }}
-                <a href="/boards/{{ .Board.Id }}">{{ .Board.Name }}</a>
-            {{ else }}
-                {{ .Board.Name }}
+        {{ with .Board }}
+            {{ if .Name }}
+                <span aria-hidden="true">›</span>
+                {{ if $.Topic }}
+                    <a href="/boards/{{ .Id | urlquery }}" aria-label="Go to {{ .Name }} board">{{ .Name }}</a>
+                {{ else }}
+                    <span aria-current="page">{{ .Name }}</span>
+                {{ end }}
             {{ end }}
         {{ end }}
 
         {{ if .Topic }}
-            <span>›</span> {{ .Topic }}
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">{{ .Topic }}</span>
         {{ end }}
     </nav>
 {{ end }}
@@ -92,12 +97,12 @@ var TplCommonMap = map[string]string{
         {{ if .navigation.Forum.Name }}
             {{ if .navigation.Board.Name }}
                 {{ if .navigation.Topic }}
-                    <title>{{ .navigation.Topic }} | {{ .settings.Name }}</title>
+                    <title aria-label="Topic '{{ .navigation.Topic }}'">{{ .navigation.Topic }} | {{ .settings.Name }}</title>
                 {{ else }}
-                    <title>{{ .navigation.Board.Name }} | {{ .settings.Name }}</title>
+                    <title aria-label="Board '{{ .navigation.Board.Name }}'">{{ .navigation.Board.Name }} | {{ .settings.Name }}</title>
                 {{ end }}
             {{ else }}
-                <title>{{ .navigation.Forum.Name }} | {{ .settings.Name }}</title>
+                <title aria-label="Forum {{ .navigation.Forum.Name }}">{{ .navigation.Forum.Name }} | {{ .settings.Name }}</title>
             {{ end }}
         {{ else }}
             <title>{{ .settings.Name }}</title>
@@ -106,13 +111,21 @@ var TplCommonMap = map[string]string{
     </head>
     <body>
     <header>
-        <nav>
-            <a href="/">home</a> <a href="/posts">posts</a> <a href="/feed.atom">atom</a>
+        <nav aria-label="Main">
+            <a href="/">home</a>
+            <a href="/search">search</a>
+            <a href="/posts">posts</a>
+            <a href="/feed.atom" aria-label="Atom feed">atom</a>
             {{ if logged }}
-                <a href="/users/{{ .logged.Id }}">{{ .logged.Name }}</a> <a href="/account">account</a> <a
-                        href="/logout">logout</a>
+                <a href="/users/{{ .logged.Id }}" aria-label="Logged as {{ .logged.Name }}">{{ .logged.Name }}</a>
+                <a href="/account">account</a>
+                {{ if .logged.IsAdmin }}
+                    <a href="/admin">instance settings</a>
+                {{ end }}
+                <a href="/logout">logout</a>
             {{ else }}
-                <a href="/login">login</a> <a href="/register">register</a>
+                <a href="/login">login</a>
+                <a href="/register">register</a>
             {{ end }}
         </nav>
     </header>
@@ -143,6 +156,7 @@ var TplCommonMap = map[string]string{
         </footer>
     {{ end }}
     </body>
+    <script src="/js/server-time-to-local.js"></script>
     </html>
 {{ end }}
 {{ define "head" }}{{ end }}

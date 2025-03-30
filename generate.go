@@ -85,4 +85,5 @@ func main() {
 	generateMap(path.Join("web", "handler", "html.go"), "handler", "TplMap", glob("web/handler/html/*.gohtml"))
 	generateMap(path.Join("web", "handler", "common.go"), "handler", "TplCommonMap", glob("web/handler/html/common/*.gohtml"))
 	generateMap(path.Join("assets", "static_stylesheet.go"), "assets", "AssetsMap", glob("assets/*.css"))
+	generateMap(path.Join("assets", "static_javascript.go"), "assets", "JSMap", glob("assets/*.js"))
 }
