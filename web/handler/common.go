@@ -156,7 +156,9 @@ var TplCommonMap = map[string]string{
         </footer>
     {{ end }}
     </body>
-    <script src="/js/server-time-to-local.js"></script>
+    {{ range scripts }}
+        <script src="/js/{{ . }}"></script>
+    {{ end }}
     </html>
 {{ end }}
 {{ define "head" }}{{ end }}
