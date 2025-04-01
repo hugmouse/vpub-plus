@@ -28,12 +28,22 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * Saves date and time style preferences to localStorage.
+     * Saves date style preference to localStorage.
      * @param {string} dateStyle - The selected date style.
-     * @param {string} timeStyle - The selected time style.
      */
-    function savePreferences(dateStyle, timeStyle) {
+    function saveDateStylePreference(dateStyle, timeStyle) {
         localStorage.setItem(LOCAL_STORAGE_DATE_KEY, dateStyle);
+        currentPreferences = {
+            dateStyle,
+            timeStyle
+        };
+    }
+
+     /**
+     * Saves time style preference to localStorage.
+     * @param {string} timeStyle - The selected date style.
+     */
+    function saveTimeStylePreference(dateStyle, timeStyle) {
         localStorage.setItem(LOCAL_STORAGE_TIME_KEY, timeStyle);
         currentPreferences = {
             dateStyle,
@@ -134,11 +144,15 @@ window.addEventListener("DOMContentLoaded", () => {
      * Sets up the date/time preference controls on account pages.
      */
     function setupAccountPageControls() {
-        const form = document.querySelector("form"); // More specific selector if possible
-        const submitButton = form?.querySelector('input[type="submit"]'); // Use optional chaining
+        const form = document.querySelector("form");
+        if (!form) {
+            console.error("[server-time-to-local.js] Could not find form on account page to add settings.");
+            return;
+        }
 
-        if (!form || !submitButton) {
-            console.warn("[server-time-to-local.js] Could not find form or submit button on account page to add settings.");
+        const submitButton = form.querySelector('input[type="submit"]');
+        if (!submitButton) {
+            console.error("[server-time-to-local.js] Could not find submit button on account page to add settings.");
             return;
         }
 
@@ -168,15 +182,6 @@ window.addEventListener("DOMContentLoaded", () => {
             currentPreferences.timeStyle
         );
 
-        [dateSelect, timeSelect].forEach(select => {
-            select.addEventListener("change", () => {
-                const newDateStyle = dateSelect.value;
-                const newTimeStyle = timeSelect.value;
-                savePreferences(newDateStyle, newTimeStyle);
-                updatePreview();
-            });
-        });
-
         timeSettingsField.appendChild(dateWrapper);
         timeSettingsField.appendChild(timeWrapper);
         form.insertBefore(timeSettingsField, submitButton);
@@ -186,6 +191,23 @@ window.addEventListener("DOMContentLoaded", () => {
 
     if (ACCOUNT_PAGE_PATHS.includes(window.location.pathname)) {
         setupAccountPageControls();
+
+        document.addEventListener("change", (e) => {
+            const target = e.target;
+            let changed = false;
+            
+            if (target.id === 'date-style-pref') {
+                saveDateStylePreference(target.value);
+                changed = true;
+            } else if (target.id === 'time-style-pref') {
+                saveTimeStylePreference(target.value);
+                changed = true;
+            }
+        
+            if (changed) {
+                updatePreview();
+            }
+        });
     }
 
     formatAllDates();
