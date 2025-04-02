@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"time"
+	jsEmbed "vpub/assets/js"
 	"vpub/syntax"
 	"vpub/web/handler/request"
 
@@ -80,6 +81,7 @@ func (h *Handler) initTpl() {
 			"iso8601": func(t time.Time) string {
 				return t.Format("2006-01-02")
 			},
+			"now": func() time.Time { return time.Now() },
 			"iso8601Time": func(t time.Time) string {
 				return t.Format("2006-01-02 15:04:05")
 			},
@@ -145,6 +147,19 @@ func (h *Handler) initTpl() {
 				default:
 					return table
 				}
+			},
+			"scripts": func() []string {
+				var filenames []string
+				files, err := jsEmbed.Scripts.ReadDir(".")
+				if err != nil {
+					return nil
+				}
+				for _, file := range files {
+					if !file.IsDir() {
+						filenames = append(filenames, file.Name())
+					}
+				}
+				return filenames
 			},
 		}).Parse(commonTemplates + content))
 	}

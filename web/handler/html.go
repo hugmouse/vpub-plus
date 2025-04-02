@@ -7,19 +7,71 @@ var TplMap = map[string]string{
 
 {{ define "content" }}
     <h1>Account</h1>
+    <p>This is where you can customize your account details and preferences.</p>
 
+    <h2>Preview</h2>
+    <p>This is what your forum post will look like.</p>
+    <table class="topic">
+        <thead>
+        <tr>
+            <th>Author</th>
+            <th>Topic</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr id="2">
+            <td class="col-author">
+                <a href="/users/1">{{ .logged.Name }}</a>
+                <p>
+                    {{ if .logged.Picture }}
+                        <img alt="{{ .logged.PictureAlt }}" src="{{ .logged.Picture }}" width="80" height="80"
+                             style="object-fit: contain;"/>
+                    {{ else }}
+                        <svg class="not-selectable" width="80" height="80" xmlns="http://www.w3.org/2000/svg"
+                             aria-hidden="true">
+                            <rect width="80" height="80" fill="rgba(0, 0, 0, 40%)"/>
+                            <text x="40" y="40" font-size="30" font-family="Sans-Serif" font-weight="bold"
+                                  fill="#ffffff"
+                                  text-anchor="middle"
+                                  dominant-baseline="middle">{{ printf "%c" (index .logged.Name 0) }}
+                            </text>
+                        </svg>
+                    {{ end }}
+                </p>
+            </td>
+            <td>
+                <div class="posted">
+                    <span>Posted on <time datetime="{{ iso8601Time now }}" id="preview-time">{{ iso8601Time now }}</time></span>
+                    <a href="#">edit</a> <a href="#">remove</a>
+                    <hr>
+                </div>
+                <div>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque consequat ante sodales ligula
+                        laoreet suscipit. Nulla luctus elit at massa dignissim, a tristique libero pretium. Pellentesque
+                        habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur
+                        molestie eget enim sed congue.
+                    </p>
+                    <p>
+                        Integer porta bibendum ex, eu viverra felis mattis vitae. Nullam imperdiet quis mi eu lobortis.
+                        Phasellus elit lectus, consectetur aliquet erat a, finibus pellentesque dolor. Sed sagittis
+                        mattis aliquam.
+                    </p>
+                </div>
+                {{ if .form.About }}
+                    <div class="signature">
+                        {{ sig .form.About }}
+                    </div>
+                {{ end }}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2>Settings</h2>
     <form action="/update-account" method="post">
         {{ .csrfField }}
-        {{ if .form.Picture }}
-            <img alt="{{ .form.PictureAlt }}" src="{{ .form.Picture }}" width="80" height="80" style="object-fit: contain;"/>
-        {{ else }}
-            <svg class="not-selectable" width="80" height="80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <rect width="80" height="80" fill="rgba(0,0,0,40%)"/>
-                <text x="40" y="40" font-size="30" font-family="Sans-Serif" font-weight="bold" fill="#ffffff"
-                      text-anchor="middle" dominant-baseline="middle">{{ printf "%c" (index .logged.Name 0) }}
-                </text>
-            </svg>
-        {{ end }}
         <div class="field">
             <label for="picture">Picture URL</label>
             <input type="url" name="picture" id="picture" value="{{ .form.Picture }}">

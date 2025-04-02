@@ -73,6 +73,9 @@
         </footer>
     {{ end }}
     </body>
+    {{ range scripts }}
+        <script src="/js/{{ . }}"></script>
+    {{ end }}
     </html>
 {{ end }}
 {{ define "head" }}{{ end }}

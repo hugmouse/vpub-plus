@@ -160,6 +160,7 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 
 	// Static assets
 	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)
+	router.HandleFunc("/js/{filename}", h.showJS).Methods(http.MethodGet)
 	//router.HandleFunc("/favicon.ico", h.showFavicon).Name("favicon").Methods(http.MethodGet)
 
 	// Forum views

@@ -292,6 +292,9 @@ ALTER TABLE users
 
 CREATE INDEX textsearch_idx_users ON users USING GIN (textsearchable_index_col);
 
+-- We are storing ID as a string for the sake of convenience,
+-- since we are only using it for search results.
+
 CREATE OR REPLACE VIEW search_items AS
     SELECT
         text 'users' AS origin_table,
