@@ -1,8 +1,8 @@
 "use strict";
 
 /**
- * @file Manages date and time formatting across the forum based on user preferences stored in localStorage.
- * Also adds preference controls to account pages.
+ * @file Manages date and time formatting across the forum based on user preferences, stores them in localStorage.
+ * Also adds preference controls to /account and /update-account pages.
  */
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -95,8 +95,6 @@ window.addEventListener("DOMContentLoaded", () => {
             console.error("[server-time-to-local.js] Error updating preview:", error, currentPreferences);
         }
     }
-
-    // ---------------------------------------- Account Page Specific Logic ---------------------------------------- //
 
     /**
      * Creates a labeled dropdown select element for date/time style options.
