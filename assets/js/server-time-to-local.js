@@ -31,24 +31,18 @@ window.addEventListener("DOMContentLoaded", () => {
      * Saves date style preference to localStorage.
      * @param {string} dateStyle - The selected date style.
      */
-    function saveDateStylePreference(dateStyle, timeStyle) {
+    function saveDateStylePreference(dateStyle) {
         localStorage.setItem(LOCAL_STORAGE_DATE_KEY, dateStyle);
-        currentPreferences = {
-            dateStyle,
-            timeStyle
-        };
+        currentPreferences.dateStyle = dateStyle;
     }
 
      /**
      * Saves time style preference to localStorage.
      * @param {string} timeStyle - The selected date style.
      */
-    function saveTimeStylePreference(dateStyle, timeStyle) {
+    function saveTimeStylePreference(timeStyle) {
         localStorage.setItem(LOCAL_STORAGE_TIME_KEY, timeStyle);
-        currentPreferences = {
-            dateStyle,
-            timeStyle
-        };
+        currentPreferences.timeStyle = timeStyle;
     }
 
     /**
@@ -167,7 +161,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
         const {
             wrapper: dateWrapper,
-            selectElement: dateSelect
         } = createStyleDropdown(
             "date-style-pref",
             "Preferred Date Format:",
@@ -175,7 +168,6 @@ window.addEventListener("DOMContentLoaded", () => {
         );
         const {
             wrapper: timeWrapper,
-            selectElement: timeSelect
         } = createStyleDropdown(
             "time-style-pref",
             "Preferred Time Format:",
