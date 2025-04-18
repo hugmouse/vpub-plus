@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"net"
 	"net/http"
 	"strconv"
+	"sync"
+	"time"
 	"vpub/model"
 	"vpub/storage"
 	"vpub/web/handler/request"
@@ -91,9 +94,17 @@ func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
 }
 
 type Handler struct {
-	session *session.Manager
-	mux     *mux.Router
-	storage *storage.Storage
+	session     *session.Manager
+	mux         *mux.Router
+	storage     *storage.Storage
+	httpClient  *http.Client
+	simpleCache map[string]SimpleCacheValue
+	cacheMutex  sync.RWMutex
+}
+
+type SimpleCacheValue struct {
+	lastUpdate time.Time
+	value      interface{}
 }
 
 func (h *Handler) protect(fn http.HandlerFunc) http.HandlerFunc {
@@ -151,9 +162,25 @@ func (h *Handler) handleAdminMiddleware(next http.Handler) http.Handler {
 func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 	router := mux.NewRouter()
 	h := &Handler{
-		session: s,
-		mux:     router,
-		storage: data,
+		session:     s,
+		mux:         router,
+		storage:     data,
+		simpleCache: make(map[string]SimpleCacheValue),
+		httpClient: &http.Client{
+			Timeout: 3 * time.Second,
+			Transport: &http.Transport{
+				DialContext: (&net.Dialer{
+					Timeout: 3 * time.Second,
+				}).DialContext,
+				TLSHandshakeTimeout: 3 * time.Second,
+			},
+			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+				if len(via) >= 3 {
+					return http.ErrUseLastResponse
+				}
+				return nil
+			},
+		},
 	}
 	router.Use(h.handleSessionMiddleware)
 	h.initTpl()
