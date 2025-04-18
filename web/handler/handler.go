@@ -166,6 +166,9 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 	// Forum views
 	publicSubRouter := router.PathPrefix("/").Subrouter()
 
+	// Proxy
+	publicSubRouter.HandleFunc("/proxy", h.proxyHandler).Methods(http.MethodGet)
+
 	// Search
 	publicSubRouter.HandleFunc("/search", h.searchShow).Methods(http.MethodGet)
 

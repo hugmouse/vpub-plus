@@ -30,7 +30,7 @@
                     <a href="/users/{{ .User.Id }}">{{ .User.Name }}</a>
                     <p>
                         {{ if .User.Picture }}
-                            <img alt="{{ .User.PictureAlt }}" src="{{ .User.Picture }}" width="80" height="80" style="object-fit: contain;"/>
+                            <img alt="{{ .User.PictureAlt }}" src="{{ proxyURL .User.Picture }}" width="80" height="80" style="object-fit: contain;"/>
                         {{ else }}
                             <svg class="not-selectable" width="80" height="80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                 <rect width="80" height="80" fill="rgba(0, 0, 0, 40%)"/>

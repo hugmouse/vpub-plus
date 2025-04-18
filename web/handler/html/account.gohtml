@@ -20,7 +20,7 @@
                 <a href="/users/1">{{ .logged.Name }}</a>
                 <p>
                     {{ if .logged.Picture }}
-                        <img alt="{{ .logged.PictureAlt }}" src="{{ .logged.Picture }}" width="80" height="80"
+                        <img alt="{{ .logged.PictureAlt }}" src="{{ proxyURL .logged.Picture }}" width="80" height="80"
                              style="object-fit: contain;"/>
                     {{ else }}
                         <svg class="not-selectable" width="80" height="80" xmlns="http://www.w3.org/2000/svg"

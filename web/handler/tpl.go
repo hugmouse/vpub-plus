@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"net/url"
 	"time"
 	jsEmbed "vpub/assets/js"
 	"vpub/syntax"
@@ -160,6 +161,10 @@ func (h *Handler) initTpl() {
 					}
 				}
 				return filenames
+			},
+			"proxyURL": func(urlToProxy string) string {
+				newUrl := url.QueryEscape(urlToProxy)
+				return fmt.Sprintf("/proxy?url=%s", newUrl)
 			},
 		}).Parse(commonTemplates + content))
 	}
