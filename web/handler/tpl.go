@@ -164,7 +164,7 @@ func (h *Handler) initTpl() {
 			},
 			"proxyURL": func(urlToProxy string) string {
 				newUrl := url.QueryEscape(urlToProxy)
-				return fmt.Sprintf("/proxy?url=%s", newUrl)
+				return fmt.Sprintf("/image-proxy?url=%s", newUrl)
 			},
 		}).Parse(commonTemplates + content))
 	}

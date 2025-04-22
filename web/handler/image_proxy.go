@@ -12,7 +12,7 @@ import (
 
 // TODO: probably rename it since I plan to use it only for images
 // and not universal proxy
-func (h *Handler) proxyHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 	rawURL := r.URL.Query().Get("url")
 	if rawURL == "" {
 		http.Error(w, "Missing URL parameter", http.StatusBadRequest)
@@ -27,18 +27,23 @@ func (h *Handler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 	urlStr := parsedURL.String()
 
 	h.cacheMutex.RLock()
-	val, ok := h.simpleCache[urlStr]
+	val, ok := h.cachedImages[urlStr]
 	isStale := ok && time.Since(val.lastUpdate) > 1*time.Minute
 	h.cacheMutex.RUnlock()
 
+	log.Println(h.cachedImages)
+
 	// Cache hit :)
 	if ok && !isStale {
-		h.serveFromCache(w, val)
+		if val.isImage {
+			h.serveFromCache(w, val)
+			return
+		}
+		http.Error(w, "Not an image", http.StatusBadGateway)
 		return
 	}
 
 	// No cache hit :(
-	// TODO: this will make new requests on unsupported responses like text/html
 	req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, urlStr, nil)
 	if err != nil {
 		log.Printf("Error creating request for %s: %v", urlStr, err)
@@ -61,7 +66,7 @@ func (h *Handler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 || !strings.HasPrefix(resp.Header.Get("Content-Type"), "image/") {
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		log.Printf("Received non-cacheable response for %s (Status: %d, Type: %s)",
 			urlStr, resp.StatusCode, resp.Header.Get("Content-Type"))
 
@@ -72,11 +77,7 @@ func (h *Handler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if !strings.HasPrefix(resp.Header.Get("Content-Type"), "image/") {
-			http.Error(w, "Content type not supported by proxy", http.StatusUnsupportedMediaType)
-		} else {
-			http.Error(w, fmt.Sprintf("Upstream server returned status %d", resp.StatusCode), http.StatusBadGateway)
-		}
+		http.Error(w, fmt.Sprintf("Upstream server returned status %d", resp.StatusCode), http.StatusBadGateway)
 		return
 	}
 
@@ -92,13 +93,24 @@ func (h *Handler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newValue := SimpleCacheValue{
-		lastUpdate: time.Now(),
-		value:      imageBytes,
+	isImage := strings.HasPrefix(resp.Header.Get("Content-Type"), "image/")
+
+	var newValue CachedImage
+
+	if isImage {
+		newValue = CachedImage{
+			lastUpdate: time.Now(),
+			isImage:    isImage,
+			value:      imageBytes,
+		}
+	} else {
+		newValue = CachedImage{
+			isImage: isImage,
+		}
 	}
 
 	h.cacheMutex.Lock()
-	h.simpleCache[urlStr] = newValue
+	h.cachedImages[urlStr] = newValue
 	h.cacheMutex.Unlock()
 
 	log.Printf("Fetched and cached: %s", urlStr)
@@ -106,7 +118,7 @@ func (h *Handler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 	h.serveFromCache(w, newValue)
 }
 
-func (h *Handler) serveFromCache(w http.ResponseWriter, val SimpleCacheValue) {
+func (h *Handler) serveFromCache(w http.ResponseWriter, val CachedImage) {
 	expires := val.lastUpdate.Add(1 * time.Minute)
 	if time.Now().Before(expires) {
 		maxAge := time.Until(expires).Seconds()
