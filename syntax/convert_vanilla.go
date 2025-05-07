@@ -34,12 +34,16 @@ func sanitize(input string) string {
 	return html.EscapeString(input)
 }
 
+const (
+	imageProxyURLBase = "/image-proxy?url="
+)
+
 func processLinks(input string) string {
 	sane := html.EscapeString(input)
 	if imgRegexp.MatchString(input) || linkRegexp.MatchString(input) {
 		matches := imgRegexp.FindAllStringSubmatch(input, -1)
 		for _, m := range matches {
-			sane = strings.Replace(sane, m[0], fmt.Sprintf("<img src=\"%s\" alt=\"%s\"/>", m[2], m[1]), 1)
+			sane = strings.Replace(sane, m[0], fmt.Sprintf("<img src=\"%s%s\" alt=\"%s\"/>", imageProxyURLBase, m[2], m[1]), 1)
 		}
 		matches = linkRegexp.FindAllStringSubmatch(sane, -1)
 		for _, m := range matches {
