@@ -9,7 +9,7 @@ ENV GOCACHE=/root/.cache/go-build
 RUN --mount=type=cache,target="/root/.cache/go-build" go generate
 RUN --mount=type=cache,target="/root/.cache/go-build" go build -o /vpub main.go
 
-FROM scratch
+FROM alpine:3.21.3
 
 COPY --from=builder /vpub /vpub
 EXPOSE 8080
