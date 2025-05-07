@@ -94,18 +94,21 @@ func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
 }
 
 type Handler struct {
-	session      *session.Manager
-	mux          *mux.Router
-	storage      *storage.Storage
+	session *session.Manager
+	mux     *mux.Router
+	storage *storage.Storage
+}
+
+type ImageProxyHandler struct {
 	httpClient   *http.Client
 	cachedImages map[string]CachedImage
 	cacheMutex   sync.RWMutex
 }
 
 type CachedImage struct {
-	lastUpdate time.Time
-	isImage    bool
-	value      interface{}
+	lastUpdate  time.Time
+	value       interface{}
+	contentType string
 }
 
 func (h *Handler) protect(fn http.HandlerFunc) http.HandlerFunc {
@@ -163,9 +166,14 @@ func (h *Handler) handleAdminMiddleware(next http.Handler) http.Handler {
 func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 	router := mux.NewRouter()
 	h := &Handler{
-		session:      s,
-		mux:          router,
-		storage:      data,
+		session: s,
+		mux:     router,
+		storage: data,
+	}
+	router.Use(h.handleSessionMiddleware)
+	h.initTpl()
+
+	handlerForImageProxy := &ImageProxyHandler{
 		cachedImages: make(map[string]CachedImage),
 		httpClient: &http.Client{
 			Timeout: 3 * time.Second,
@@ -183,8 +191,6 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 			},
 		},
 	}
-	router.Use(h.handleSessionMiddleware)
-	h.initTpl()
 
 	// Static assets
 	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)
@@ -195,7 +201,7 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 	publicSubRouter := router.PathPrefix("/").Subrouter()
 
 	// Proxy
-	publicSubRouter.HandleFunc("/image-proxy", h.imageProxyHandler).Methods(http.MethodGet)
+	publicSubRouter.HandleFunc("/image-proxy", handlerForImageProxy.imageProxyHandler).Methods(http.MethodGet)
 
 	// Search
 	publicSubRouter.HandleFunc("/search", h.searchShow).Methods(http.MethodGet)

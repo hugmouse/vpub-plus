@@ -18,7 +18,7 @@ const (
 // imageProxyHandler GETs the image from remote host and serves it from a string map
 //
 // It does not validate the image is in fact a JPEG, PNG or GIF.
-func (h *Handler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
+func (h *ImageProxyHandler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 	rawURL := r.URL.Query().Get("url")
 	if rawURL == "" {
 		http.Error(w, "Missing URL parameter", http.StatusBadRequest)
@@ -39,16 +39,7 @@ func (h *Handler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Cache hit :)
 	if ok && !isStale {
-		if val.isImage {
-			h.serveFromCache(w, val)
-			return
-		}
-		http.Error(w, "Error serving from cache", http.StatusInternalServerError)
-
-		h.cacheMutex.Lock()
-		delete(h.cachedImages, urlStr)
-		h.cacheMutex.Unlock()
-
+		h.serveFromCache(w, urlStr)
 		return
 	}
 
@@ -67,7 +58,7 @@ func (h *Handler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 	// Try to serve from cache upon error
 	if err != nil {
 		if isStale {
-			h.serveFromCache(w, val)
+			h.serveFromCache(w, urlStr)
 			return
 		}
 		log.Printf("Error getting an image from remote resource %s: %v", urlStr, err)
@@ -85,7 +76,7 @@ func (h *Handler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 		// Try to serve from cache upon error again
 		if isStale {
 			log.Printf("Non-cacheable response for %s, serving stale data instead.", urlStr)
-			h.serveFromCache(w, val)
+			h.serveFromCache(w, urlStr)
 			return
 		}
 
@@ -98,14 +89,20 @@ func (h *Handler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	// So either I have to add more dependencies or rely on remote server not being
 	// manipulated such way that they serve __something else__ as an image.
+	respContentType := resp.Header.Get("Content-Type")
 	isImage := strings.HasPrefix(resp.Header.Get("Content-Type"), "image/")
+
+	if !isImage {
+		http.Error(w, "Remote server returned not an image", http.StatusBadGateway)
+		return
+	}
 
 	imageBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Printf("Error reading body for %s: %v", urlStr, err)
 		if isStale {
 			log.Printf("Read body failed for %s, serving stale data: %v", urlStr, err)
-			h.serveFromCache(w, val)
+			h.serveFromCache(w, urlStr)
 			return
 		}
 		http.Error(w, "Failed to read response body", http.StatusBadGateway)
@@ -119,16 +116,10 @@ func (h *Handler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 
 	var newValue CachedImage
 
-	if isImage {
-		newValue = CachedImage{
-			lastUpdate: time.Now(),
-			isImage:    isImage,
-			value:      imageBytes,
-		}
-	} else {
-		newValue = CachedImage{
-			isImage: isImage,
-		}
+	newValue = CachedImage{
+		lastUpdate:  time.Now(),
+		value:       imageBytes,
+		contentType: respContentType,
 	}
 
 	h.cacheMutex.Lock()
@@ -137,18 +128,21 @@ func (h *Handler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Fetched and cached: %s", urlStr)
 
-	h.serveFromCache(w, newValue)
+	h.serveFromCache(w, urlStr)
 }
 
-func (h *Handler) serveFromCache(w http.ResponseWriter, val CachedImage) {
-	expires := val.lastUpdate.Add(cacheTime)
+func (h *ImageProxyHandler) serveFromCache(w http.ResponseWriter, key string) {
+	expires := h.cachedImages[key].lastUpdate.Add(cacheTime)
 	if time.Now().Before(expires) {
 		maxAge := time.Until(expires).Seconds()
 		w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%.0f", maxAge))
 	}
 
 	w.WriteHeader(http.StatusOK)
-	if _, err := w.Write(val.value.([]byte)); err != nil {
+	w.Header().Set("Content-Type", h.cachedImages[key].contentType)
+	if _, err := w.Write(h.cachedImages[key].value.([]byte)); err != nil {
 		log.Printf("Error writing response body from cache: %v", err)
+		http.Error(w, "Error writing response body from cache", http.StatusInternalServerError)
+		return
 	}
 }
