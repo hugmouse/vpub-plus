@@ -10,8 +10,14 @@ import (
 	"time"
 )
 
-// TODO: probably rename it since I plan to use it only for images
-// and not universal proxy
+const (
+	imageSizeLimit = 1024 * 512 // 524KB limit
+	cacheTime      = 10 * time.Minute
+)
+
+// imageProxyHandler GETs the image from remote host and serves it from a string map
+//
+// It does not validate the image is in fact a JPEG, PNG or GIF.
 func (h *Handler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 	rawURL := r.URL.Query().Get("url")
 	if rawURL == "" {
@@ -28,10 +34,8 @@ func (h *Handler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 
 	h.cacheMutex.RLock()
 	val, ok := h.cachedImages[urlStr]
-	isStale := ok && time.Since(val.lastUpdate) > 1*time.Minute
+	isStale := ok && time.Since(val.lastUpdate) > cacheTime
 	h.cacheMutex.RUnlock()
-
-	log.Println(h.cachedImages)
 
 	// Cache hit :)
 	if ok && !isStale {
@@ -39,19 +43,23 @@ func (h *Handler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 			h.serveFromCache(w, val)
 			return
 		}
-		http.Error(w, "Not an image", http.StatusBadGateway)
+		http.Error(w, "Error serving from cache", http.StatusInternalServerError)
+
+		h.cacheMutex.Lock()
+		delete(h.cachedImages, urlStr)
+		h.cacheMutex.Unlock()
+
 		return
 	}
 
 	// No cache hit :(
-	req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, urlStr, nil)
+	req, err := http.NewRequest(http.MethodGet, urlStr, nil)
 	if err != nil {
 		log.Printf("Error creating request for %s: %v", urlStr, err)
 		http.Error(w, "Failed to create request", http.StatusInternalServerError)
 		return
 	}
 
-	// TODO: move version to global const
 	req.Header.Set("User-Agent", "vpub-plus/1.13")
 
 	resp, err := h.httpClient.Do(req)
@@ -62,14 +70,18 @@ func (h *Handler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 			h.serveFromCache(w, val)
 			return
 		}
+		log.Printf("Error getting an image from remote resource %s: %v", urlStr, err)
+		http.Error(w, "Error getting an image from remote resource", http.StatusInternalServerError)
 		return
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Printf("Error closing response body: %v", err)
+		}
+	}(resp.Body)
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		log.Printf("Received non-cacheable response for %s (Status: %d, Type: %s)",
-			urlStr, resp.StatusCode, resp.Header.Get("Content-Type"))
-
 		// Try to serve from cache upon error again
 		if isStale {
 			log.Printf("Non-cacheable response for %s, serving stale data instead.", urlStr)
@@ -80,6 +92,13 @@ func (h *Handler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Upstream server returned status %d", resp.StatusCode), http.StatusBadGateway)
 		return
 	}
+
+	// In general, we can use STD's image library to validate JPEG, PNG or GIF,
+	// but there's way more image formats that browser supports.
+	//
+	// So either I have to add more dependencies or rely on remote server not being
+	// manipulated such way that they serve __something else__ as an image.
+	isImage := strings.HasPrefix(resp.Header.Get("Content-Type"), "image/")
 
 	imageBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -93,7 +112,10 @@ func (h *Handler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	isImage := strings.HasPrefix(resp.Header.Get("Content-Type"), "image/")
+	if len(imageBytes) > imageSizeLimit {
+		http.Error(w, "Image size too big", http.StatusRequestEntityTooLarge)
+		return
+	}
 
 	var newValue CachedImage
 
@@ -119,7 +141,7 @@ func (h *Handler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) serveFromCache(w http.ResponseWriter, val CachedImage) {
-	expires := val.lastUpdate.Add(1 * time.Minute)
+	expires := val.lastUpdate.Add(cacheTime)
 	if time.Now().Before(expires) {
 		maxAge := time.Until(expires).Seconds()
 		w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%.0f", maxAge))
