@@ -1,14 +1,14 @@
-//go:build !blackfriday
-// +build !blackfriday
-
-package syntax
+package vanilla
 
 import (
 	"fmt"
 	"html"
 	"regexp"
 	"strings"
+	"vpub/syntax"
 )
+
+type VanillaRenderer struct{}
 
 var blockquoteRegexp = regexp.MustCompile("^> (.*)$")
 var preRegexp = regexp.MustCompile("^```.*$")
@@ -23,27 +23,23 @@ var tableSeparator = regexp.MustCompile(`(:?-.-+:?)`)
 var codeRegexp = regexp.MustCompile("`(.*)`")
 var strikethroughRegexp = regexp.MustCompile(`~~(.*?)~~`)
 
-func clearUlMode(ulMode *bool, rv *[]string) {
+func (r *VanillaRenderer) clearUlMode(ulMode *bool, rv *[]string) {
 	if *ulMode {
 		*rv = append(*rv, "</ul>")
 		*ulMode = false
 	}
 }
 
-func sanitize(input string) string {
+func (r *VanillaRenderer) sanitize(input string) string {
 	return html.EscapeString(input)
 }
 
-const (
-	imageProxyURLBase = "/image-proxy?url="
-)
-
-func processLinks(input string) string {
+func (r *VanillaRenderer) processLinks(input string) string {
 	sane := html.EscapeString(input)
 	if imgRegexp.MatchString(input) || linkRegexp.MatchString(input) {
 		matches := imgRegexp.FindAllStringSubmatch(input, -1)
 		for _, m := range matches {
-			sane = strings.Replace(sane, m[0], fmt.Sprintf("<img src=\"%s%s\" alt=\"%s\"/>", imageProxyURLBase, m[2], m[1]), 1)
+			sane = strings.Replace(sane, m[0], fmt.Sprintf("<img src=\"%s%s\" alt=\"%s\"/>", syntax.ImageProxyURLBase, m[2], m[1]), 1)
 		}
 		matches = linkRegexp.FindAllStringSubmatch(sane, -1)
 		for _, m := range matches {
@@ -59,7 +55,7 @@ func processLinks(input string) string {
 	return sane
 }
 
-func processBold(input string) string {
+func (r *VanillaRenderer) processBold(input string) string {
 	if boldRegexp.MatchString(input) {
 		matches := boldRegexp.FindAllStringSubmatch(input, -1)
 		for _, m := range matches {
@@ -69,7 +65,7 @@ func processBold(input string) string {
 	return input
 }
 
-func processItalics(input string) string {
+func (r *VanillaRenderer) processItalics(input string) string {
 	if italicsRegexp.MatchString(input) {
 		matches := italicsRegexp.FindAllStringSubmatch(input, -1)
 		for _, m := range matches {
@@ -79,7 +75,7 @@ func processItalics(input string) string {
 	return input
 }
 
-func processCode(input string) string {
+func (r *VanillaRenderer) processCode(input string) string {
 	if codeRegexp.MatchString(input) {
 		matches := codeRegexp.FindAllStringSubmatch(input, -1)
 		for _, m := range matches {
@@ -89,7 +85,7 @@ func processCode(input string) string {
 	return input
 }
 
-func processStrikethrough(input string) string {
+func (r *VanillaRenderer) processStrikethrough(input string) string {
 	if strikethroughRegexp.MatchString(input) {
 		matches := strikethroughRegexp.FindAllStringSubmatch(input, -1)
 		for _, m := range matches {
@@ -100,16 +96,16 @@ func processStrikethrough(input string) string {
 }
 
 // Returns a sanitized output
-func processDecoration(input string) string {
-	sane := processLinks(input)
-	sane = processBold(sane)
-	sane = processItalics(sane)
-	sane = processCode(sane)
-	sane = processStrikethrough(sane)
+func (r *VanillaRenderer) processDecoration(input string) string {
+	sane := r.processLinks(input)
+	sane = r.processBold(sane)
+	sane = r.processItalics(sane)
+	sane = r.processCode(sane)
+	sane = r.processStrikethrough(sane)
 	return sane
 }
 
-func Convert(gmi string, wrap bool) string {
+func (r *VanillaRenderer) Convert(gmi string, wrap bool) string {
 	var rv []string
 
 	// Table parser logic
@@ -264,7 +260,7 @@ func Convert(gmi string, wrap bool) string {
 				rv = append(rv, "</pre>")
 				preMode = false
 			default:
-				rv = append(rv, sanitize(l))
+				rv = append(rv, r.sanitize(l))
 			}
 		} else {
 			switch {
@@ -272,16 +268,16 @@ func Convert(gmi string, wrap bool) string {
 				tableMode = true
 				tableHeaderTmp = l
 			case blockquoteRegexp.MatchString(l):
-				clearUlMode(&ulMode, &rv)
+				r.clearUlMode(&ulMode, &rv)
 				matches := blockquoteRegexp.FindStringSubmatch(l)
-				rv = append(rv, "<blockquote>"+sanitize(matches[1])+"</blockquote>")
+				rv = append(rv, "<blockquote>"+r.sanitize(matches[1])+"</blockquote>")
 			case preRegexp.MatchString(l):
-				clearUlMode(&ulMode, &rv)
+				r.clearUlMode(&ulMode, &rv)
 				rv = append(rv, "<pre>")
 				preMode = true
 			case bulletRegexp.MatchString(l):
 				matches := bulletRegexp.FindStringSubmatch(l)
-				sane := processDecoration(matches[1])
+				sane := r.processDecoration(matches[1])
 				if ulMode {
 					rv = append(rv, "<li>"+sane+"</li>")
 					continue
@@ -289,8 +285,8 @@ func Convert(gmi string, wrap bool) string {
 				rv = append(rv, "<ul>\n<li>"+sane+"</li>")
 				ulMode = true
 			default:
-				clearUlMode(&ulMode, &rv)
-				sane := processDecoration(l)
+				r.clearUlMode(&ulMode, &rv)
+				sane := r.processDecoration(l)
 				if len(l) != 0 {
 					if wrap {
 						rv = append(rv, "<p>"+sane+"</p>")
@@ -301,6 +297,6 @@ func Convert(gmi string, wrap bool) string {
 			}
 		}
 	}
-	clearUlMode(&ulMode, &rv)
+	r.clearUlMode(&ulMode, &rv)
 	return strings.Join(rv, "\n")
 }

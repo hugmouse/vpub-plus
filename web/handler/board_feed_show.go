@@ -11,7 +11,7 @@ import (
 	"vpub/web/handler/request"
 )
 
-func createAtomEntryFromTopic(url string, topic model.Topic) *Entry {
+func createAtomEntryFromTopic(url string, topic model.Topic, renderEngine syntax.Renderer) *Entry {
 	link := joinPath(
 		url,
 		"topics",
@@ -39,7 +39,7 @@ func createAtomEntryFromTopic(url string, topic model.Topic) *Entry {
 		},
 		Content: &Text{
 			Type: "html",
-			Body: syntax.Convert(topic.Post.Content, true) + postCount,
+			Body: renderEngine.Convert(topic.Post.Content, true) + postCount,
 		},
 	}
 }
@@ -71,7 +71,7 @@ func (h *Handler) showBoardFeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, topic := range topics {
-		feed.Entry = append(feed.Entry, createAtomEntryFromTopic(settings.URL, topic))
+		feed.Entry = append(feed.Entry, createAtomEntryFromTopic(settings.URL, topic, *h.renderEngine))
 	}
 
 	w.Header().Set("Content-Type", "application/atom+xml")

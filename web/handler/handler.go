@@ -13,6 +13,9 @@ import (
 	"time"
 	"vpub/model"
 	"vpub/storage"
+	"vpub/syntax"
+	"vpub/syntax/renderers/customBlackfriday"
+	"vpub/syntax/renderers/vanilla"
 	"vpub/web/handler/request"
 	"vpub/web/session"
 
@@ -94,9 +97,10 @@ func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
 }
 
 type Handler struct {
-	session *session.Manager
-	mux     *mux.Router
-	storage *storage.Storage
+	session      *session.Manager
+	mux          *mux.Router
+	storage      *storage.Storage
+	renderEngine *syntax.Renderer
 }
 
 type ImageProxyHandler struct {
@@ -165,11 +169,30 @@ func (h *Handler) handleAdminMiddleware(next http.Handler) http.Handler {
 
 func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 	router := mux.NewRouter()
-	h := &Handler{
-		session: s,
-		mux:     router,
-		storage: data,
+
+	renderRegistry := syntax.NewRegistry()
+
+	err := renderRegistry.Register("blackfriday", &customBlackfriday.BlackfridayRenderer{})
+	if err != nil {
+		return nil, err
 	}
+	err = renderRegistry.Register("vanilla", &vanilla.VanillaRenderer{})
+	if err != nil {
+		return nil, err
+	}
+
+	defaultRenderEngine, err := renderRegistry.Get("blackfriday")
+	if err != nil {
+		return nil, err
+	}
+
+	h := &Handler{
+		session:      s,
+		mux:          router,
+		storage:      data,
+		renderEngine: &defaultRenderEngine,
+	}
+
 	router.Use(h.handleSessionMiddleware)
 	h.initTpl()
 

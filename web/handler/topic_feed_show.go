@@ -35,7 +35,7 @@ func (h *Handler) showTopicFeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, post := range posts {
-		feed.Entry = append(feed.Entry, createAtomEntryFromPost(settings.URL, post))
+		feed.Entry = append(feed.Entry, createAtomEntryFromPost(settings.URL, post, *h.renderEngine))
 	}
 
 	w.Header().Set("Content-Type", "application/atom+xml")

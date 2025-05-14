@@ -113,28 +113,28 @@ func (s *Storage) CreateUser(key string, request model.UserCreationRequest) (int
 	if err := tx.QueryRowContext(ctx, `select exists(select 1 from users where name=$1)`, request.Name).Scan(&exists); err != nil {
 		rbErr := tx.Rollback()
 		if rbErr != nil {
-			return userId, errors.Join(err, fmt.Errorf("rollback in CreateTopic failed: %w", rbErr))
+			return userId, errors.Join(err, fmt.Errorf("rollback in CreateUser failed: %w", rbErr))
 		}
 		return userId, err
 	}
 	if exists {
 		rbErr := tx.Rollback()
 		if rbErr != nil {
-			return userId, errors.Join(err, fmt.Errorf("rollback in CreateTopic failed: %w", rbErr))
+			return userId, errors.Join(err, fmt.Errorf("rollback in CreateUser failed: %w", rbErr))
 		}
 		return userId, ErrUserExists{}
 	}
 	if err := tx.QueryRowContext(ctx, `insert into users (name, hash, is_admin) values (lower($1), $2, $3) returning id`, request.Name, string(hash), request.IsAdmin).Scan(&userId); err != nil {
 		rbErr := tx.Rollback()
 		if rbErr != nil {
-			return userId, errors.Join(err, fmt.Errorf("rollback in CreateTopic failed: %w", rbErr))
+			return userId, errors.Join(err, fmt.Errorf("rollback in CreateUser failed: %w", rbErr))
 		}
 		return userId, err
 	}
 	if _, err := tx.ExecContext(ctx, `update keys set user_id=$1 where id=$2`, userId, keyId); err != nil {
 		rbErr := tx.Rollback()
 		if rbErr != nil {
-			return userId, errors.Join(err, fmt.Errorf("rollback in CreateTopic failed: %w", rbErr))
+			return userId, errors.Join(err, fmt.Errorf("rollback in CreateUser failed: %w", rbErr))
 		}
 		return userId, err
 	}

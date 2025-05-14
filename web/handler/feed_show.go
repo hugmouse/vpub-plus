@@ -69,7 +69,7 @@ func joinPath(base string, p ...string) string {
 	return u.String()
 }
 
-func createAtomEntryFromPost(url string, post model.Post) *Entry {
+func createAtomEntryFromPost(url string, post model.Post, renderEngine syntax.Renderer) *Entry {
 	link := joinPath(
 		url,
 		"topics",
@@ -91,7 +91,7 @@ func createAtomEntryFromPost(url string, post model.Post) *Entry {
 		},
 		Content: &Text{
 			Type: "html",
-			Body: syntax.Convert(post.Content, true),
+			Body: renderEngine.Convert(post.Content, true),
 		},
 	}
 }
@@ -123,7 +123,7 @@ func (h *Handler) showFeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, post := range posts {
-		feed.Entry = append(feed.Entry, createAtomEntryFromPost(settings.URL, post))
+		feed.Entry = append(feed.Entry, createAtomEntryFromPost(settings.URL, post, *h.renderEngine))
 	}
 
 	w.Header().Set("Content-Type", "application/atom+xml; charset=utf-8")
