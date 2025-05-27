@@ -67,6 +67,17 @@
             <input type="number" name="per-page" id="per-page" value="{{ .form.PerPage }}" autocomplete="off" required aria-describedby="perpage-desc"/>
             <p id="perpage-desc">Limits amount of boards sent to a client at once and adds pagination if needed.</p>
         </div>
+        <div class="field">
+            <label for="rendering-engine">Rendering engine</label>
+            <select name="rendering-engine" id="rendering-engine">
+                <option value="" disabled>--Please choose an option--</option>
+                {{/* For some reason I have to utilize variable here, otherwise doesn't want to work inside range loop below */}}
+                {{ $currentEngine := .form.SelectedRenderEngine }}
+                {{ range $index, $engine := .engines }}
+                    <option value="{{$engine}}" {{ if eq $engine $currentEngine }} selected {{ end }}>{{$engine}}</option>
+                {{ end }}
+            </select>
+        </div>
         <input type="submit" value="Submit">
     </form>
     </table>

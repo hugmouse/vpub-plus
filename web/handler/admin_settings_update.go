@@ -22,6 +22,13 @@ func (h *Handler) updateAdminSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	engine, err := h.renderRegistry.Get(settingsForm.SelectedRenderEngine)
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	h.currentRenderEngine = &engine
+
 	session := request.GetSessionContextKey(r)
 	session.FlashInfo("Settings updated")
 	session.Save(r, w)

@@ -97,10 +97,11 @@ func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
 }
 
 type Handler struct {
-	session      *session.Manager
-	mux          *mux.Router
-	storage      *storage.Storage
-	renderEngine *syntax.Renderer
+	session             *session.Manager
+	mux                 *mux.Router
+	storage             *storage.Storage
+	currentRenderEngine *syntax.Renderer
+	renderRegistry      *syntax.RenderEngineRegistry
 }
 
 type ImageProxyHandler struct {
@@ -187,10 +188,11 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 	}
 
 	h := &Handler{
-		session:      s,
-		mux:          router,
-		storage:      data,
-		renderEngine: &defaultRenderEngine,
+		session:             s,
+		mux:                 router,
+		storage:             data,
+		currentRenderEngine: &defaultRenderEngine,
+		renderRegistry:      renderRegistry,
 	}
 
 	router.Use(h.handleSessionMiddleware)

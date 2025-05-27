@@ -16,6 +16,7 @@ type Renderer interface {
 	// to wrap in <p> tags the text nodes.
 	// You can ignore it if you so desire.
 	Convert(input string, wrap bool) string
+	Name() string
 }
 
 type RenderEngineRegistry struct {

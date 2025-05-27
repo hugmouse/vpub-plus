@@ -49,3 +49,7 @@ func (b *BlackfridayRenderer) Convert(gmiContent string, wrap bool) string {
 	safe := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
 	return string(safe)
 }
+
+func (b *BlackfridayRenderer) Name() string {
+	return "blackfriday"
+}

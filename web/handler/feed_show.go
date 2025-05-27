@@ -123,7 +123,7 @@ func (h *Handler) showFeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, post := range posts {
-		feed.Entry = append(feed.Entry, createAtomEntryFromPost(settings.URL, post, *h.renderEngine))
+		feed.Entry = append(feed.Entry, createAtomEntryFromPost(settings.URL, post, *h.currentRenderEngine))
 	}
 
 	w.Header().Set("Content-Type", "application/atom+xml; charset=utf-8")

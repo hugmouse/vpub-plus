@@ -73,10 +73,10 @@ func (h *Handler) initTpl() {
 				return false
 			},
 			"syntax": func(input string) template.HTML {
-				return template.HTML((*h.renderEngine).Convert(input, true))
+				return template.HTML((*h.currentRenderEngine).Convert(input, true))
 			},
 			"sig": func(input string) template.HTML {
-				return template.HTML((*h.renderEngine).Convert(input, false))
+				return template.HTML((*h.currentRenderEngine).Convert(input, false))
 			},
 			"iso8601": func(t time.Time) string {
 				return t.Format("2006-01-02")
@@ -138,7 +138,7 @@ func (h *Handler) initTpl() {
 				return template.HTML(html)
 			},
 			"unsafeRender": func(text string) template.HTML {
-				return template.HTML((*h.renderEngine).Convert(text, false))
+				return template.HTML((*h.currentRenderEngine).Convert(text, false))
 			},
 			"tableNameToRoute": func(table string) string {
 				switch table {

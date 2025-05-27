@@ -71,7 +71,7 @@ func (h *Handler) showBoardFeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, topic := range topics {
-		feed.Entry = append(feed.Entry, createAtomEntryFromTopic(settings.URL, topic, *h.renderEngine))
+		feed.Entry = append(feed.Entry, createAtomEntryFromTopic(settings.URL, topic, *h.currentRenderEngine))
 	}
 
 	w.Header().Set("Content-Type", "application/atom+xml")

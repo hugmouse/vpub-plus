@@ -12,16 +12,24 @@ func (h *Handler) showAdminSettingsView(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	engines := (*h.renderRegistry).List()
+	var enginesStrings []string
+	for _, engine := range engines {
+		enginesStrings = append(enginesStrings, engine.Name())
+	}
+
 	settingsForm := form.SettingsForm{
-		Name:    settings.Name,
-		Css:     settings.Css,
-		Footer:  settings.Footer,
-		PerPage: settings.PerPage,
-		URL:     settings.URL,
-		Lang:    settings.Lang,
+		Name:                 settings.Name,
+		Css:                  settings.Css,
+		Footer:               settings.Footer,
+		PerPage:              settings.PerPage,
+		URL:                  settings.URL,
+		Lang:                 settings.Lang,
+		SelectedRenderEngine: (*h.currentRenderEngine).Name(),
 	}
 
 	v := NewView(w, r, "admin_settings_edit")
 	v.Set("form", settingsForm)
+	v.Set("engines", enginesStrings)
 	v.Render()
 }
