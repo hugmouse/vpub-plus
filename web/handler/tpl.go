@@ -43,9 +43,11 @@ func (v View) Render() {
 	settings := request.GetSettingsContextKey(v.r)
 	data["settings"] = settings
 	session := request.GetSessionContextKey(v.r)
-	data["errors"] = session.GetFlashErrors()
-	data["info"] = session.GetFlashInfo()
-	session.Save(v.r, v.w)
+	if session != nil {
+		data["errors"] = session.GetFlashErrors()
+		data["info"] = session.GetFlashInfo()
+		session.Save(v.r, v.w)
+	}
 	if err := views[v.tpl].Funcs(template.FuncMap{
 		"hasPermission": func(name string) bool {
 			return user.Name == name

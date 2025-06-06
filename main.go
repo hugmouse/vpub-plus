@@ -4,6 +4,7 @@ package main
 import (
 	"log"
 	"math/rand"
+	_ "net/http/pprof"
 	"time"
 	"vpub/config"
 	"vpub/model"

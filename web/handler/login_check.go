@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -29,8 +30,23 @@ func (h *Handler) checkLogin(w http.ResponseWriter, r *http.Request) {
 		v.Render()
 		return
 	}
-	session := request.GetSessionContextKey(r)
-	session.SetUserId(user.Id)
-	session.Save(r, w)
+
+	newSession, err := h.session.NewSession(w, r, user.Id)
+	if err != nil {
+		serverError(w, errors.New("can't create a new session: "+err.Error()))
+		return
+	}
+
+	settings, err := h.storage.Settings()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+
+	ctx := r.Context()
+	ctx = context.WithValue(ctx, request.SessionKey, newSession)
+	ctx = context.WithValue(ctx, request.UserKey, user)
+	ctx = context.WithValue(ctx, request.SettingsKey, settings)
+
 	http.Redirect(w, r, "/", http.StatusFound)
 }

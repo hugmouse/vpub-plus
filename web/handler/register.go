@@ -1,7 +1,8 @@
 package handler
 
 import (
-	"fmt"
+	"context"
+	"errors"
 	"net/http"
 	"vpub/model"
 	"vpub/validator"
@@ -39,10 +40,24 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session := request.GetSessionContextKey(r)
-	session.SetUserId(id)
-	session.FlashInfo(fmt.Sprintf("Welcome, %s!", userCreationRequest.Name))
-	session.Save(r, w)
+	newSession, err := h.session.NewSession(w, r, id)
+	if err != nil {
+		serverError(w, errors.New("can't create a new session: "+err.Error()))
+		return
+	}
+
+	settings, err := h.storage.Settings()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+
+	ctx := r.Context()
+	ctx = context.WithValue(ctx, request.SessionKey, newSession)
+	ctx = context.WithValue(ctx, request.SettingsKey, settings)
+
+	// TODO: fix flash
+	// session.FlashInfo(fmt.Sprintf("Welcome, %s!", userCreationRequest.Name))
 
 	http.Redirect(w, r, "/", http.StatusFound)
 }

@@ -20,6 +20,20 @@ type Session struct {
 	session *sessions.Session
 }
 
+func (s *Manager) NewSession(w http.ResponseWriter, r *http.Request, userID int64) (*Session, error) {
+	sess, err := s.Store.Get(r, cookieName)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get session: %w", err)
+	}
+	sess.Values["id"] = userID
+
+	session := &Session{session: sess}
+	if err := session.session.Save(r, w); err != nil {
+		return nil, fmt.Errorf("unable to save session: %w", err)
+	}
+	return session, nil
+}
+
 func (s *Session) FlashError(msg string) {
 	s.session.AddFlash(msg, "errors")
 }
@@ -96,18 +110,18 @@ func (s *Manager) GetSession(r *http.Request) (*Session, error) {
 //}
 
 // GetUser Returns an error if the user doesn't exist
-func (s *Manager) GetUser(r *http.Request) (model.User, error) {
+func (s *Manager) GetUser(r *http.Request) (model.User, *Session, error) {
 	session, err := s.GetSession(r)
 	if err != nil {
-		return model.User{}, err
+		return model.User{}, &Session{}, err
 	}
 	id, ok := session.session.Values["id"].(int64)
 	if id == 0 || !ok {
-		return model.User{}, errors.New("error extracting session")
+		return model.User{}, &Session{}, errors.New("error extracting session")
 	}
 	user, err := s.Storage.UserById(id)
 	if err != nil {
-		return model.User{}, errors.New("user not found")
+		return model.User{}, &Session{}, errors.New("user not found")
 	}
-	return user, nil
+	return user, session, nil
 }

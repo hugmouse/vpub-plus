@@ -2,12 +2,12 @@ package handler
 
 import (
 	"context"
-	"errors"
-	"fmt"
+	_ "expvar"
 	"html/template"
 	"log"
 	"net"
 	"net/http"
+	"net/http/pprof"
 	"strconv"
 	"sync"
 	"time"
@@ -76,11 +76,10 @@ func serverError(w http.ResponseWriter, err error) {
 
 func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user, _ := h.session.GetUser(r)
-		sessionResult, err := h.session.GetSession(r)
+		ctx := r.Context()
+		user, _session, err := h.session.GetUser(r)
 		if err != nil {
-			fmt.Println("Unable to get session: " + err.Error())
-			serverError(w, errors.New("An error occurred! Please try to clean cookies and then refresh the page. Context: "+err.Error()))
+			next.ServeHTTP(w, r.WithContext(ctx))
 			return
 		}
 		settings, err := h.storage.Settings()
@@ -88,8 +87,7 @@ func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
 			serverError(w, err)
 			return
 		}
-		ctx := r.Context()
-		ctx = context.WithValue(ctx, request.SessionKey, sessionResult)
+		ctx = context.WithValue(ctx, request.SessionKey, _session)
 		ctx = context.WithValue(ctx, request.UserKey, user)
 		ctx = context.WithValue(ctx, request.SettingsKey, settings)
 		next.ServeHTTP(w, r.WithContext(ctx))
@@ -216,6 +214,37 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 			},
 		},
 	}
+
+	router.HandleFunc(
+		"/debug/pprof/", pprof.Index,
+	)
+	router.HandleFunc(
+		"/debug/pprof/cmdline", pprof.Cmdline,
+	)
+	router.HandleFunc(
+		"/debug/pprof/profile", pprof.Profile,
+	)
+	router.HandleFunc(
+		"/debug/pprof/symbol", pprof.Symbol,
+	)
+	router.HandleFunc(
+		"/debug/pprof/trace", pprof.Trace,
+	)
+	router.Handle(
+		"/debug/pprof/goroutine", pprof.Handler("goroutine"),
+	)
+	router.Handle(
+		"/debug/pprof/heap", pprof.Handler("heap"),
+	)
+	router.Handle(
+		"/debug/pprof/threadcreate", pprof.Handler("threadcreate"),
+	)
+	router.Handle(
+		"/debug/pprof/block", pprof.Handler("block"),
+	)
+	router.Handle(
+		"/debug/vars", http.DefaultServeMux,
+	)
 
 	// Static assets
 	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)
