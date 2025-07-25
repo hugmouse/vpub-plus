@@ -25,7 +25,7 @@ var TplMap = map[string]string{
                 <a href="/users/1">{{ .logged.Name }}</a>
                 <p>
                     {{ if .logged.Picture }}
-                        <img alt="{{ .logged.PictureAlt }}" src="{{ .logged.Picture }}" width="80" height="80"
+                        <img alt="{{ .logged.PictureAlt }}" src="{{ proxyURL .logged.Picture }}" width="80" height="80"
                              style="object-fit: contain;"/>
                     {{ else }}
                         <svg class="not-selectable" width="80" height="80" xmlns="http://www.w3.org/2000/svg"
@@ -443,6 +443,17 @@ var TplMap = map[string]string{
             <label for="per-page">Per page</label>
             <input type="number" name="per-page" id="per-page" value="{{ .form.PerPage }}" autocomplete="off" required aria-describedby="perpage-desc"/>
             <p id="perpage-desc">Limits amount of boards sent to a client at once and adds pagination if needed.</p>
+        </div>
+        <div class="field">
+            <label for="rendering-engine">Rendering engine</label>
+            <select name="rendering-engine" id="rendering-engine">
+                <option value="" disabled>--Please choose an option--</option>
+                {{/* For some reason I have to utilize variable here, otherwise doesn't want to work inside range loop below */}}
+                {{ $currentEngine := .form.SelectedRenderEngine }}
+                {{ range $index, $engine := .engines }}
+                    <option value="{{$engine}}" {{ if eq $engine $currentEngine }} selected {{ end }}>{{$engine}}</option>
+                {{ end }}
+            </select>
         </div>
         <input type="submit" value="Submit">
     </form>
@@ -933,7 +944,7 @@ var TplMap = map[string]string{
                     <a href="/users/{{ .User.Id }}">{{ .User.Name }}</a>
                     <p>
                         {{ if .User.Picture }}
-                            <img alt="{{ .User.PictureAlt }}" src="{{ .User.Picture }}" width="80" height="80" style="object-fit: contain;"/>
+                            <img alt="{{ .User.PictureAlt }}" src="{{ proxyURL .User.Picture }}" width="80" height="80" style="object-fit: contain;"/>
                         {{ else }}
                             <svg class="not-selectable" width="80" height="80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                 <rect width="80" height="80" fill="rgba(0, 0, 0, 40%)"/>
@@ -956,6 +967,7 @@ var TplMap = map[string]string{
                                 <a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
                             {{ end }}
                         {{ end }}
+                        <a href="#{{ .Id }}" class="anchor">#</a>
                         <hr/>
                     </div>
                     <div>{{ syntax .Content }}</div>

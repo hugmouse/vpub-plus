@@ -53,6 +53,7 @@
                                 <a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
                             {{ end }}
                         {{ end }}
+                        <a href="#{{ .Id }}" class="anchor">#</a>
                         <hr/>
                     </div>
                     <div>{{ syntax .Content }}</div>

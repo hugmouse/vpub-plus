@@ -400,5 +400,16 @@ form.search-form {
     gap: 0.5rem;
     align-items: center;
     justify-content: center;
+}
+
+a.anchor {
+    float: right;
+    font-weight: normal;
+    text-decoration: none;
+    opacity: 0.6;
+}
+
+a.anchor:hover {
+    opacity: 1.0;
 }`,
 }
