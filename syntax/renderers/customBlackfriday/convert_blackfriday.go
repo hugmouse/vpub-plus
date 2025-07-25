@@ -97,9 +97,6 @@ func (b *BlackfridayRenderer) Convert(gmiContent string, wrap bool) string {
 		[]byte(input),
 		blackfriday.WithRenderer(proxy),
 		blackfriday.WithExtensions(blackfriday.CommonExtensions),
-		blackfriday.WithExtensions(blackfriday.HeadingIDs),
-		blackfriday.WithExtensions(blackfriday.Footnotes),
-		blackfriday.WithExtensions(blackfriday.Titleblock),
 	)
 	safe := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
 
