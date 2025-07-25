@@ -7,7 +7,6 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"net/http/pprof"
 	"strconv"
 	"sync"
 	"time"
@@ -215,36 +214,9 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 		},
 	}
 
-	router.HandleFunc(
-		"/debug/pprof/", pprof.Index,
-	)
-	router.HandleFunc(
-		"/debug/pprof/cmdline", pprof.Cmdline,
-	)
-	router.HandleFunc(
-		"/debug/pprof/profile", pprof.Profile,
-	)
-	router.HandleFunc(
-		"/debug/pprof/symbol", pprof.Symbol,
-	)
-	router.HandleFunc(
-		"/debug/pprof/trace", pprof.Trace,
-	)
-	router.Handle(
-		"/debug/pprof/goroutine", pprof.Handler("goroutine"),
-	)
-	router.Handle(
-		"/debug/pprof/heap", pprof.Handler("heap"),
-	)
-	router.Handle(
-		"/debug/pprof/threadcreate", pprof.Handler("threadcreate"),
-	)
-	router.Handle(
-		"/debug/pprof/block", pprof.Handler("block"),
-	)
-	router.Handle(
-		"/debug/vars", http.DefaultServeMux,
-	)
+	// Adds pprof to /debug/pprof route,
+	// see "debug_handlers.go" for more info
+	registerDebugHandlers(router)
 
 	// Static assets
 	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)
