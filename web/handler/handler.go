@@ -76,19 +76,19 @@ func serverError(w http.ResponseWriter, err error) {
 func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		user, _session, err := h.session.GetUser(r)
-		if err != nil {
-			next.ServeHTTP(w, r.WithContext(ctx))
-			return
-		}
 		settings, err := h.storage.Settings()
 		if err != nil {
 			serverError(w, err)
 			return
 		}
+		ctx = context.WithValue(ctx, request.SettingsKey, settings)
+		user, _session, err := h.session.GetUser(r)
+		if err != nil {
+			next.ServeHTTP(w, r.WithContext(ctx))
+			return
+		}
 		ctx = context.WithValue(ctx, request.SessionKey, _session)
 		ctx = context.WithValue(ctx, request.UserKey, user)
-		ctx = context.WithValue(ctx, request.SettingsKey, settings)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
