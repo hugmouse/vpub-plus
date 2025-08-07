@@ -11,6 +11,10 @@ func (b *testRenderer) Convert(text string, wrap bool) string {
 	return text
 }
 
+func (b *testRenderer) Name() string {
+	return "test"
+}
+
 func TestGet(t *testing.T) {
 	testRegistry := NewRegistry()
 

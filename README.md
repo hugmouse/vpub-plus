@@ -25,13 +25,27 @@ Simple message board software and also a fork.
 
 ### Using `Docker` and `Docker Compose`
 
-You can try it out using `Docker`, for testing purposes you can skip configuring `.env` file and just run:
+The easiest way to get started is with `Docker` and `Docker Compose`.
 
-```bash
-docker-compose up -d
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/hugmouse/vpub-plus.git
+   cd vpub-plus
+   ```
 
-And then you can navigate to `localhost:1337` to see your very own forum!
+2. **Configure your environment**
+   Copy the example `.env.example` file to `.env` and edit it to your liking.
+   ```bash
+   cp .env.example .env
+   ```
+   The default values in `.env.example` are a good starting point for local testing.
+
+3. **Run the application**
+   ```bash
+   docker-compose up -d
+   ```
+
+And then you can navigate to `localhost:1337` (or whatever `HOST_PORT` you set in `.env`) to see your very own forum!
 
 ### Compiling vpub-plus from the source
 
@@ -69,15 +83,26 @@ Make sure that you have [postgresql][postgres] installed!
 
 ### Set up environment variables
 
-Now you have to set those environment variables:
+`vpub-plus` is configured using environment variables. If you are using Docker, you can set these in the `.env` file. If you are running from source, you can set them in your shell or use a tool like `direnv`.
 
-* `DATABASE_URL` - [Postgresql connection URL][postgres-url-format]
-* `SESSION_KEY` - 32 bytes long session key
-* `CSRF_KEY` - 32 bytes longs CSRF key
-* `CSRF_SECURE` - Makes CSRF cookies secure (`true`/`false`)
-* `PORT` - What port is going to be used by a `vpub` HTTP server
+Here are the available variables:
 
-You can check the example configuration in systemd config!
+| Variable                          | Description                                                                                                | Default                               |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `PORT`                            | The port the application will listen on.                                                                   | `8080`                                |
+| `HOST_PORT`                       | The port on the host machine to map to the application port (for Docker).                                  | `1337`                                |
+| `DATABASE_URL`                    | The full connection URL for your PostgreSQL database.                                                      | `postgres://vpub:yourpassword@db:5432/vpub?sslmode=disable` |
+| `POSTGRES_USER`                   | The PostgreSQL user.                                                                                       | `vpub`                                |
+| `POSTGRES_PASSWORD`               | The PostgreSQL password.                                                                                   | `yourpassword`                        |
+| `POSTGRES_DB`                     | The PostgreSQL database name.                                                                              | `vpub`                                |
+| `SESSION_KEY`                     | A 32-byte random string for session authentication. **Change this!**                                       | `your32byteslongsessionkeyhere`       |
+| `CSRF_KEY`                        | A 32-byte random string for CSRF protection. **Change this!**                                              | `your32byteslongcsrfkeyhere`          |
+| `CSRF_SECURE`                     | Set to `true` if you are using HTTPS to make CSRF cookies secure.                                            | `true`                                |
+| `TITLE`                           | The title of your forum.                                                                                   | `My vpub-plus forum`                  |
+| `PROXYING_ENABLED`                | Set to `true` if you are running behind a reverse proxy.                                                   | `true`                                |
+| `POSTGRES_MAX_OPEN_CONNECTIONS`   | The maximum number of open connections to the database.                                                    | `0` (unlimited)                       |
+| `POSTGRES_MAX_IDLE_CONNECTIONS`   | The maximum number of idle connections to the database.                                                    | `0` (unlimited)                       |
+| `POSTGRES_MAX_LIFETIME`           | The maximum amount of time a connection may be reused.                                                     | `5m`                                  |
 
 ----
 
@@ -101,11 +126,9 @@ User=vpub
 Group=vpub
 
 Environment=DATABASE_URL=postgres://vpub@127.0.0.1/vpub?sslmode=disable
-
-# Default port 8080
 Environment=PORT=1337
 
-# Those keys should be 32 bytes long
+# IMPORTANT: Those keys should be 32 bytes long and random
 Environment=SESSION_KEY=CHANGE ME
 Environment=CSRF_KEY=CHANGE ME
 
