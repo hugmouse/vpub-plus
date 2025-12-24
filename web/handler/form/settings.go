@@ -14,10 +14,14 @@ type SettingsForm struct {
 	URL                  string
 	Lang                 string
 	SelectedRenderEngine string
+	ImageProxyCacheTime  int64
+	ImageProxySizeLimit  int64
 }
 
 func NewSettingsForm(r *http.Request) *SettingsForm {
 	perPage, _ := strconv.ParseInt(r.FormValue("per-page"), 10, 64)
+	cacheTime, _ := strconv.ParseInt(r.FormValue("image-proxy-cache-time"), 10, 64)
+	sizeLimit, _ := strconv.ParseInt(r.FormValue("image-proxy-size-limit"), 10, 64)
 	return &SettingsForm{
 		Name:                 strings.TrimSpace(r.FormValue("name")),
 		Css:                  r.FormValue("css"),
@@ -26,5 +30,7 @@ func NewSettingsForm(r *http.Request) *SettingsForm {
 		Lang:                 r.FormValue("lang"),
 		PerPage:              perPage,
 		SelectedRenderEngine: r.FormValue("rendering-engine"),
+		ImageProxyCacheTime:  cacheTime,
+		ImageProxySizeLimit:  sizeLimit,
 	}
 }

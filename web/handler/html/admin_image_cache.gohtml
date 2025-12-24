@@ -1,0 +1,62 @@
+{{ define "admin_image_cache" }}
+{{ template "layout" . }}
+{{ end }}
+
+{{ define "content" }}
+    <nav class="breadcrumb">
+        <ul>
+            <li>
+                <a href="/admin">Admin</a>
+                <ul>
+                    <li>
+                        Image cache
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+<h1>Image Proxy Cache</h1>
+
+<form action="/admin/image-proxy/remove" method="post" style="margin-bottom: 2rem;">
+    {{ .csrfField }}
+    <input type="hidden" name="action" value="all">
+    <button type="submit" class="button danger">Clear All Cache</button>
+    <a href="/admin/settings/edit" class="button">Edit Settings</a>
+</form>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>URL</th>
+        <th>Size</th>
+        <th>Type</th>
+        <th>Expires</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ range .images }}
+    <tr>
+        <td title="{{ .URL }}" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            <img src="{{ .URL }}" alt="{{ .URL }}" style="max-height: 100px;">
+        </td>
+        <td>{{ humanizeBytes .Size }}</td>
+        <td>{{ .ContentType }}</td>
+        <td>{{ .ExpiresAt.Format "2006-01-02 15:04:05" }}</td>
+        <td>
+            <form action="/admin/image-proxy/remove" method="post" style="display:inline;">
+                {{ $.csrfField }}
+                <input type="hidden" name="url" value="{{ .URL }}">
+                <button type="submit" class="button-small danger">Remove</button>
+            </form>
+        </td>
+    </tr>
+    {{ else }}
+    <tr>
+        <td colspan="5">No images in cache.</td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+{{ end }}

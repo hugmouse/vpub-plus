@@ -99,6 +99,7 @@ type Handler struct {
 	storage             *storage.Storage
 	currentRenderEngine *syntax.Renderer
 	renderRegistry      *syntax.RenderEngineRegistry
+	imageProxy          *ImageProxyHandler
 }
 
 type ImageProxyHandler struct {
@@ -214,6 +215,8 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 		},
 	}
 
+	h.imageProxy = handlerForImageProxy
+
 	// Adds pprof to /debug/pprof route,
 	// see "debug_handlers.go" for more info
 	registerDebugHandlers(router)
@@ -312,6 +315,9 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 	adminSubRouter.HandleFunc("/forums/{forumId}/update", h.updateAdminForum).Methods(http.MethodPost)
 	adminSubRouter.HandleFunc("/forums/{forumId}/remove", h.showAdminRemoveForumView).Methods(http.MethodGet)
 	adminSubRouter.HandleFunc("/forums/{forumId}/remove", h.removeAdminForum).Methods(http.MethodPost)
+
+	adminSubRouter.HandleFunc("/image-proxy", h.showAdminImageCache).Methods(http.MethodGet)
+	adminSubRouter.HandleFunc("/image-proxy/remove", h.removeAdminImageCache).Methods(http.MethodPost)
 
 	return router, nil
 }

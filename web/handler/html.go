@@ -99,6 +99,7 @@ var TplMap = map[string]string{
             <li><a href="/admin/boards">Manage boards</a></li>
             <li><a href="/admin/forums">Manage forums</a></li>
             <li><a href="/admin/users">Manage users</a></li>
+            <li><a href="/admin/image-proxy">Manage image cache</a></li>
         </ul>
     </nav>
 {{ end }}`,
@@ -335,6 +336,67 @@ var TplMap = map[string]string{
         <input type="submit" value="Submit">
     </form>
 {{ end }}`,
+	"admin_image_cache": `{{ define "admin_image_cache" }}
+{{ template "layout" . }}
+{{ end }}
+
+{{ define "content" }}
+    <nav class="breadcrumb">
+        <ul>
+            <li>
+                <a href="/admin">Admin</a>
+                <ul>
+                    <li>
+                        Image cache
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+<h1>Image Proxy Cache</h1>
+
+<form action="/admin/image-proxy/remove" method="post" style="margin-bottom: 2rem;">
+    {{ .csrfField }}
+    <input type="hidden" name="action" value="all">
+    <button type="submit" class="button danger">Clear All Cache</button>
+    <a href="/admin/settings/edit" class="button">Edit Settings</a>
+</form>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>URL</th>
+        <th>Size</th>
+        <th>Type</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ range .images }}
+    <tr>
+        <td title="{{ .URL }}" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            <img src="{{ .URL }}" alt="{{ .URL }}" style="max-height: 100px;">
+        </td>
+        <td>{{ humanizeBytes .Size }}</td>
+        <td>{{ .ContentType }}</td>
+        <td>
+            <form action="/admin/image-proxy/remove" method="post" style="display:inline;">
+                {{ $.csrfField }}
+                <input type="hidden" name="url" value="{{ .URL }}">
+                <button type="submit" class="button-small danger">Remove</button>
+            </form>
+        </td>
+    </tr>
+    {{ else }}
+    <tr>
+        <td colspan="5">No images in cache.</td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+{{ end }}
+`,
 	"admin_keys": `{{ define "title" }}Keys{{ end }}
 {{ define "content" }}
     <nav class="breadcrumb">
@@ -454,6 +516,16 @@ var TplMap = map[string]string{
                     <option value="{{$engine}}" {{ if eq $engine $currentEngine }} selected {{ end }}>{{$engine}}</option>
                 {{ end }}
             </select>
+        </div>
+        <div class="field">
+            <label for="image-proxy-cache-time">Image Proxy Cache Time (seconds)</label>
+            <input type="number" name="image-proxy-cache-time" id="image-proxy-cache-time" value="{{ .form.ImageProxyCacheTime }}" autocomplete="off" aria-describedby="cache-time-desc"/>
+            <p id="cache-time-desc">Duration in seconds to cache external images.</p>
+        </div>
+        <div class="field">
+            <label for="image-proxy-size-limit">Image Proxy Size Limit (bytes)</label>
+            <input type="number" name="image-proxy-size-limit" id="image-proxy-size-limit" value="{{ .form.ImageProxySizeLimit }}" autocomplete="off" aria-describedby="size-limit-desc"/>
+            <p id="size-limit-desc">Maximum size of an image in bytes to be cached and served (e.g. 524288 for 512KB).</p>
         </div>
         <input type="submit" value="Submit">
     </form>

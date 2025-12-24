@@ -11,12 +11,14 @@ func (h *Handler) updateAdminSettings(w http.ResponseWriter, r *http.Request) {
 	settingsForm := form.NewSettingsForm(r)
 
 	if err := h.storage.UpdateSettings(model.Settings{
-		Name:    settingsForm.Name,
-		Css:     settingsForm.Css,
-		Footer:  settingsForm.Footer,
-		PerPage: settingsForm.PerPage,
-		URL:     settingsForm.URL,
-		Lang:    settingsForm.Lang,
+		Name:                settingsForm.Name,
+		Css:                 settingsForm.Css,
+		Footer:              settingsForm.Footer,
+		PerPage:             settingsForm.PerPage,
+		URL:                 settingsForm.URL,
+		Lang:                settingsForm.Lang,
+		ImageProxyCacheTime: settingsForm.ImageProxyCacheTime,
+		ImageProxySizeLimit: settingsForm.ImageProxySizeLimit,
 	}); err != nil {
 		serverError(w, err)
 		return

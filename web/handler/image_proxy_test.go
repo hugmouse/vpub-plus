@@ -2,11 +2,14 @@ package handler
 
 import (
 	"bytes"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"testing"
 	"time"
+	"vpub/model"
+	"vpub/web/handler/request"
 )
 
 var (
@@ -112,6 +115,14 @@ func TestImageProxyHandler_ServeHTTP_WithStdHttp(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			req := httptest.NewRequest(http.MethodGet, tt.urlPath, nil)
+			// Inject key settings for test
+			settings := model.Settings{
+				ImageProxySizeLimit: 1024 * 1024, // 1MB
+				ImageProxyCacheTime: 60,
+			}
+			ctx := context.WithValue(req.Context(), request.SettingsKey, settings)
+			req = req.WithContext(ctx)
+
 			rr := httptest.NewRecorder()
 
 			serveMux.ServeHTTP(rr, req)
@@ -132,5 +143,51 @@ func TestImageProxyHandler_ServeHTTP_WithStdHttp(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestImageProxyHandler_Management(t *testing.T) {
+	h := NewImageProxyHandler()
+	urlStr := "http://example.com/image.png"
+
+	// Add an item manually to cache
+	h.cacheMutex.Lock()
+	h.cachedImages[urlStr] = CachedImage{
+		lastUpdate:  time.Now(),
+		value:       []byte("fake-image-data"),
+		contentType: "image/png",
+	}
+	h.cacheMutex.Unlock()
+
+	// Test List
+	list := h.List(time.Minute)
+	if len(list) != 1 {
+		t.Errorf("List() returned %d items, want 1", len(list))
+	}
+	if list[0].URL != urlStr {
+		t.Errorf("List() item URL = %s, want %s", list[0].URL, urlStr)
+	}
+
+	// Test Remove
+	h.Remove(urlStr)
+	list = h.List(time.Minute)
+	if len(list) != 0 {
+		t.Errorf("List() returned %d items after Remove, want 0", len(list))
+	}
+
+	// Add again for RemoveAll
+	h.cacheMutex.Lock()
+	h.cachedImages[urlStr] = CachedImage{
+		lastUpdate:  time.Now(),
+		value:       []byte("fake-image-data"),
+		contentType: "image/png",
+	}
+	h.cacheMutex.Unlock()
+
+	// Test RemoveAll
+	h.RemoveAll()
+	list = h.List(time.Minute)
+	if len(list) != 0 {
+		t.Errorf("List() returned %d items after RemoveAll, want 0", len(list))
 	}
 }
