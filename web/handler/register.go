@@ -52,12 +52,11 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx := r.Context()
-	ctx = context.WithValue(ctx, request.SessionKey, newSession)
+	ctx := context.WithValue(r.Context(), request.SessionKey, newSession)
 	ctx = context.WithValue(ctx, request.SettingsKey, settings)
 
 	// TODO: fix flash
 	// session.FlashInfo(fmt.Sprintf("Welcome, %s!", userCreationRequest.Name))
 
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r.WithContext(ctx), "/", http.StatusFound)
 }

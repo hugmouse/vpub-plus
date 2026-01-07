@@ -96,6 +96,9 @@ func hashPassword(password string) ([]byte, error) {
 func (s *Storage) CreateUser(key string, request model.UserCreationRequest) (int64, error) {
 	var userId int64
 	hash, err := hashPassword(request.Password)
+	if err != nil {
+		return userId, fmt.Errorf("failed to hash password: %w", err)
+	}
 	ctx := context.Background()
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -170,6 +173,9 @@ func (s *Storage) UpdateUser(user model.User) error {
 
 func (s *Storage) UpdatePassword(hash string, user model.User) error {
 	newHash, err := hashPassword(user.Password)
+	if err != nil {
+		return fmt.Errorf("failed to hash new password: %w", err)
+	}
 	stmt, err := s.db.Prepare(`UPDATE users SET hash=$1 where hash=$2;`)
 	if err != nil {
 		return err

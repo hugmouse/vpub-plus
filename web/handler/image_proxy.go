@@ -114,9 +114,7 @@ func (h *ImageProxyHandler) imageProxyHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	var newValue CachedImage
-
-	newValue = CachedImage{
+	newValue := CachedImage{
 		lastUpdate:  time.Now(),
 		value:       imageBytes,
 		contentType: respContentType,

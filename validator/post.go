@@ -7,11 +7,11 @@ import (
 
 func ValidatePostRequest(request model.PostRequest) error {
 	if checkStringIsEmpty(request.Subject) {
-		return errors.New("Post subject can't be empty")
+		return errors.New("post subject can't be empty")
 	}
 
 	if checkStringIsEmpty(request.Content) {
-		return errors.New("Post content can't be empty")
+		return errors.New("post content can't be empty")
 	}
 
 	return nil

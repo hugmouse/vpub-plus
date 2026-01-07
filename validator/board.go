@@ -8,7 +8,7 @@ import (
 
 func ValidateBoardCreation(store *storage.Storage, request model.BoardRequest) error {
 	if checkStringIsEmpty(request.Name) {
-		return errors.New("Board name can't be empty")
+		return errors.New("board name can't be empty")
 	}
 
 	boardExists, err := store.BoardNameExists(request.Name)
@@ -16,7 +16,7 @@ func ValidateBoardCreation(store *storage.Storage, request model.BoardRequest) e
 		return err
 	}
 	if boardExists {
-		return errors.New("Board name already exists")
+		return errors.New("board name already exists")
 	}
 
 	return nil
@@ -24,7 +24,7 @@ func ValidateBoardCreation(store *storage.Storage, request model.BoardRequest) e
 
 func ValidateBoardModification(store *storage.Storage, boardId int64, request model.BoardRequest) error {
 	if checkStringIsEmpty(request.Name) {
-		return errors.New("Board name can't be empty")
+		return errors.New("board name can't be empty")
 	}
 
 	anotherBoardExists, err := store.AnotherBoardExists(boardId, request.Name)
@@ -32,7 +32,7 @@ func ValidateBoardModification(store *storage.Storage, boardId int64, request mo
 		return err
 	}
 	if anotherBoardExists {
-		return errors.New("Board name already exists")
+		return errors.New("board name already exists")
 	}
 
 	return nil

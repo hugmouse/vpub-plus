@@ -6,10 +6,12 @@ import (
 	"vpub/web/session"
 )
 
+type contextKey string
+
 const (
-	UserKey = iota
-	SessionKey
-	SettingsKey
+	UserKey     contextKey = "user"
+	SessionKey  contextKey = "session"
+	SettingsKey contextKey = "settings"
 )
 
 func GetSettingsContextKey(r *http.Request) model.Settings {

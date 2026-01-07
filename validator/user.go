@@ -9,15 +9,15 @@ import (
 
 func ValidateUserCreation(store *storage.Storage, key string, r model.UserCreationRequest) error {
 	if len(r.Name) < 3 {
-		return errors.New("Username needs to be at least 3 characters")
+		return errors.New("username needs to be at least 3 characters")
 	}
 
 	if len(r.Name) > 20 {
-		return errors.New("Username should be 20 characters or less")
+		return errors.New("username should be 20 characters or less")
 	}
 
 	if match, _ := regexp.MatchString("^[a-z0-9-_]+$", r.Name); !match {
-		return errors.New("Only lowercase letters and digits are accepted for username")
+		return errors.New("only lowercase letters and digits are accepted for username")
 	}
 
 	userExists, err := store.UserExists(r.Name)
@@ -26,7 +26,7 @@ func ValidateUserCreation(store *storage.Storage, key string, r model.UserCreati
 	}
 
 	if userExists {
-		return errors.New("Username already exists")
+		return errors.New("username already exists")
 	}
 
 	keyExists, err := store.KeyExists(key)
@@ -35,7 +35,7 @@ func ValidateUserCreation(store *storage.Storage, key string, r model.UserCreati
 	}
 
 	if !keyExists {
-		return errors.New("Key not found or already used")
+		return errors.New("key not found or already used")
 	}
 
 	return nil

@@ -43,10 +43,9 @@ func (h *Handler) checkLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx := r.Context()
-	ctx = context.WithValue(ctx, request.SessionKey, newSession)
+	ctx := context.WithValue(r.Context(), request.SessionKey, newSession)
 	ctx = context.WithValue(ctx, request.UserKey, user)
 	ctx = context.WithValue(ctx, request.SettingsKey, settings)
 
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r.WithContext(ctx), "/", http.StatusFound)
 }

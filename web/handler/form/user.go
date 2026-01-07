@@ -15,7 +15,7 @@ type UserForm struct {
 
 func (f *UserForm) Validate() error {
 	if f.Password != f.Confirm {
-		return errors.New("Password doesn't match confirmation")
+		return errors.New("password doesn't match confirmation")
 	}
 
 	return nil
