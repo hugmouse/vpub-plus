@@ -50,15 +50,16 @@ func TestImageProxyHandler_ServeHTTP_WithStdHttp(t *testing.T) {
 	darkAndEmptyPNGSlice := darkAndEmptyPNG[:]
 
 	mockImageServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/dark.png" {
+		switch r.URL.Path {
+		case "/dark.png":
 			w.Header().Set("Content-Type", "image/png")
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write(darkAndEmptyPNGSlice)
-		} else if r.URL.Path == "/not-image" {
+		case "/not-image":
 			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write(darkAndEmptyPNGSlice[7:67])
-		} else {
+		default:
 			w.WriteHeader(http.StatusNotFound)
 		}
 	}))

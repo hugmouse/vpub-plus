@@ -21,7 +21,7 @@ func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
 
 	topicForm.Boards = boards
 
-	board, err := h.storage.BoardById(topicForm.BoardId)
+	board, err := h.storage.BoardByID(topicForm.BoardID)
 	if err != nil {
 		notFound(w)
 		return
@@ -31,13 +31,13 @@ func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
 	v.Set("form", topicForm)
 	v.Set("board", board)
 
-	boardId := topicForm.NewBoardId
+	boardId := topicForm.NewBoardID
 	if boardId == 0 {
-		boardId = topicForm.BoardId
+		boardId = topicForm.BoardID
 	}
 
 	topicModificationRequest := model.TopicRequest{
-		BoardId:  boardId,
+		BoardID:  boardId,
 		IsSticky: topicForm.IsSticky,
 		IsLocked: topicForm.IsLocked,
 		Subject:  topicForm.PostForm.Subject,

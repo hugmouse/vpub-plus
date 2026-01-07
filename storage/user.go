@@ -30,7 +30,7 @@ func (u ErrUserExists) Error() string {
 }
 
 func (s *Storage) queryUser(q string, params ...interface{}) (user model.User, err error) {
-	err = s.db.QueryRow(q, params...).Scan(&user.Id, &user.Name, &user.Hash, &user.About, &user.IsAdmin, &user.Picture)
+	err = s.db.QueryRow(q, params...).Scan(&user.ID, &user.Name, &user.Hash, &user.About, &user.IsAdmin, &user.Picture)
 	return
 }
 
@@ -85,7 +85,7 @@ func (s *Storage) UserByName(name string) (model.User, error) {
 	return s.queryUser(queryFindName, name)
 }
 
-func (s *Storage) UserById(id int64) (model.User, error) {
+func (s *Storage) UserByID(id int64) (model.User, error) {
 	return s.queryUser(`SELECT id, name, hash, about, is_admin, picture FROM users WHERE id=$1;`, id)
 }
 
@@ -153,7 +153,7 @@ func (s *Storage) Users() ([]model.User, error) {
 	var users []model.User
 	for rows.Next() {
 		var user model.User
-		err := rows.Scan(&user.Id, &user.Name, &user.Hash)
+		err := rows.Scan(&user.ID, &user.Name, &user.Hash)
 		if err != nil {
 			return users, err
 		}
@@ -167,7 +167,7 @@ func (s *Storage) UpdateUser(user model.User) error {
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(user.Name, user.About, user.Picture, user.Id)
+	_, err = stmt.Exec(user.Name, user.About, user.Picture, user.ID)
 	return err
 }
 

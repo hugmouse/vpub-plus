@@ -15,7 +15,7 @@ func createAtomEntryFromTopic(url string, topic model.Topic, renderEngine syntax
 	link := joinPath(
 		url,
 		"topics",
-	) + fmt.Sprintf("/%d", topic.Id)
+	) + fmt.Sprintf("/%d", topic.ID)
 	postCount := ""
 	if topic.Posts > 2 {
 		postCount = fmt.Sprintf("<p>%d replies</p>", topic.Posts-1)
@@ -64,7 +64,7 @@ func (h *Handler) showBoardFeed(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	topics, _, err := h.storage.TopicsByBoardId(boardId, 1)
+	topics, _, err := h.storage.TopicsByBoardID(boardId, 1)
 	if err != nil {
 		serverError(w, err)
 		return

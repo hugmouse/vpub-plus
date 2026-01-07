@@ -7,23 +7,23 @@ import (
 )
 
 type TopicForm struct {
-	Id         int64
-	BoardId    int64
+	ID         int64
+	BoardID    int64
 	PostForm   PostForm
 	IsSticky   bool
 	IsLocked   bool
 	Boards     []model.Board
-	NewBoardId int64
+	NewBoardID int64
 }
 
 func NewTopicForm(r *http.Request) *TopicForm {
-	BoardId, _ := strconv.ParseInt(r.FormValue("boardId"), 10, 64)
-	NewBoardId, _ := strconv.ParseInt(r.FormValue("newBoardId"), 10, 64)
+	BoardID, _ := strconv.ParseInt(r.FormValue("boardId"), 10, 64)
+	NewBoardID, _ := strconv.ParseInt(r.FormValue("newBoardId"), 10, 64)
 	return &TopicForm{
-		BoardId:    BoardId,
+		BoardID:    BoardID,
 		PostForm:   NewPostForm(r),
 		IsSticky:   r.FormValue("sticky") == "on",
 		IsLocked:   r.FormValue("locked") == "on",
-		NewBoardId: NewBoardId,
+		NewBoardID: NewBoardID,
 	}
 }

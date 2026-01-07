@@ -6,7 +6,7 @@ import (
 )
 
 func (h *Handler) showAdminEditUserView(w http.ResponseWriter, r *http.Request) {
-	user, err := h.storage.UserById(RouteInt64Param(r, "userId"))
+	user, err := h.storage.UserByID(RouteInt64Param(r, "userId"))
 	if err != nil {
 		notFound(w)
 		return

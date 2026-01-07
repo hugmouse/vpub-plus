@@ -73,7 +73,7 @@ func createAtomEntryFromPost(url string, post model.Post, renderEngine syntax.Re
 	link := joinPath(
 		url,
 		"topics",
-	) + fmt.Sprintf("/%d#%d", post.TopicId, post.Id)
+	) + fmt.Sprintf("/%d#%d", post.TopicID, post.ID)
 	return &Entry{
 		Title: post.Subject,
 		ID:    link,

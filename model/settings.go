@@ -2,7 +2,7 @@ package model
 
 type Settings struct {
 	Name                string
-	Css                 string
+	CSS                 string
 	Footer              string
 	PerPage             int64
 	URL                 string

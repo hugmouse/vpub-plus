@@ -12,13 +12,13 @@ func (h *Handler) showBoardView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id := RouteInt64Param(r, "boardId")
-	board, err := h.storage.BoardById(id)
+	board, err := h.storage.BoardByID(id)
 	if err != nil {
 		notFound(w)
 		return
 	}
 
-	topics, hasMore, err := h.storage.TopicsByBoardId(board.Id, page)
+	topics, hasMore, err := h.storage.TopicsByBoardID(board.ID, page)
 	if err != nil {
 		notFound(w)
 		return

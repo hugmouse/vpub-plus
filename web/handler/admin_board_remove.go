@@ -6,7 +6,7 @@ import (
 )
 
 func (h *Handler) removeAdminBoard(w http.ResponseWriter, r *http.Request) {
-	board, err := h.storage.BoardById(RouteInt64Param(r, "boardId"))
+	board, err := h.storage.BoardByID(RouteInt64Param(r, "boardId"))
 	if err != nil {
 		notFound(w)
 		return
@@ -15,7 +15,7 @@ func (h *Handler) removeAdminBoard(w http.ResponseWriter, r *http.Request) {
 	v := NewView(w, r, "admin_board_remove")
 	v.Set("board", board)
 
-	if err := h.storage.RemoveBoard(board.Id); err != nil {
+	if err := h.storage.RemoveBoard(board.ID); err != nil {
 		v.Set("errorMessage", "Unable to delete board: "+err.Error())
 		v.Render()
 		return

@@ -1,24 +1,33 @@
 package storage
 
 import (
+	"crypto/rand"
 	"database/sql"
 	"errors"
-	"math/rand"
+	"math/big"
 	"vpub/model"
 )
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-func randSeq(n int) string {
+func randSeq(n int) (string, error) {
 	b := make([]rune, n)
 	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
+		idx, err := rand.Int(rand.Reader, big.NewInt(int64(len(letters))))
+		if err != nil {
+			return "", err
+		}
+		b[i] = letters[idx.Int64()]
 	}
-	return string(b)
+	return string(b), nil
 }
 
 func (s *Storage) CreateKey() error {
-	_, err := s.db.Exec(`INSERT INTO keys (key) VALUES ($1)`, randSeq(20))
+	key, err := randSeq(20)
+	if err != nil {
+		return err
+	}
+	_, err = s.db.Exec(`INSERT INTO keys (key) VALUES ($1)`, key)
 	return err
 }
 
@@ -38,7 +47,7 @@ func (s *Storage) Keys() ([]model.Key, error) {
 	var keys []model.Key
 	for rows.Next() {
 		var key model.Key
-		err := rows.Scan(&key.Id, &key.Key, &key.CreatedAt)
+		err := rows.Scan(&key.ID, &key.Key, &key.CreatedAt)
 		if err != nil {
 			return keys, err
 		}

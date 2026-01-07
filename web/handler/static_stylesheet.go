@@ -11,7 +11,7 @@ func (h *Handler) showStylesheet(w http.ResponseWriter, r *http.Request) {
 
 	settings := request.GetSettingsContextKey(r)
 
-	_, err := w.Write([]byte(assets.AssetsMap["style"] + "\n" + settings.Css))
+	_, err := w.Write([]byte(assets.AssetsMap["style"] + "\n" + settings.CSS))
 	if err != nil {
 		serverError(w, err)
 	}

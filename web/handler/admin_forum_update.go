@@ -11,7 +11,7 @@ import (
 
 func (h *Handler) updateAdminForum(w http.ResponseWriter, r *http.Request) {
 	id := RouteInt64Param(r, "forumId")
-	forum, err := h.storage.ForumById(id)
+	forum, err := h.storage.ForumByID(id)
 	if err != nil {
 		notFound(w)
 		return

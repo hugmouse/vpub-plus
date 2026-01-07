@@ -16,13 +16,13 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request) {
 
 	postForm := form.NewPostForm(r)
 
-	topic, err := h.storage.TopicById(postForm.TopicId)
+	topic, err := h.storage.TopicByID(postForm.TopicID)
 	if err != nil {
 		notFound(w)
 		return
 	}
 
-	board, err := h.storage.BoardById(topic.BoardId)
+	board, err := h.storage.BoardByID(topic.BoardID)
 	if err != nil {
 		notFound(w)
 		return
@@ -44,11 +44,11 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.storage.UpdatePost(id, user.Id, postRequest); err != nil {
+	if err := h.storage.UpdatePost(id, user.ID, postRequest); err != nil {
 		v.Set("errorMessage", "Unable to create post: "+err.Error())
 		v.Render()
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/topics/%d#%d", postForm.TopicId, id), http.StatusFound)
+	http.Redirect(w, r, fmt.Sprintf("/topics/%d#%d", postForm.TopicID, id), http.StatusFound)
 }

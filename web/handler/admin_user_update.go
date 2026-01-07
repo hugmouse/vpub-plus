@@ -8,7 +8,7 @@ import (
 )
 
 func (h *Handler) updateAdminUser(w http.ResponseWriter, r *http.Request) {
-	user, err := h.storage.UserById(RouteInt64Param(r, "userId"))
+	user, err := h.storage.UserByID(RouteInt64Param(r, "userId"))
 	if err != nil {
 		notFound(w)
 		return
@@ -28,5 +28,5 @@ func (h *Handler) updateAdminUser(w http.ResponseWriter, r *http.Request) {
 	sess.FlashInfo("User account updated")
 	sess.Save(r, w)
 
-	http.Redirect(w, r, fmt.Sprintf("/admin/users/%d/edit", user.Id), http.StatusFound)
+	http.Redirect(w, r, fmt.Sprintf("/admin/users/%d/edit", user.ID), http.StatusFound)
 }

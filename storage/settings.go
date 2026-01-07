@@ -12,7 +12,7 @@ func (s *Storage) Settings() (model.Settings, error) {
             settings;
     `).Scan(
 		&settings.Name,
-		&settings.Css,
+		&settings.CSS,
 		&settings.Footer,
 		&settings.PerPage,
 		&settings.URL,
@@ -40,7 +40,7 @@ func (s *Storage) UpdateSettings(settings model.Settings) error {
 	_, err := s.db.Exec(
 		query,
 		settings.Name,
-		settings.Css,
+		settings.CSS,
 		settings.Footer,
 		&settings.PerPage,
 		&settings.URL,

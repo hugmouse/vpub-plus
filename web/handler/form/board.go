@@ -11,7 +11,7 @@ type BoardForm struct {
 	Description string
 	Position    int64
 	Forums      []model.Forum
-	ForumId     int64
+	ForumID     int64
 	IsLocked    bool
 }
 
@@ -20,7 +20,7 @@ func (f *BoardForm) Merge(board *model.Board) *model.Board {
 	board.Description = f.Description
 	board.Position = f.Position
 	board.IsLocked = f.IsLocked
-	board.Forum = model.Forum{Id: f.ForumId}
+	board.Forum = model.Forum{ID: f.ForumID}
 	return board
 }
 
@@ -31,7 +31,7 @@ func NewBoardForm(r *http.Request) *BoardForm {
 		Name:        r.FormValue("name"),
 		Description: r.FormValue("description"),
 		Position:    position,
-		ForumId:     forumId,
+		ForumID:     forumId,
 		IsLocked:    r.FormValue("locked") == "true",
 	}
 }

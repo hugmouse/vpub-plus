@@ -1,25 +1,34 @@
+// Environment Variables:
+//   - DATABASE_URL: PostgreSQL connection string
+//   - PORT: HTTP server port (default: "8080")
+//   - SESSION_KEY: 32-byte session encryption key
+//   - CSRF_KEY: 32-byte CSRF protection key
+//   - TITLE: Forum title (default: "My vpub-plus forum")
+//   - CSRF_SECURE: Enable secure cookies (default: true)
+//   - PROXYING_ENABLED: Enable image proxying (default: true)
+//   - POSTGRES_MAX_OPEN_CONNECTIONS: Max DB connections (default: 0 - auto)
+//   - POSTGRES_MAX_IDLE_CONNECTIONS: Idle DB connections (default: 0 - auto)
+//   - POSTGRES_MAX_LIFETIME: Connection max lifetime (default: 5m)
 package config
 
 import (
 	"os"
 	"strconv"
-	"time" // Import time for duration parsing
+	"time"
 )
 
-type (
-	Config struct {
-		DatabaseURL                string
-		DatabaseMaxOpenConnections int
-		DatabaseMaxIdleConnections int
-		DatabaseMaxLifetime        time.Duration
-		Port                       string
-		SessionKey                 string
-		CSRFKey                    string
-		CSRFSecure                 bool
-		Title                      string
-		ProxyingEnabled            bool
-	}
-)
+type Config struct {
+	DatabaseURL                string        // PostgreSQL connection string
+	DatabaseMaxOpenConnections int           // Maximum number of open DB connections
+	DatabaseMaxIdleConnections int           // Maximum number of idle DB connections
+	DatabaseMaxLifetime        time.Duration // Maximum lifetime of DB connections
+	Port                       string        // HTTP server port
+	SessionKey                 string        // Session encryption key (32 bytes)
+	CSRFKey                    string        // CSRF protection key (32 bytes)
+	CSRFSecure                 bool          // Use secure cookies
+	Title                      string        // Forum title
+	ProxyingEnabled            bool          // Enable image proxying
+}
 
 func New() *Config {
 	cfg := &Config{

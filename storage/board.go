@@ -6,7 +6,7 @@ import (
 	"vpub/model"
 )
 
-func (s *Storage) BoardById(id int64) (model.Board, error) {
+func (s *Storage) BoardByID(id int64) (model.Board, error) {
 	var board model.Board
 	err := s.db.QueryRow(`
 SELECT
@@ -20,11 +20,11 @@ SELECT
        f.name
 from boards b inner join forums f on f.id = b.forum_id WHERE b.id=$1
 `, id).Scan(
-		&board.Id,
+		&board.ID,
 		&board.Name,
 		&board.Description,
 		&board.Position,
-		&board.Forum.Id,
+		&board.Forum.ID,
 		&board.Forum.IsLocked,
 		&board.IsLocked,
 		&board.Forum.Name,
@@ -40,7 +40,7 @@ func (s *Storage) Boards() ([]model.Board, error) {
 	var boards []model.Board
 	for rows.Next() {
 		var board model.Board
-		err := rows.Scan(&board.Id, &board.Forum.Id, &board.Forum.Name, &board.Name, &board.Description, &board.Topics, &board.Posts, &board.UpdatedAt)
+		err := rows.Scan(&board.ID, &board.Forum.ID, &board.Forum.Name, &board.Name, &board.Description, &board.Topics, &board.Posts, &board.UpdatedAt)
 		if err != nil {
 			return boards, err
 		}
@@ -49,7 +49,7 @@ func (s *Storage) Boards() ([]model.Board, error) {
 	return boards, nil
 }
 
-func (s *Storage) BoardsByForumId(id int64) ([]model.Board, error) {
+func (s *Storage) BoardsByForumID(id int64) ([]model.Board, error) {
 	rows, err := s.db.Query("select * from forums_summary where forum_id=$1", id)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (s *Storage) BoardsByForumId(id int64) ([]model.Board, error) {
 	var boards []model.Board
 	for rows.Next() {
 		var board model.Board
-		err := rows.Scan(&board.Id, &board.Forum.Id, &board.Forum.Name, &board.Name, &board.Description, &board.Topics, &board.Posts, &board.UpdatedAt)
+		err := rows.Scan(&board.ID, &board.Forum.ID, &board.Forum.Name, &board.Name, &board.Description, &board.Topics, &board.Posts, &board.UpdatedAt)
 		if err != nil {
 			return boards, err
 		}
@@ -80,7 +80,7 @@ RETURNING id
 		request.Name,
 		request.Description,
 		request.Position,
-		request.ForumId,
+		request.ForumID,
 		request.IsLocked,
 	).Scan(
 		&id,
@@ -99,7 +99,7 @@ func (s *Storage) UpdateBoard(id int64, request model.BoardRequest) error {
 		request.Name,
 		request.Description,
 		request.Position,
-		request.ForumId,
+		request.ForumID,
 		request.IsLocked,
 		id); err != nil {
 		return errors.New("unable to update board: " + err.Error())

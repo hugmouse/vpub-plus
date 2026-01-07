@@ -7,7 +7,7 @@ import (
 
 func (h *Handler) showCreateTopicView(w http.ResponseWriter, r *http.Request) {
 	id := RouteInt64Param(r, "boardId")
-	board, err := h.storage.BoardById(id)
+	board, err := h.storage.BoardByID(id)
 	if err != nil {
 		notFound(w)
 		return
@@ -18,7 +18,7 @@ func (h *Handler) showCreateTopicView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	topicForm := form.TopicForm{
-		BoardId: board.Id,
+		BoardID: board.ID,
 		Boards:  boards,
 	}
 

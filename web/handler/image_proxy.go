@@ -26,7 +26,7 @@ func (h *ImageProxyHandler) imageProxyHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	parsedURL, err := url.Parse(rawURL)
-	if err != nil || !(parsedURL.Scheme == "http" || parsedURL.Scheme == "https") {
+	if err != nil || (parsedURL.Scheme != "http" && parsedURL.Scheme != "https") {
 		http.Error(w, "Invalid URL parameter", http.StatusBadRequest)
 		return
 	}

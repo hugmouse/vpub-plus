@@ -8,7 +8,7 @@ import (
 
 type SettingsForm struct {
 	Name                 string
-	Css                  string
+	CSS                  string
 	Footer               string
 	PerPage              int64
 	URL                  string
@@ -24,7 +24,7 @@ func NewSettingsForm(r *http.Request) *SettingsForm {
 	sizeLimit, _ := strconv.ParseInt(r.FormValue("image-proxy-size-limit"), 10, 64)
 	return &SettingsForm{
 		Name:                 strings.TrimSpace(r.FormValue("name")),
-		Css:                  r.FormValue("css"),
+		CSS:                  r.FormValue("css"),
 		Footer:               r.FormValue("footer"),
 		URL:                  r.FormValue("url"),
 		Lang:                 r.FormValue("lang"),

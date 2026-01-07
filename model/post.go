@@ -5,11 +5,11 @@ import (
 )
 
 type Post struct {
-	Id        int64
+	ID        int64
 	User      User
 	Subject   string
 	Content   string
-	TopicId   int64
+	TopicID   int64
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

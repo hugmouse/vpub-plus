@@ -28,7 +28,7 @@ func (h *Handler) showTopicFeed(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	posts, _, err := h.storage.PostsByTopicId(topicId)
+	posts, _, err := h.storage.PostsByTopicID(topicId)
 	if err != nil {
 		serverError(w, err)
 		return

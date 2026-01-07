@@ -3,7 +3,7 @@ package model
 import "time"
 
 type Board struct {
-	Id          int64
+	ID          int64
 	Name        string
 	Description string
 	Topics      int64
@@ -20,5 +20,5 @@ type BoardRequest struct {
 	Description string
 	IsLocked    bool
 	Position    int64
-	ForumId     int64
+	ForumID     int64
 }

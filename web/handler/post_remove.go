@@ -11,7 +11,7 @@ func (h *Handler) removePost(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		id := RouteInt64Param(r, "postId")
-		post, err := h.storage.PostById(id)
+		post, err := h.storage.PostByID(id)
 		if err != nil {
 			serverError(w, err)
 			return
@@ -20,7 +20,7 @@ func (h *Handler) removePost(w http.ResponseWriter, r *http.Request) {
 		v.Set("post", post)
 		v.Render()
 	case "POST":
-		post, err := h.storage.PostById(RouteInt64Param(r, "postId"))
+		post, err := h.storage.PostByID(RouteInt64Param(r, "postId"))
 		if err != nil {
 			serverError(w, err)
 			return
@@ -36,6 +36,6 @@ func (h *Handler) removePost(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		http.Redirect(w, r, fmt.Sprintf("/topics/%d", post.TopicId), http.StatusFound)
+		http.Redirect(w, r, fmt.Sprintf("/topics/%d", post.TopicID), http.StatusFound)
 	}
 }

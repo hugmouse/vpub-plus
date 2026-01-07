@@ -25,7 +25,7 @@ func (h *Handler) saveAdminBoard(w http.ResponseWriter, r *http.Request) {
 		Description: boardForm.Description,
 		IsLocked:    boardForm.IsLocked,
 		Position:    boardForm.Position,
-		ForumId:     boardForm.ForumId,
+		ForumID:     boardForm.ForumID,
 	}
 
 	if err := validator.ValidateBoardCreation(h.storage, boardRequest); err != nil {

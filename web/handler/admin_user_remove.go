@@ -6,7 +6,7 @@ import (
 )
 
 func (h *Handler) removeAdminUser(w http.ResponseWriter, r *http.Request) {
-	user, err := h.storage.UserById(RouteInt64Param(r, "userId"))
+	user, err := h.storage.UserByID(RouteInt64Param(r, "userId"))
 	if err != nil {
 		notFound(w)
 		return
@@ -15,7 +15,7 @@ func (h *Handler) removeAdminUser(w http.ResponseWriter, r *http.Request) {
 	v := NewView(w, r, "admin_user_remove")
 	v.Set("user", user)
 
-	if err := h.storage.RemoveUser(user.Id); err != nil {
+	if err := h.storage.RemoveUser(user.ID); err != nil {
 		v.Set("errorMessage", "Unable to delete user: "+err.Error())
 		v.Render()
 		return

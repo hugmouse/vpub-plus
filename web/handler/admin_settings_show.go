@@ -20,7 +20,7 @@ func (h *Handler) showAdminSettingsView(w http.ResponseWriter, r *http.Request) 
 
 	settingsForm := form.SettingsForm{
 		Name:                 settings.Name,
-		Css:                  settings.Css,
+		CSS:                  settings.CSS,
 		Footer:               settings.Footer,
 		PerPage:              settings.PerPage,
 		URL:                  settings.URL,

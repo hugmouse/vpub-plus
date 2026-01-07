@@ -142,10 +142,10 @@ func forumFromBoards(boards []model.Board) []model.Forum {
 	for i, board := range boards {
 		if i == 0 {
 			forum.Name = board.Forum.Name
-			forum.Id = board.Forum.Id
-		} else if board.Forum.Id != forum.Id {
+			forum.ID = board.Forum.ID
+		} else if board.Forum.ID != forum.ID {
 			forums = append(forums, forum)
-			forum = model.Forum{Name: board.Forum.Name, Id: board.Forum.Id}
+			forum = model.Forum{Name: board.Forum.Name, ID: board.Forum.ID}
 		}
 		forum.Boards = append(forum.Boards, board)
 	}

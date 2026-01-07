@@ -3,7 +3,7 @@ package handler
 import "net/http"
 
 func (h *Handler) showAdminRemoveBoardView(w http.ResponseWriter, r *http.Request) {
-	board, err := h.storage.BoardById(RouteInt64Param(r, "boardId"))
+	board, err := h.storage.BoardByID(RouteInt64Param(r, "boardId"))
 	if err != nil {
 		notFound(w)
 		return

@@ -12,7 +12,7 @@ import (
 func (h *Handler) updateAdminBoard(w http.ResponseWriter, r *http.Request) {
 	id := RouteInt64Param(r, "boardId")
 
-	board, err := h.storage.BoardById(id)
+	board, err := h.storage.BoardByID(id)
 	if err != nil {
 		serverError(w, err)
 		return
@@ -37,7 +37,7 @@ func (h *Handler) updateAdminBoard(w http.ResponseWriter, r *http.Request) {
 		Description: boardForm.Description,
 		IsLocked:    boardForm.IsLocked,
 		Position:    boardForm.Position,
-		ForumId:     boardForm.ForumId,
+		ForumID:     boardForm.ForumID,
 	}
 
 	if err := validator.ValidateBoardModification(h.storage, id, boardRequest); err != nil {

@@ -369,6 +369,7 @@ var TplMap = map[string]string{
         <th>URL</th>
         <th>Size</th>
         <th>Type</th>
+        <th>Expires</th>
         <th>Action</th>
     </tr>
     </thead>
@@ -380,6 +381,7 @@ var TplMap = map[string]string{
         </td>
         <td>{{ humanizeBytes .Size }}</td>
         <td>{{ .ContentType }}</td>
+        <td>{{ .ExpiresAt.Format "2006-01-02 15:04:05" }}</td>
         <td>
             <form action="/admin/image-proxy/remove" method="post" style="display:inline;">
                 {{ $.csrfField }}
@@ -517,15 +519,17 @@ var TplMap = map[string]string{
                 {{ end }}
             </select>
         </div>
-        <div class="field">
-            <label for="image-proxy-cache-time">Image Proxy Cache Time (seconds)</label>
-            <input type="number" name="image-proxy-cache-time" id="image-proxy-cache-time" value="{{ .form.ImageProxyCacheTime }}" autocomplete="off" aria-describedby="cache-time-desc"/>
-            <p id="cache-time-desc">Duration in seconds to cache external images.</p>
-        </div>
-        <div class="field">
-            <label for="image-proxy-size-limit">Image Proxy Size Limit (bytes)</label>
-            <input type="number" name="image-proxy-size-limit" id="image-proxy-size-limit" value="{{ .form.ImageProxySizeLimit }}" autocomplete="off" aria-describedby="size-limit-desc"/>
-            <p id="size-limit-desc">Maximum size of an image in bytes to be cached and served (e.g. 524288 for 512KB).</p>
+        <div style="display: flex; flex-direction: row; gap: 0.5rem;">
+            <div class="field">
+                <label for="image-proxy-cache-time">Image Proxy Cache Time (seconds)</label>
+                <input type="number" name="image-proxy-cache-time" id="image-proxy-cache-time" value="{{ .form.ImageProxyCacheTime }}" autocomplete="off" aria-describedby="cache-time-desc"/>
+                <p id="cache-time-desc">Duration in seconds to cache external images.</p>
+            </div>
+            <div class="field">
+                <label for="image-proxy-size-limit">Image Proxy Size Limit (bytes)</label>
+                <input type="number" name="image-proxy-size-limit" id="image-proxy-size-limit" value="{{ .form.ImageProxySizeLimit }}" autocomplete="off" aria-describedby="size-limit-desc"/>
+                <p id="size-limit-desc">Maximum size of an image in bytes to be cached and served (e.g. 524288 for 512KB).</p>
+            </div>
         </div>
         <input type="submit" value="Submit">
     </form>

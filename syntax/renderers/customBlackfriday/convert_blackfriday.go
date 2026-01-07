@@ -9,17 +9,18 @@
 package customBlackfriday
 
 import (
-	"crypto/sha1"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"github.com/microcosm-cc/bluemonday"
-	"github.com/russross/blackfriday/v2"
 	"io"
 	"net/url"
 	"strings"
 	"sync"
 	"time"
 	"vpub/syntax"
+
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/russross/blackfriday/v2"
 )
 
 const cacheTTL = 5 * time.Minute
@@ -63,17 +64,17 @@ type imageProxyRenderer struct {
 
 func (r *imageProxyRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering bool) blackfriday.WalkStatus {
 	if node.Type == blackfriday.Image && entering {
-		originalURL := string(node.LinkData.Destination)
+		originalURL := string(node.Destination)
 		escapedURL := url.QueryEscape(originalURL)
-		node.LinkData.Destination = []byte(fmt.Sprintf("%s%s", syntax.ImageProxyURLBase, escapedURL))
+		node.Destination = fmt.Appendf(nil, "%s%s", syntax.ImageProxyURLBase, escapedURL)
 	}
 	return r.Renderer.RenderNode(w, node, entering)
 }
 
 func (b *BlackfridayRenderer) Convert(gmiContent string, wrap bool) string {
-	h := sha1.New()
+	h := sha256.New()
 	if _, err := h.Write([]byte(gmiContent)); err != nil {
-		return fmt.Errorf("SHA-1 hash error: %w", err).Error()
+		return fmt.Errorf("SHA-256 hash error: %w", err).Error()
 	}
 	sum := h.Sum(nil)
 

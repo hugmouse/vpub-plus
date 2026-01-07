@@ -6,19 +6,19 @@ import (
 )
 
 func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request) {
-	post, err := h.storage.PostById(RouteInt64Param(r, "postId"))
+	post, err := h.storage.PostByID(RouteInt64Param(r, "postId"))
 	if err != nil {
 		serverError(w, err)
 		return
 	}
 
-	topic, err := h.storage.TopicById(post.TopicId)
+	topic, err := h.storage.TopicByID(post.TopicID)
 	if err != nil {
 		notFound(w)
 		return
 	}
 
-	board, err := h.storage.BoardById(topic.BoardId)
+	board, err := h.storage.BoardByID(topic.BoardID)
 	if err != nil {
 		serverError(w, err)
 		return
@@ -27,7 +27,7 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request) {
 	postForm := form.PostForm{
 		Subject: post.Subject,
 		Content: post.Content,
-		TopicId: post.TopicId,
+		TopicID: post.TopicID,
 	}
 
 	v := NewView(w, r, "edit_post")

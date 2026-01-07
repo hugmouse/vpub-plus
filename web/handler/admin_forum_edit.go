@@ -6,7 +6,7 @@ import (
 )
 
 func (h *Handler) showAdminEditForumView(w http.ResponseWriter, r *http.Request) {
-	forum, err := h.storage.ForumById(RouteInt64Param(r, "forumId"))
+	forum, err := h.storage.ForumByID(RouteInt64Param(r, "forumId"))
 	if err != nil {
 		serverError(w, err)
 		return

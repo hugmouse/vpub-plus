@@ -15,7 +15,7 @@ func (s *Storage) CreateTopic(userId int64, request model.TopicRequest) (int64, 
 		return topicId, err
 	}
 	if err := tx.QueryRowContext(ctx, `INSERT INTO topics (is_sticky, is_locked, board_id, post_id) VALUES ($1, $2, $3, -1) RETURNING id`,
-		request.IsSticky, request.IsLocked, request.BoardId).Scan(&topicId); err != nil {
+		request.IsSticky, request.IsLocked, request.BoardID).Scan(&topicId); err != nil {
 		rbErr := tx.Rollback()
 		if rbErr != nil {
 			return topicId, errors.Join(err, fmt.Errorf("rollback in CreateTopic failed: %w", rbErr))
@@ -58,7 +58,7 @@ func (s *Storage) UpdateTopic(id int64, request model.TopicRequest) error {
     `,
 		request.IsLocked,
 		request.IsSticky,
-		request.BoardId,
+		request.BoardID,
 		id,
 	).Scan(&postId); err != nil {
 		rbErr := tx.Rollback()
@@ -88,7 +88,7 @@ func (s *Storage) UpdateTopic(id int64, request model.TopicRequest) error {
 	return err
 }
 
-func (s *Storage) TopicsByBoardId(boardId, page int64) ([]model.Topic, bool, error) {
+func (s *Storage) TopicsByBoardID(boardId, page int64) ([]model.Topic, bool, error) {
 	var topics []model.Topic
 	settings, err := s.Settings()
 	if err != nil {
@@ -113,7 +113,7 @@ limit $3`, boardId, settings.PerPage*(page-1), settings.PerPage+1)
 	}
 	for rows.Next() {
 		var topic model.Topic
-		err := rows.Scan(&topic.Id, &topic.Post.Subject, &topic.Post.Content, &topic.Posts, &topic.UpdatedAt, &topic.Post.CreatedAt, &topic.Post.User.Id, &topic.Post.User.Name, &topic.IsSticky)
+		err := rows.Scan(&topic.ID, &topic.Post.Subject, &topic.Post.Content, &topic.Posts, &topic.UpdatedAt, &topic.Post.CreatedAt, &topic.Post.User.ID, &topic.Post.User.Name, &topic.IsSticky)
 		if err != nil {
 			return topics, false, err
 		}
@@ -125,7 +125,7 @@ limit $3`, boardId, settings.PerPage*(page-1), settings.PerPage+1)
 	return topics, false, nil
 }
 
-func (s *Storage) TopicById(id int64) (model.Topic, error) {
+func (s *Storage) TopicByID(id int64) (model.Topic, error) {
 	var topic model.Topic
 	err := s.db.QueryRow(`
 select 
@@ -139,13 +139,13 @@ select
        subject
 from topics_summary where topic_id=$1
 `, id).Scan(
-		&topic.Id,
+		&topic.ID,
 		&topic.Posts,
 		&topic.IsSticky,
 		&topic.IsLocked,
 		&topic.UpdatedAt,
-		&topic.BoardId,
-		&topic.Post.Id,
+		&topic.BoardID,
+		&topic.Post.ID,
 		&topic.Post.Subject,
 	)
 	if err != nil {

@@ -5,7 +5,7 @@ import (
 	"vpub/model"
 )
 
-func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
+func (s *Storage) PostsByTopicID(id int64) ([]model.Post, bool, error) {
 	rows, err := s.db.Query("select topic_id, post_id, subject, content, created_at, updated_at, user_id, name, picture, about from posts_full where topic_id=$1 order by created_at", id)
 	if err != nil {
 		return nil, false, err
@@ -13,7 +13,7 @@ func (s *Storage) PostsByTopicId(id int64) ([]model.Post, bool, error) {
 	var posts []model.Post
 	for rows.Next() {
 		var post model.Post
-		err := rows.Scan(&post.TopicId, &post.Id, &post.Subject, &post.Content, &post.CreatedAt, &post.UpdatedAt, &post.User.Id, &post.User.Name, &post.User.Picture, &post.User.About)
+		err := rows.Scan(&post.TopicID, &post.ID, &post.Subject, &post.Content, &post.CreatedAt, &post.UpdatedAt, &post.User.ID, &post.User.Name, &post.User.Picture, &post.User.About)
 		if err != nil {
 			return posts, false, err
 		}
@@ -48,13 +48,13 @@ limit $2`, settings.PerPage*(page-1), settings.PerPage+1)
 	for rows.Next() {
 		var post model.Post
 		err := rows.Scan(
-			&post.TopicId,
-			&post.Id,
+			&post.TopicID,
+			&post.ID,
 			&post.Subject,
 			&post.Content,
 			&post.CreatedAt,
 			&post.UpdatedAt,
-			&post.User.Id,
+			&post.User.ID,
 			&post.User.Name,
 		)
 		if err != nil {
@@ -68,7 +68,7 @@ limit $2`, settings.PerPage*(page-1), settings.PerPage+1)
 	return posts, false, nil
 }
 
-func (s *Storage) PostsByUserId(id, page int64) ([]model.Post, bool, error) {
+func (s *Storage) PostsByUserID(id, page int64) ([]model.Post, bool, error) {
 	var posts []model.Post
 	settings, err := s.Settings()
 	if err != nil {
@@ -95,13 +95,13 @@ limit $3`, id, settings.PerPage*(page-1), settings.PerPage+1)
 	for rows.Next() {
 		var post model.Post
 		err := rows.Scan(
-			&post.TopicId,
-			&post.Id,
+			&post.TopicID,
+			&post.ID,
 			&post.Subject,
 			&post.Content,
 			&post.CreatedAt,
 			&post.UpdatedAt,
-			&post.User.Id,
+			&post.User.ID,
 			&post.User.Name,
 		)
 		if err != nil {
@@ -140,9 +140,9 @@ func (s *Storage) CreatePost(userId, topicId int64, request model.PostRequest) (
 	return id, nil
 }
 
-func (s *Storage) PostById(id int64) (model.Post, error) {
+func (s *Storage) PostByID(id int64) (model.Post, error) {
 	var post model.Post
-	err := s.db.QueryRow("select * from posts_full where post_id=$1", id).Scan(&post.TopicId, &post.Id, &post.Subject, &post.Content, &post.CreatedAt, &post.UpdatedAt, &post.User.Id, &post.User.Name, &post.User.Picture, &post.User.About)
+	err := s.db.QueryRow("select * from posts_full where post_id=$1", id).Scan(&post.TopicID, &post.ID, &post.Subject, &post.Content, &post.CreatedAt, &post.UpdatedAt, &post.User.ID, &post.User.Name, &post.User.Picture, &post.User.About)
 	if err != nil {
 		return post, err
 	}
@@ -154,7 +154,7 @@ func (s *Storage) DeletePost(post model.Post) error {
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(post.Id, post.User.Id)
+	_, err = stmt.Exec(post.ID, post.User.ID)
 	return err
 }
 

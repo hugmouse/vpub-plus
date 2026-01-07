@@ -14,13 +14,13 @@ func (h *Handler) savePost(w http.ResponseWriter, r *http.Request) {
 
 	postForm := form.NewPostForm(r)
 
-	topic, err := h.storage.TopicById(postForm.TopicId)
+	topic, err := h.storage.TopicByID(postForm.TopicID)
 	if err != nil {
 		notFound(w)
 		return
 	}
 
-	board, err := h.storage.BoardById(topic.BoardId)
+	board, err := h.storage.BoardByID(topic.BoardID)
 	if err != nil {
 		notFound(w)
 		return
@@ -42,12 +42,12 @@ func (h *Handler) savePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := h.storage.CreatePost(user.Id, postForm.TopicId, postRequest)
+	id, err := h.storage.CreatePost(user.ID, postForm.TopicID, postRequest)
 	if err != nil {
 		v.Set("errorMessage", "Unable to create post: "+err.Error())
 		v.Render()
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/topics/%d#%d", postForm.TopicId, id), http.StatusFound)
+	http.Redirect(w, r, fmt.Sprintf("/topics/%d#%d", postForm.TopicID, id), http.StatusFound)
 }

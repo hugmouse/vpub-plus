@@ -11,7 +11,7 @@ func (h *Handler) showUserView(w http.ResponseWriter, r *http.Request) {
 		page, _ = strconv.ParseInt(val[0], 10, 64)
 	}
 
-	posts, hasMore, err := h.storage.PostsByUserId(RouteInt64Param(r, "userId"), page)
+	posts, hasMore, err := h.storage.PostsByUserID(RouteInt64Param(r, "userId"), page)
 	if err != nil {
 		notFound(w)
 		return

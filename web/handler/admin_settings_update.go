@@ -12,7 +12,7 @@ func (h *Handler) updateAdminSettings(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.storage.UpdateSettings(model.Settings{
 		Name:                settingsForm.Name,
-		Css:                 settingsForm.Css,
+		CSS:                 settingsForm.CSS,
 		Footer:              settingsForm.Footer,
 		PerPage:             settingsForm.PerPage,
 		URL:                 settingsForm.URL,

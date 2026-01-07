@@ -5,17 +5,17 @@ import (
 )
 
 func (h *Handler) showTopicView(w http.ResponseWriter, r *http.Request) {
-	topic, err := h.storage.TopicById(RouteInt64Param(r, "topicId"))
+	topic, err := h.storage.TopicByID(RouteInt64Param(r, "topicId"))
 	if err != nil {
 		notFound(w)
 		return
 	}
-	board, err := h.storage.BoardById(topic.BoardId)
+	board, err := h.storage.BoardByID(topic.BoardID)
 	if err != nil {
 		serverError(w, err)
 		return
 	}
-	posts, _, err := h.storage.PostsByTopicId(topic.Id)
+	posts, _, err := h.storage.PostsByTopicID(topic.ID)
 	if err != nil {
 		serverError(w, err)
 		return

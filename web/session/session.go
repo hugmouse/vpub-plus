@@ -119,7 +119,7 @@ func (s *Manager) GetUser(r *http.Request) (model.User, *Session, error) {
 	if id == 0 || !ok {
 		return model.User{}, &Session{}, errors.New("error extracting session")
 	}
-	user, err := s.Storage.UserById(id)
+	user, err := s.Storage.UserByID(id)
 	if err != nil {
 		return model.User{}, &Session{}, errors.New("user not found")
 	}

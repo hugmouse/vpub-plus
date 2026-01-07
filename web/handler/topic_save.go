@@ -22,7 +22,7 @@ func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request) {
 
 	topicForm.Boards = boards
 
-	board, err := h.storage.BoardById(topicForm.BoardId)
+	board, err := h.storage.BoardByID(topicForm.BoardID)
 	if err != nil {
 		notFound(w)
 		return
@@ -32,13 +32,13 @@ func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request) {
 	v.Set("form", topicForm)
 	v.Set("board", board)
 
-	boardId := topicForm.NewBoardId
+	boardId := topicForm.NewBoardID
 	if boardId == 0 {
-		boardId = topicForm.BoardId
+		boardId = topicForm.BoardID
 	}
 
 	topicCreationRequest := model.TopicRequest{
-		BoardId:  boardId,
+		BoardID:  boardId,
 		IsSticky: topicForm.IsSticky,
 		IsLocked: topicForm.IsLocked,
 		Subject:  topicForm.PostForm.Subject,
@@ -51,7 +51,7 @@ func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := h.storage.CreateTopic(user.Id, topicCreationRequest)
+	id, err := h.storage.CreateTopic(user.ID, topicCreationRequest)
 	if err != nil {
 		v.Set("errorMessage", "Unable to create topic: "+err.Error())
 		v.Render()

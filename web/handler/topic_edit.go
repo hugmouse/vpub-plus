@@ -12,12 +12,12 @@ func (h *Handler) showEditTopicView(w http.ResponseWriter, r *http.Request) {
 		notFound(w)
 		return
 	}
-	topic, err := h.storage.TopicById(RouteInt64Param(r, "topicId"))
+	topic, err := h.storage.TopicByID(RouteInt64Param(r, "topicId"))
 	if err != nil {
 		notFound(w)
 		return
 	}
-	post, err := h.storage.PostById(topic.Post.Id)
+	post, err := h.storage.PostByID(topic.Post.ID)
 	if err != nil {
 		notFound(w)
 		return
@@ -28,15 +28,15 @@ func (h *Handler) showEditTopicView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	topicForm := form.TopicForm{
-		Id:       topic.Id,
-		BoardId:  topic.BoardId,
+		ID:       topic.ID,
+		BoardID:  topic.BoardID,
 		IsSticky: topic.IsSticky,
 		IsLocked: topic.IsLocked,
 		Boards:   boards,
 		PostForm: form.PostForm{
 			Subject: post.Subject,
 			Content: post.Content,
-			TopicId: post.TopicId,
+			TopicID: post.TopicID,
 		},
 	}
 

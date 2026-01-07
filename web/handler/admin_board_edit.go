@@ -6,7 +6,7 @@ import (
 )
 
 func (h *Handler) showAdminEditBoardView(w http.ResponseWriter, r *http.Request) {
-	board, err := h.storage.BoardById(RouteInt64Param(r, "boardId"))
+	board, err := h.storage.BoardByID(RouteInt64Param(r, "boardId"))
 	if err != nil {
 		serverError(w, err)
 		return
@@ -20,7 +20,7 @@ func (h *Handler) showAdminEditBoardView(w http.ResponseWriter, r *http.Request)
 		Name:        board.Name,
 		Description: board.Description,
 		Position:    board.Position,
-		ForumId:     board.Forum.Id,
+		ForumID:     board.Forum.ID,
 		Forums:      forums,
 		IsLocked:    board.IsLocked,
 	}

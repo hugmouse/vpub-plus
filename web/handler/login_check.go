@@ -31,7 +31,7 @@ func (h *Handler) checkLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newSession, err := h.session.NewSession(w, r, user.Id)
+	newSession, err := h.session.NewSession(w, r, user.ID)
 	if err != nil {
 		serverError(w, errors.New("can't create a new session: "+err.Error()))
 		return

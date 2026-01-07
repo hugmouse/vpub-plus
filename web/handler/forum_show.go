@@ -6,13 +6,13 @@ import (
 
 func (h *Handler) showForumView(w http.ResponseWriter, r *http.Request) {
 	id := RouteInt64Param(r, "forumId")
-	forum, err := h.storage.ForumById(id)
+	forum, err := h.storage.ForumByID(id)
 	if err != nil {
 		notFound(w)
 		return
 	}
 
-	boards, err := h.storage.BoardsByForumId(forum.Id)
+	boards, err := h.storage.BoardsByForumID(forum.ID)
 	if err != nil {
 		notFound(w)
 		return
