@@ -6,7 +6,7 @@
             {{ if .Name }}
                 <span aria-hidden="true">›</span>
                 {{ if $.Board.Name }}
-                    <a href="/forums/{{ .Id | urlquery }}" aria-label="Go to {{ .Name }} forum">{{ .Name }}</a>
+                    <a href="/forums/{{ .ID | urlquery }}" aria-label="Go to {{ .Name }} forum">{{ .Name }}</a>
                 {{ else }}
                     <span aria-current="page">{{ .Name }}</span>
                 {{ end }}
@@ -17,7 +17,7 @@
             {{ if .Name }}
                 <span aria-hidden="true">›</span>
                 {{ if $.Topic }}
-                    <a href="/boards/{{ .Id | urlquery }}" aria-label="Go to {{ .Name }} board">{{ .Name }}</a>
+                    <a href="/boards/{{ .ID | urlquery }}" aria-label="Go to {{ .Name }} board">{{ .Name }}</a>
                 {{ else }}
                     <span aria-current="page">{{ .Name }}</span>
                 {{ end }}

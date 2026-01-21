@@ -8,7 +8,7 @@ var TplCommonMap = map[string]string{
         <label for="forumId">Forum</label>
         <select name="forumId" id="forumId">
             {{ range .Forums }}
-                <option value="{{ .Id }}" {{ if eq .Id $.ForumId }}selected{{ end }}>{{ .Name }}</option>
+                <option value="{{ .ID }}" {{ if eq .ID $.ForumID }}selected{{ end }}>{{ .Name }}</option>
             {{ end }}
         </select>
     </div>
@@ -56,7 +56,7 @@ var TplCommonMap = map[string]string{
             {{ if .Name }}
                 <span aria-hidden="true">›</span>
                 {{ if $.Board.Name }}
-                    <a href="/forums/{{ .Id | urlquery }}" aria-label="Go to {{ .Name }} forum">{{ .Name }}</a>
+                    <a href="/forums/{{ .ID | urlquery }}" aria-label="Go to {{ .Name }} forum">{{ .Name }}</a>
                 {{ else }}
                     <span aria-current="page">{{ .Name }}</span>
                 {{ end }}
@@ -67,7 +67,7 @@ var TplCommonMap = map[string]string{
             {{ if .Name }}
                 <span aria-hidden="true">›</span>
                 {{ if $.Topic }}
-                    <a href="/boards/{{ .Id | urlquery }}" aria-label="Go to {{ .Name }} board">{{ .Name }}</a>
+                    <a href="/boards/{{ .ID | urlquery }}" aria-label="Go to {{ .Name }} board">{{ .Name }}</a>
                 {{ else }}
                     <span aria-current="page">{{ .Name }}</span>
                 {{ end }}
@@ -117,7 +117,7 @@ var TplCommonMap = map[string]string{
             <a href="/posts">posts</a>
             <a href="/feed.atom" aria-label="Atom feed">atom</a>
             {{ if logged }}
-                <a href="/users/{{ .logged.Id }}" aria-label="Logged as {{ .logged.Name }}">{{ .logged.Name }}</a>
+                <a href="/users/{{ .logged.ID }}" aria-label="Logged as {{ .logged.Name }}">{{ .logged.Name }}</a>
                 <a href="/account">account</a>
                 {{ if .logged.IsAdmin }}
                     <a href="/admin">instance settings</a>
@@ -176,7 +176,7 @@ var TplCommonMap = map[string]string{
     {{ end }}
 {{ end }}`,
 	"post_form": `{{ define "post_form" }}
-    <input type="hidden" name="topicId" value="{{ .TopicId }}">
+    <input type="hidden" name="topicId" value="{{ .TopicID }}">
     <div class="field">
         <label for="subject">Subject</label>
         <input type="text" name="subject" id="subject" value="{{ .Subject }}" autocomplete="off" maxlength="115"
@@ -194,7 +194,7 @@ var TplCommonMap = map[string]string{
             <label for="newBoardId">Board</label>
             <select name="newBoardId" id="newBoardId">
                 {{ range .Boards }}
-                    <option value="{{ .Id }}" {{ if eq .Id $.BoardId }}selected{{ end }}>{{ .Name }}</option>
+                    <option value="{{ .ID }}" {{ if eq .ID $.BoardID }}selected{{ end }}>{{ .Name }}</option>
                 {{ end }}
             </select>
         </div>

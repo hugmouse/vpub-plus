@@ -5,7 +5,7 @@
 
     Are you sure you want to delete the following post?
     <p>{{ syntax .post.Content }}</p>
-    <form action="/posts/{{ .post.Id }}/remove" method="post">
+    <form action="/posts/{{ .post.ID }}/remove" method="post">
         {{ .csrfField }}
         <input type="submit" value="Submit">
     </form>

@@ -3,7 +3,7 @@
         <label for="forumId">Forum</label>
         <select name="forumId" id="forumId">
             {{ range .Forums }}
-                <option value="{{ .Id }}" {{ if eq .Id $.ForumId }}selected{{ end }}>{{ .Name }}</option>
+                <option value="{{ .ID }}" {{ if eq .ID $.ForumID }}selected{{ end }}>{{ .Name }}</option>
             {{ end }}
         </select>
     </div>

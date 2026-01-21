@@ -141,10 +141,10 @@ var TplMap = map[string]string{
                 {{ range .Boards }}
                     <tr>
                         <td>
-                            <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+                            <a href="/boards/{{ .ID }}">{{ .Name }}</a><br>{{ .Description }}
                         </td>
-                        <td class="center"><a href="/admin/boards/{{ .Id }}/edit">Edit</a></td>
-                        <td class="center"><a href="/admin/boards/{{ .Id }}/remove">Delete</a></td>
+                        <td class="center"><a href="/admin/boards/{{ .ID }}/edit">Edit</a></td>
+                        <td class="center"><a href="/admin/boards/{{ .ID }}/remove">Delete</a></td>
                     </tr>
                 {{ end }}
             {{ end }}
@@ -205,7 +205,7 @@ var TplMap = map[string]string{
     {{ if .errorMessage }}
         <p class="errors">{{ .errorMessage }}</p>
     {{ end }}
-    <form action="/admin/boards/{{ .board.Id }}/update" method="post">
+    <form action="/admin/boards/{{ .board.ID }}/update" method="post">
         {{ .csrfField }}
         {{ template "board_form" .form }}
         <input type="submit" value="Submit">
@@ -220,7 +220,7 @@ var TplMap = map[string]string{
 
     Are you sure you want to delete the following board?
     <p>{{ .board.Name }}</p>
-    <form action="/admin/boards/{{ .board.Id }}/remove" method="post">
+    <form action="/admin/boards/{{ .board.ID }}/remove" method="post">
         {{ .csrfField }}
         <input type="submit" value="Submit">
     </form>
@@ -255,8 +255,8 @@ var TplMap = map[string]string{
                     <td>
                         {{ .Name }}
                     </td>
-                    <td class="center"><a href="/admin/forums/{{ .Id }}/edit">Edit</a></td>
-                    <td class="center"><a href="/admin/forums/{{ .Id }}/remove">Delete</a></td>
+                    <td class="center"><a href="/admin/forums/{{ .ID }}/edit">Edit</a></td>
+                    <td class="center"><a href="/admin/forums/{{ .ID }}/remove">Delete</a></td>
                 </tr>
             {{ end }}
         {{ else }}
@@ -316,7 +316,7 @@ var TplMap = map[string]string{
     {{ if .errorMessage }}
         <p class="errors">{{ .errorMessage }}</p>
     {{ end }}
-    <form action="/admin/forums/{{ .forum.Id }}/update" method="post">
+    <form action="/admin/forums/{{ .forum.ID }}/update" method="post">
         {{ .csrfField }}
         {{ template "forum_form" .form }}
         <input type="submit" value="Submit">
@@ -331,7 +331,7 @@ var TplMap = map[string]string{
 
     Are you sure you want to delete the following forum?
     <p>{{ .forum.Name }}</p>
-    <form action="/admin/forums/{{ .forum.Id }}/remove" method="post">
+    <form action="/admin/forums/{{ .forum.ID }}/remove" method="post">
         {{ .csrfField }}
         <input type="submit" value="Submit">
     </form>
@@ -432,7 +432,7 @@ var TplMap = map[string]string{
             <tr>
                 <td>{{ .Key }}</td>
                 <td class="center">{{ iso8601 .CreatedAt }}</td>
-                <td class="center"><a href="/admin/keys/{{ .Id }}/remove">Delete</a></td>
+                <td class="center"><a href="/admin/keys/{{ .ID }}/remove">Delete</a></td>
             </tr>
         {{ end }}
         </tbody>
@@ -500,7 +500,7 @@ var TplMap = map[string]string{
         </div>
         <div class="field">
             <label for="css">CSS</label>
-            <textarea class="editor" name="css" id="css" aria-describedby="css-desc">{{ .form.Css }}</textarea>
+            <textarea class="editor" name="css" id="css" aria-describedby="css-desc">{{ .form.CSS }}</textarea>
             <p id="css-desc">Custom styles for your instance.</p>
         </div>
         <div class="field">
@@ -560,9 +560,9 @@ var TplMap = map[string]string{
         {{ range .users }}
             <tr>
                 <td>{{ .Name }}</td>
-                <td class="center"><a href="/admin/users/{{ .Id }}/edit">Edit</a></td>
+                <td class="center"><a href="/admin/users/{{ .ID }}/edit">Edit</a></td>
                 <td class="center"><a href="/reset-password?hash={{ .Hash }}">Reset</a></td>
-                <td class="center"><a href="/admin/users/{{ .Id }}/remove">Delete</a></td>
+                <td class="center"><a href="/admin/users/{{ .ID }}/remove">Delete</a></td>
             </tr>
         {{ end }}
         </tbody>
@@ -586,7 +586,7 @@ var TplMap = map[string]string{
         </ul>
     </nav>
     <h1>Edit user</h1>
-    <form action="/admin/users/{{ .user.Id }}/update" method="post">
+    <form action="/admin/users/{{ .user.ID }}/update" method="post">
         {{ .csrfField }}
         <div class="field">
             <label for="name">Name</label>
@@ -613,14 +613,14 @@ var TplMap = map[string]string{
 
     Are you sure you want to delete the following user?
     <p>{{ .user.Name }}</p>
-    <form action="/admin/users/{{ .user.Id }}/remove" method="post">
+    <form action="/admin/users/{{ .user.ID }}/remove" method="post">
         {{ .csrfField }}
         <input type="submit" value="Submit">
     </form>
 {{ end }}`,
 	"board": `{{ define "head" }}
     <link type="application/atom+xml" rel="alternate"
-          href="{{ .settings.URL}}boards/{{ .board.Id }}/feed.atom"/>
+          href="{{ .settings.URL}}boards/{{ .board.ID }}/feed.atom"/>
 {{ end }}
 {{ define "content" }}
     {{ template "forum_nav" .navigation }}
@@ -633,7 +633,7 @@ var TplMap = map[string]string{
             <p>This board is locked.</p>
         {{ end }}
         {{ if or (and (not .board.IsLocked) (not .board.Forum.IsLocked)) .logged.IsAdmin }}
-            <form action="/boards/{{ .board.Id }}/new-topic" method="get" class="action">
+            <form action="/boards/{{ .board.ID }}/new-topic" method="get" class="action">
                 {{ .csrfField }}
                 <input type="submit" value="New topic">
             </form>
@@ -656,11 +656,11 @@ var TplMap = map[string]string{
                     <tr>
                         <td>
                             {{ if .IsSticky }}<span class="sticky">[Sticky]</span>{{ end }}
-                            <a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a>
+                            <a href="/topics/{{ .ID }}">{{ .Post.Subject }}</a>
                         </td>
-                        <td class="center"><a href="/users/{{ .Post.User.Id }}">{{ .Post.User.Name }}</a></td>
+                        <td class="center"><a href="/users/{{ .Post.User.ID }}">{{ .Post.User.Name }}</a></td>
                         <td class="center">{{ dec .Posts }}</td>
-                        <td><a href="/topics/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
+                        <td><a href="/topics/{{ .ID }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
                     </tr>
                 {{ end }}
             {{ else }}
@@ -694,11 +694,11 @@ var TplMap = map[string]string{
             {{ range .boards }}
                 <tr>
                     <td>
-                        <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+                        <a href="/boards/{{ .ID }}">{{ .Name }}</a><br>{{ .Description }}
                     </td>
                     <td class="center">{{ .Topics }}</td>
                     <td class="center">{{ .Posts }}</td>
-                    <td class="center"><a href="/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
+                    <td class="center"><a href="/boards/{{ .ID }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
                 </tr>
             {{ end }}
         {{ else }}
@@ -716,7 +716,7 @@ var TplMap = map[string]string{
 
     Are you sure you want to delete the following post?
     <p>{{ syntax .post.Content }}</p>
-    <form action="/posts/{{ .post.Id }}/remove" method="post">
+    <form action="/posts/{{ .post.ID }}/remove" method="post">
         {{ .csrfField }}
         <input type="submit" value="Submit">
     </form>
@@ -729,10 +729,10 @@ var TplMap = map[string]string{
                 <a href="/">All forums</a>
                 <ul>
                     <li>
-                        <a href="/forums/{{ .board.Forum.Id }}">{{ .board.Forum.Name }}</a>
+                        <a href="/forums/{{ .board.Forum.ID }}">{{ .board.Forum.Name }}</a>
                         <ul>
                             <li>
-                                <a href="/boards/{{ .board.Id }}">{{ .board.Name }}</a>
+                                <a href="/boards/{{ .board.ID }}">{{ .board.Name }}</a>
                                 <ul>
                                     <li>{{ .topic.Post.Subject }}</li>
                                 </ul>
@@ -764,9 +764,9 @@ var TplMap = map[string]string{
     {{ if .errorMessage }}
         <p class="errors">{{ .errorMessage }}</p>
     {{ end }}
-    <form action="/boards/{{ .board.Id }}/save-topic" method="post">
+    <form action="/boards/{{ .board.ID }}/save-topic" method="post">
         {{ .csrfField }}
-        <input type="hidden" name="boardId" value="{{ .form.BoardId }}">
+        <input type="hidden" name="boardId" value="{{ .form.BoardID }}">
         {{ template "post_form" .form.PostForm }}
         {{ if .logged.IsAdmin }}
             {{ template "topic_form" .form }}
@@ -785,7 +785,7 @@ var TplMap = map[string]string{
         <p class="errors">{{ .errorMessage }}</p>
     {{ end }}
 
-    <form action="/posts/{{ .post.Id }}/update" method="post">
+    <form action="/posts/{{ .post.ID }}/update" method="post">
         {{ .csrfField }}
         {{ template "post_form" .form }}
         <input type="submit" value="Submit">
@@ -798,9 +798,9 @@ var TplMap = map[string]string{
     {{ if .errorMessage }}
         <p class="errors">{{ .errorMessage }}</p>
     {{ end }}
-    <form action="/topics/{{ .form.Id }}/update" method="post">
+    <form action="/topics/{{ .form.ID }}/update" method="post">
         {{ .csrfField }}
-        <input type="hidden" name="boardId" value="{{ .form.BoardId }}">
+        <input type="hidden" name="boardId" value="{{ .form.BoardID }}">
         {{ template "post_form" .form.PostForm }}
         {{ if .logged.IsAdmin }}
             {{ template "topic_form" .form }}
@@ -828,18 +828,18 @@ var TplMap = map[string]string{
         {{ if .forums }}
             {{ range .forums }}
                 <tr class="forum">
-                    <td colspan="4"><a href="/forums/{{ .Id }}">{{ .Name }}</a></td>
+                    <td colspan="4"><a href="/forums/{{ .ID }}">{{ .Name }}</a></td>
                 </tr>
                 {{ range .Boards }}
                     <tr>
                         <td>
-                            <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+                            <a href="/boards/{{ .ID }}">{{ .Name }}</a><br>{{ .Description }}
                         </td>
                         <td class="center">{{ .Topics }}</td>
                         <td class="center">{{ .Posts }}</td>
                         <td class="center">
                             {{ if .Topics }}
-                                <a href="/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a>
+                                <a href="/boards/{{ .ID }}/newest">{{ iso8601 .UpdatedAt }}</a>
                             {{ else }}
                                 {{ iso8601 .UpdatedAt }}
                             {{ end }}
@@ -891,8 +891,8 @@ var TplMap = map[string]string{
             {{ if .posts }}
                 {{ range .posts }}
                     <tr>
-                        <td><a href="/topics/{{ .TopicId }}#{{ .Id }}">{{ .Subject }}</a></td>
-                        <td class="center"><a href="/users/{{ .User.Id }}">{{ .User.Name }}</a></td>
+                        <td><a href="/topics/{{ .TopicID }}#{{ .ID }}">{{ .Subject }}</a></td>
+                        <td class="center"><a href="/users/{{ .User.ID }}">{{ .User.Name }}</a></td>
                         <td class="center">{{ iso8601 .CreatedAt }}</td>
                     </tr>
                 {{ end }}
@@ -989,12 +989,12 @@ var TplMap = map[string]string{
     {{ end }}
 {{ end }}`,
 	"topic": `{{ define "head" }}
-    <link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}topics/{{ .topic.Id }}/feed.atom"/>
+    <link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}topics/{{ .topic.ID }}/feed.atom"/>
     <meta property="article:published_time" content="{{ iso8601Time (index .posts 0).CreatedAt }}">
     {{ if ne (index .posts 0).CreatedAt (index .posts 0).UpdatedAt }}
         <meta property="article:modified_time" content="{{ iso8601Time (index .posts 0).UpdatedAt }}">
     {{ end }}
-    <meta property="article:author" content="{{ .settings.URL}}users/{{ (index .posts 0).User.Id }}">
+    <meta property="article:author" content="{{ .settings.URL}}users/{{ (index .posts 0).User.ID }}">
     <meta property="author" content="{{ (index .posts 0).User.Name }}">
     <meta property="og:description" content="{{ printf "%.160s" (index .posts 0).Content }}">
     <meta property="og:title" content="{{ (index .posts 0).Subject }}">
@@ -1015,9 +1015,9 @@ var TplMap = map[string]string{
         </thead>
         <tbody>
         {{ range .posts }}
-            <tr id="{{ .Id }}">
+            <tr id="{{ .ID }}">
                 <td class="col-author">
-                    <a href="/users/{{ .User.Id }}">{{ .User.Name }}</a>
+                    <a href="/users/{{ .User.ID }}">{{ .User.Name }}</a>
                     <p>
                         {{ if .User.Picture }}
                             <img alt="{{ .User.PictureAlt }}" src="{{ proxyURL .User.Picture }}" width="80" height="80" style="object-fit: contain;"/>
@@ -1035,15 +1035,15 @@ var TplMap = map[string]string{
                     <div class="posted">
                         <span>Posted on <time datetime="{{ iso8601Time .CreatedAt }}"
                                               title="{{ timeAgo .CreatedAt }}">{{ iso8601Time .CreatedAt }}</time></span>
-                        {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
-                            <a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a
-                                    href="/posts/{{ .Id }}/remove">remove</a>
+                        {{ if and (eq $.topic.Post.ID .ID) $.logged.IsAdmin }}
+                            <a href="/topics/{{ $.topic.ID }}/edit">edit</a> <a
+                                    href="/posts/{{ .ID }}/remove">remove</a>
                         {{ else }}
                             {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
-                                <a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
+                                <a href="/posts/{{ .ID }}/edit">edit</a> <a href="/posts/{{ .ID }}/remove">remove</a>
                             {{ end }}
                         {{ end }}
-                        <a href="#{{ .Id }}" class="anchor">#</a>
+                        <a href="#{{ .ID }}" class="anchor">#</a>
                         <hr/>
                     </div>
                     <div>{{ syntax .Content }}</div>
@@ -1084,8 +1084,8 @@ var TplMap = map[string]string{
                 {{ end }}
                 <form action="/posts/save" method="post">
                     {{ .csrfField }}
-                    <input type="hidden" name="topicId" value="{{ .topic.Id }}">
-                    <input type="hidden" name="boardId" value="{{ .board.Id }}">
+                    <input type="hidden" name="topicId" value="{{ .topic.ID }}">
+                    <input type="hidden" name="boardId" value="{{ .board.ID }}">
                     <input type="hidden" name="subject" value="Re: {{ .topic.Post.Subject }}">
                     <div class="field">
                         <label for="content">Reply to this topic</label>

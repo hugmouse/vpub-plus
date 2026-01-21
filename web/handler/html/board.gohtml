@@ -1,6 +1,6 @@
 {{ define "head" }}
     <link type="application/atom+xml" rel="alternate"
-          href="{{ .settings.URL}}boards/{{ .board.Id }}/feed.atom"/>
+          href="{{ .settings.URL}}boards/{{ .board.ID }}/feed.atom"/>
 {{ end }}
 {{ define "content" }}
     {{ template "forum_nav" .navigation }}
@@ -13,7 +13,7 @@
             <p>This board is locked.</p>
         {{ end }}
         {{ if or (and (not .board.IsLocked) (not .board.Forum.IsLocked)) .logged.IsAdmin }}
-            <form action="/boards/{{ .board.Id }}/new-topic" method="get" class="action">
+            <form action="/boards/{{ .board.ID }}/new-topic" method="get" class="action">
                 {{ .csrfField }}
                 <input type="submit" value="New topic">
             </form>
@@ -36,11 +36,11 @@
                     <tr>
                         <td>
                             {{ if .IsSticky }}<span class="sticky">[Sticky]</span>{{ end }}
-                            <a href="/topics/{{ .Id }}">{{ .Post.Subject }}</a>
+                            <a href="/topics/{{ .ID }}">{{ .Post.Subject }}</a>
                         </td>
-                        <td class="center"><a href="/users/{{ .Post.User.Id }}">{{ .Post.User.Name }}</a></td>
+                        <td class="center"><a href="/users/{{ .Post.User.ID }}">{{ .Post.User.Name }}</a></td>
                         <td class="center">{{ dec .Posts }}</td>
-                        <td><a href="/topics/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
+                        <td><a href="/topics/{{ .ID }}/newest">{{ iso8601 .UpdatedAt }}</a></td>
                     </tr>
                 {{ end }}
             {{ else }}

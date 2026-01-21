@@ -34,7 +34,7 @@
             <a href="/posts">posts</a>
             <a href="/feed.atom" aria-label="Atom feed">atom</a>
             {{ if logged }}
-                <a href="/users/{{ .logged.Id }}" aria-label="Logged as {{ .logged.Name }}">{{ .logged.Name }}</a>
+                <a href="/users/{{ .logged.ID }}" aria-label="Logged as {{ .logged.Name }}">{{ .logged.Name }}</a>
                 <a href="/account">account</a>
                 {{ if .logged.IsAdmin }}
                     <a href="/admin">instance settings</a>

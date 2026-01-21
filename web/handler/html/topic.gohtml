@@ -1,10 +1,10 @@
 {{ define "head" }}
-    <link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}topics/{{ .topic.Id }}/feed.atom"/>
+    <link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}topics/{{ .topic.ID }}/feed.atom"/>
     <meta property="article:published_time" content="{{ iso8601Time (index .posts 0).CreatedAt }}">
     {{ if ne (index .posts 0).CreatedAt (index .posts 0).UpdatedAt }}
         <meta property="article:modified_time" content="{{ iso8601Time (index .posts 0).UpdatedAt }}">
     {{ end }}
-    <meta property="article:author" content="{{ .settings.URL}}users/{{ (index .posts 0).User.Id }}">
+    <meta property="article:author" content="{{ .settings.URL}}users/{{ (index .posts 0).User.ID }}">
     <meta property="author" content="{{ (index .posts 0).User.Name }}">
     <meta property="og:description" content="{{ printf "%.160s" (index .posts 0).Content }}">
     <meta property="og:title" content="{{ (index .posts 0).Subject }}">
@@ -25,9 +25,9 @@
         </thead>
         <tbody>
         {{ range .posts }}
-            <tr id="{{ .Id }}">
+            <tr id="{{ .ID }}">
                 <td class="col-author">
-                    <a href="/users/{{ .User.Id }}">{{ .User.Name }}</a>
+                    <a href="/users/{{ .User.ID }}">{{ .User.Name }}</a>
                     <p>
                         {{ if .User.Picture }}
                             <img alt="{{ .User.PictureAlt }}" src="{{ proxyURL .User.Picture }}" width="80" height="80" style="object-fit: contain;"/>
@@ -45,15 +45,15 @@
                     <div class="posted">
                         <span>Posted on <time datetime="{{ iso8601Time .CreatedAt }}"
                                               title="{{ timeAgo .CreatedAt }}">{{ iso8601Time .CreatedAt }}</time></span>
-                        {{ if and (eq $.topic.Post.Id .Id) $.logged.IsAdmin }}
-                            <a href="/topics/{{ $.topic.Id }}/edit">edit</a> <a
-                                    href="/posts/{{ .Id }}/remove">remove</a>
+                        {{ if and (eq $.topic.Post.ID .ID) $.logged.IsAdmin }}
+                            <a href="/topics/{{ $.topic.ID }}/edit">edit</a> <a
+                                    href="/posts/{{ .ID }}/remove">remove</a>
                         {{ else }}
                             {{ if or (hasPermission .User.Name) $.logged.IsAdmin }}
-                                <a href="/posts/{{ .Id }}/edit">edit</a> <a href="/posts/{{ .Id }}/remove">remove</a>
+                                <a href="/posts/{{ .ID }}/edit">edit</a> <a href="/posts/{{ .ID }}/remove">remove</a>
                             {{ end }}
                         {{ end }}
-                        <a href="#{{ .Id }}" class="anchor">#</a>
+                        <a href="#{{ .ID }}" class="anchor">#</a>
                         <hr/>
                     </div>
                     <div>{{ syntax .Content }}</div>
@@ -94,8 +94,8 @@
                 {{ end }}
                 <form action="/posts/save" method="post">
                     {{ .csrfField }}
-                    <input type="hidden" name="topicId" value="{{ .topic.Id }}">
-                    <input type="hidden" name="boardId" value="{{ .board.Id }}">
+                    <input type="hidden" name="topicId" value="{{ .topic.ID }}">
+                    <input type="hidden" name="boardId" value="{{ .board.ID }}">
                     <input type="hidden" name="subject" value="Re: {{ .topic.Post.Subject }}">
                     <div class="field">
                         <label for="content">Reply to this topic</label>

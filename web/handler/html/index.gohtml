@@ -17,18 +17,18 @@
         {{ if .forums }}
             {{ range .forums }}
                 <tr class="forum">
-                    <td colspan="4"><a href="/forums/{{ .Id }}">{{ .Name }}</a></td>
+                    <td colspan="4"><a href="/forums/{{ .ID }}">{{ .Name }}</a></td>
                 </tr>
                 {{ range .Boards }}
                     <tr>
                         <td>
-                            <a href="/boards/{{ .Id }}">{{ .Name }}</a><br>{{ .Description }}
+                            <a href="/boards/{{ .ID }}">{{ .Name }}</a><br>{{ .Description }}
                         </td>
                         <td class="center">{{ .Topics }}</td>
                         <td class="center">{{ .Posts }}</td>
                         <td class="center">
                             {{ if .Topics }}
-                                <a href="/boards/{{ .Id }}/newest">{{ iso8601 .UpdatedAt }}</a>
+                                <a href="/boards/{{ .ID }}/newest">{{ iso8601 .UpdatedAt }}</a>
                             {{ else }}
                                 {{ iso8601 .UpdatedAt }}
                             {{ end }}

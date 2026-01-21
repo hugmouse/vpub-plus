@@ -6,7 +6,7 @@
 
     Are you sure you want to delete the following forum?
     <p>{{ .forum.Name }}</p>
-    <form action="/admin/forums/{{ .forum.Id }}/remove" method="post">
+    <form action="/admin/forums/{{ .forum.ID }}/remove" method="post">
         {{ .csrfField }}
         <input type="submit" value="Submit">
     </form>

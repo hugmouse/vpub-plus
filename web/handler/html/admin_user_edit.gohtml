@@ -16,7 +16,7 @@
         </ul>
     </nav>
     <h1>Edit user</h1>
-    <form action="/admin/users/{{ .user.Id }}/update" method="post">
+    <form action="/admin/users/{{ .user.ID }}/update" method="post">
         {{ .csrfField }}
         <div class="field">
             <label for="name">Name</label>

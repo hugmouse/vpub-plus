@@ -5,7 +5,7 @@
             <label for="newBoardId">Board</label>
             <select name="newBoardId" id="newBoardId">
                 {{ range .Boards }}
-                    <option value="{{ .Id }}" {{ if eq .Id $.BoardId }}selected{{ end }}>{{ .Name }}</option>
+                    <option value="{{ .ID }}" {{ if eq .ID $.BoardID }}selected{{ end }}>{{ .Name }}</option>
                 {{ end }}
             </select>
         </div>

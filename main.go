@@ -59,7 +59,7 @@ func main() {
 			Description: "This is a sample board.",
 			Position:    0,
 			IsLocked:    false,
-			ForumId:     forumID,
+			ForumID:     forumID,
 		})
 		if err != nil {
 			log.Fatal(err)
@@ -72,7 +72,7 @@ func main() {
 ## To change the password.
 			
 Navigate to [/admin/users](/admin/users). Find the **admin** user and change the password.`,
-			BoardId:  boardID,
+			BoardID:  boardID,
 			IsLocked: true,
 			IsSticky: true,
 		})
@@ -83,7 +83,7 @@ Navigate to [/admin/users](/admin/users). Find the **admin** user and change the
 		_, err = data.CreateTopic(userID, model.TopicRequest{
 			Subject:  "What to do?",
 			Content:  `Navigate to the [/admin](/admin) route and see what you can change in there. Just make sure you do not delete yourself, okay? Otherwise you will be locked in a weird state.`,
-			BoardId:  boardID,
+			BoardID:  boardID,
 			IsLocked: false,
 			IsSticky: false,
 		})

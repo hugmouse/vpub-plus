@@ -4,9 +4,9 @@
     {{ if .errorMessage }}
         <p class="errors">{{ .errorMessage }}</p>
     {{ end }}
-    <form action="/topics/{{ .form.Id }}/update" method="post">
+    <form action="/topics/{{ .form.ID }}/update" method="post">
         {{ .csrfField }}
-        <input type="hidden" name="boardId" value="{{ .form.BoardId }}">
+        <input type="hidden" name="boardId" value="{{ .form.BoardID }}">
         {{ template "post_form" .form.PostForm }}
         {{ if .logged.IsAdmin }}
             {{ template "topic_form" .form }}
