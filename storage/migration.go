@@ -11,7 +11,7 @@ import (
 	"github.com/lib/pq"
 )
 
-const schemaVersion = 11
+const schemaVersion = 12
 
 func Migrate(db *sql.DB) {
 	var currentVersion int
