@@ -531,6 +531,11 @@ var TplMap = map[string]string{
                 <p id="size-limit-desc">Maximum size of an image in bytes to be cached and served (e.g. 524288 for 512KB).</p>
             </div>
         </div>
+        <div class="field">
+            <label for="settings-cache-ttl">Settings Cache TTL (seconds)</label>
+            <input type="number" name="settings-cache-ttl" id="settings-cache-ttl" value="{{ .form.SettingsCacheTTL }}" autocomplete="off" aria-describedby="settings-cache-desc"/>
+            <p id="settings-cache-desc">How long the server keeps settings cached before refreshing from storage.</p>
+        </div>
         <input type="submit" value="Submit">
     </form>
     </table>

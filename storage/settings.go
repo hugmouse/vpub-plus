@@ -7,7 +7,7 @@ func (s *Storage) Settings() (model.Settings, error) {
 
 	err := s.db.QueryRow(`
         SELECT
-            name, css, footer, per_page, url, lang, image_proxy_cache_time, image_proxy_size_limit
+            name, css, footer, per_page, url, lang, image_proxy_cache_time, image_proxy_size_limit, settings_cache_ttl
         FROM
             settings;
     `).Scan(
@@ -19,6 +19,7 @@ func (s *Storage) Settings() (model.Settings, error) {
 		&settings.Lang,
 		&settings.ImageProxyCacheTime,
 		&settings.ImageProxySizeLimit,
+		&settings.SettingsCacheTTL,
 	)
 
 	return settings, err
@@ -34,7 +35,8 @@ func (s *Storage) UpdateSettings(settings model.Settings) error {
             url=$5,
             lang=$6,
 			image_proxy_cache_time=$7,
-			image_proxy_size_limit=$8;
+			image_proxy_size_limit=$8,
+			settings_cache_ttl=$9;
     `
 
 	_, err := s.db.Exec(
@@ -47,6 +49,7 @@ func (s *Storage) UpdateSettings(settings model.Settings) error {
 		&settings.Lang,
 		&settings.ImageProxyCacheTime,
 		&settings.ImageProxySizeLimit,
+		&settings.SettingsCacheTTL,
 	)
 
 	return err

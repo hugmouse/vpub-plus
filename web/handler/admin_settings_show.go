@@ -28,6 +28,7 @@ func (h *Handler) showAdminSettingsView(w http.ResponseWriter, r *http.Request) 
 		SelectedRenderEngine: (*h.currentRenderEngine).Name(),
 		ImageProxyCacheTime:  settings.ImageProxyCacheTime,
 		ImageProxySizeLimit:  settings.ImageProxySizeLimit,
+		SettingsCacheTTL:     settings.SettingsCacheTTL,
 	}
 
 	v := NewView(w, r, "admin_settings_edit")
