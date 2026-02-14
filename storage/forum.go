@@ -36,6 +36,7 @@ func (s *Storage) Forums() ([]model.Forum, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	var forums []model.Forum
 	for rows.Next() {
 		var forum model.Forum

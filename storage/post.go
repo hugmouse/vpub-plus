@@ -10,6 +10,7 @@ func (s *Storage) PostsByTopicID(id int64) ([]model.Post, bool, error) {
 	if err != nil {
 		return nil, false, err
 	}
+	defer rows.Close()
 	var posts []model.Post
 	for rows.Next() {
 		var post model.Post
@@ -45,6 +46,7 @@ limit $2`, settings.PerPage*(page-1), settings.PerPage+1)
 	if err != nil {
 		return nil, false, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var post model.Post
 		err := rows.Scan(
@@ -92,6 +94,7 @@ limit $3`, id, settings.PerPage*(page-1), settings.PerPage+1)
 	if err != nil {
 		return nil, false, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var post model.Post
 		err := rows.Scan(
@@ -154,6 +157,7 @@ func (s *Storage) DeletePost(post model.Post) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(post.ID, post.User.ID)
 	return err
 }

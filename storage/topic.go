@@ -111,6 +111,7 @@ limit $3`, boardId, settings.PerPage*(page-1), settings.PerPage+1)
 	if err != nil {
 		return nil, false, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var topic model.Topic
 		err := rows.Scan(&topic.ID, &topic.Post.Subject, &topic.Post.Content, &topic.Posts, &topic.UpdatedAt, &topic.Post.CreatedAt, &topic.Post.User.ID, &topic.Post.User.Name, &topic.IsSticky)

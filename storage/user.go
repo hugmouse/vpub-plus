@@ -5,8 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
 	"vpub/model"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 const queryFindName = `SELECT id, name, hash, about, is_admin, picture FROM users WHERE name=lower($1);`
@@ -150,6 +151,7 @@ func (s *Storage) Users() ([]model.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	var users []model.User
 	for rows.Next() {
 		var user model.User
@@ -167,6 +169,7 @@ func (s *Storage) UpdateUser(user model.User) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(user.Name, user.About, user.Picture, user.ID)
 	return err
 }
@@ -180,6 +183,7 @@ func (s *Storage) UpdatePassword(hash string, user model.User) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(newHash, hash)
 	return err
 }

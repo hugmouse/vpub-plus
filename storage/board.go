@@ -37,6 +37,7 @@ func (s *Storage) Boards() ([]model.Board, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	var boards []model.Board
 	for rows.Next() {
 		var board model.Board
@@ -54,6 +55,7 @@ func (s *Storage) BoardsByForumID(id int64) ([]model.Board, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	var boards []model.Board
 	for rows.Next() {
 		var board model.Board
