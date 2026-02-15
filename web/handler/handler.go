@@ -86,19 +86,15 @@ func (h *Handler) getCachedSettings() (model.Settings, error) {
 	h.settingsCacheMutex.Lock()
 	defer h.settingsCacheMutex.Unlock()
 
-	// Double-check after acquiring write lock
-	if time.Since(h.settingsCacheTime) < h.settingsCacheTTL && h.settingsCache != nil {
-		return *h.settingsCache, nil
-	}
-
 	settings, err := h.storage.Settings()
 	if err != nil {
 		return model.Settings{}, err
 	}
 
-	// Update cache TTL from settings if it changed
 	if settings.SettingsCacheTTL > 0 {
 		h.settingsCacheTTL = time.Duration(settings.SettingsCacheTTL) * time.Second
+	} else {
+		h.settingsCacheTTL = 0
 	}
 
 	h.settingsCache = &settings
@@ -234,7 +230,7 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 		storage:             data,
 		currentRenderEngine: &defaultRenderEngine,
 		renderRegistry:      renderRegistry,
-		settingsCacheTTL:    30 * time.Second, // Default 30 seconds
+		settingsCacheTTL:    30 * time.Second,
 	}
 
 	router.Use(h.handleSessionMiddleware)

@@ -533,12 +533,11 @@ var TplMap = map[string]string{
         </div>
         <div class="field">
             <label for="settings-cache-ttl">Settings Cache TTL (seconds)</label>
-            <input type="number" name="settings-cache-ttl" id="settings-cache-ttl" value="{{ .form.SettingsCacheTTL }}" autocomplete="off" aria-describedby="settings-cache-desc"/>
+            <input type="number" name="settings-cache-ttl" id="settings-cache-ttl" value="{{ .form.SettingsCacheTTL }}" autocomplete="off" aria-describedby="settings-cache-desc" min="0" step="1"/>
             <p id="settings-cache-desc">How long the server keeps settings cached before refreshing from storage.</p>
         </div>
         <input type="submit" value="Submit">
     </form>
-    </table>
 {{ end }}`,
 	"admin_user": `{{ define "content"}}
     <nav class="breadcrumb">
