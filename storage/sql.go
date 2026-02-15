@@ -359,7 +359,8 @@ ALTER TABLE settings
 ADD COLUMN image_proxy_cache_time integer NOT NULL DEFAULT 600,
 ADD COLUMN image_proxy_size_limit integer NOT NULL DEFAULT 524288;
 `,
-	"schema_version_12": `CREATE OR REPLACE FUNCTION search_with_highlights(search_term text)
+	"schema_version_12": `-- Replacing to_tsquery with websearch_to_tsquery, fixing issues with spaces and such
+CREATE OR REPLACE FUNCTION search_with_highlights(search_term text)
     RETURNS TABLE (
                       origin_table text,
                       id text,
@@ -389,6 +390,10 @@ BEGIN
             rank DESC;
 END;
 $$ LANGUAGE plpgsql;
+`,
+	"schema_version_13": `-- Add settings cache TTL
+ALTER TABLE settings
+ADD COLUMN settings_cache_ttl integer NOT NULL DEFAULT 30;
 `,
 	"schema_version_2": `alter table settings
     add column footer text not null default ''`,

@@ -10,6 +10,7 @@ func (s *Storage) PostsByTopicID(id int64) ([]model.Post, bool, error) {
 	if err != nil {
 		return nil, false, err
 	}
+	defer rows.Close()
 	var posts []model.Post
 	for rows.Next() {
 		var post model.Post
@@ -45,6 +46,7 @@ limit $2`, settings.PerPage*(page-1), settings.PerPage+1)
 	if err != nil {
 		return nil, false, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var post model.Post
 		err := rows.Scan(
@@ -92,6 +94,7 @@ limit $3`, id, settings.PerPage*(page-1), settings.PerPage+1)
 	if err != nil {
 		return nil, false, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var post model.Post
 		err := rows.Scan(
@@ -142,7 +145,7 @@ func (s *Storage) CreatePost(userId, topicId int64, request model.PostRequest) (
 
 func (s *Storage) PostByID(id int64) (model.Post, error) {
 	var post model.Post
-	err := s.db.QueryRow("select * from posts_full where post_id=$1", id).Scan(&post.TopicID, &post.ID, &post.Subject, &post.Content, &post.CreatedAt, &post.UpdatedAt, &post.User.ID, &post.User.Name, &post.User.Picture, &post.User.About)
+	err := s.db.QueryRow("select * from posts_full where post_id=$1 limit 1", id).Scan(&post.TopicID, &post.ID, &post.Subject, &post.Content, &post.CreatedAt, &post.UpdatedAt, &post.User.ID, &post.User.Name, &post.User.Picture, &post.User.About)
 	if err != nil {
 		return post, err
 	}
@@ -150,11 +153,11 @@ func (s *Storage) PostByID(id int64) (model.Post, error) {
 }
 
 func (s *Storage) DeletePost(post model.Post) error {
-	stmt, err := s.db.Prepare(`delete from posts where id=$1 and (user_id = $2 or (select is_admin from users where id=$2))`)
-	if err != nil {
-		return err
-	}
-	_, err = stmt.Exec(post.ID, post.User.ID)
+	_, err := s.db.Exec(
+		`delete from posts where id=$1 and (user_id = $2 or (select is_admin from users where id=$2))`,
+		post.ID,
+		post.User.ID,
+	)
 	return err
 }
 
@@ -186,7 +189,7 @@ func (s *Storage) NewestPostFromTopic(topicId int64) (int64, error) {
 	var id int64
 
 	query := `
-        select id from posts where topic_id=$1 order by created_at desc
+        select id from posts where topic_id=$1 order by created_at desc limit 1
     `
 
 	err := s.db.QueryRow(

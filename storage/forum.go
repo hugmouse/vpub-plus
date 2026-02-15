@@ -36,6 +36,7 @@ func (s *Storage) Forums() ([]model.Forum, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	var forums []model.Forum
 	for rows.Next() {
 		var forum model.Forum
@@ -51,7 +52,7 @@ func (s *Storage) Forums() ([]model.Forum, error) {
 func (s *Storage) ForumByID(id int64) (model.Forum, error) {
 	var forum model.Forum
 	err := s.db.QueryRow(
-		`SELECT id, name, position, is_locked from forums WHERE id=$1`, id).Scan(
+		`SELECT id, name, position, is_locked from forums WHERE id=$1 LIMIT 1`, id).Scan(
 		&forum.ID,
 		&forum.Name,
 		&forum.Position,

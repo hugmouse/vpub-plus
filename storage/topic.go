@@ -111,6 +111,7 @@ limit $3`, boardId, settings.PerPage*(page-1), settings.PerPage+1)
 	if err != nil {
 		return nil, false, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var topic model.Topic
 		err := rows.Scan(&topic.ID, &topic.Post.Subject, &topic.Post.Content, &topic.Posts, &topic.UpdatedAt, &topic.Post.CreatedAt, &topic.Post.User.ID, &topic.Post.User.Name, &topic.IsSticky)
@@ -137,7 +138,7 @@ select
        board_id,
        post_id,
        subject
-from topics_summary where topic_id=$1
+from topics_summary where topic_id=$1 LIMIT 1
 `, id).Scan(
 		&topic.ID,
 		&topic.Posts,
@@ -158,7 +159,7 @@ func (s *Storage) NewestTopicFromBoard(boardId int64) (int64, error) {
 	var id int64
 
 	query := `
-        select id from topics where board_id=$1 order by updated_at desc
+        select id from topics where board_id=$1 order by updated_at desc limit 1
     `
 
 	err := s.db.QueryRow(

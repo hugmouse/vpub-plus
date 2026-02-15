@@ -9,4 +9,5 @@ type Settings struct {
 	Lang                string
 	ImageProxyCacheTime int64
 	ImageProxySizeLimit int64
+	SettingsCacheTTL    int64
 }

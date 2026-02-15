@@ -5,11 +5,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
 	"vpub/model"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
-const queryFindName = `SELECT id, name, hash, about, is_admin, picture FROM users WHERE name=lower($1);`
+const queryFindName = `SELECT id, name, hash, about, is_admin, picture FROM users WHERE name=lower($1) LIMIT 1;`
 
 type ErrUserNotFound struct{}
 
@@ -48,7 +49,7 @@ func (s *Storage) HasAdmin() (bool, error) {
 
 func (s *Storage) UserHashExists(hash string) (bool, error) {
 	var exists bool
-	err := s.db.QueryRow(`SELECT true FROM users WHERE hash=$1`, hash).Scan(&exists)
+	err := s.db.QueryRow(`SELECT true FROM users WHERE hash=$1 LIMIT 1`, hash).Scan(&exists)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, nil
@@ -60,7 +61,7 @@ func (s *Storage) UserHashExists(hash string) (bool, error) {
 
 func (s *Storage) UserExists(name string) (bool, error) {
 	var exists bool
-	err := s.db.QueryRow(`SELECT true FROM users WHERE name=LOWER($1)`, name).Scan(&exists)
+	err := s.db.QueryRow(`SELECT true FROM users WHERE name=LOWER($1) LIMIT 1`, name).Scan(&exists)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, nil
@@ -86,7 +87,7 @@ func (s *Storage) UserByName(name string) (model.User, error) {
 }
 
 func (s *Storage) UserByID(id int64) (model.User, error) {
-	return s.queryUser(`SELECT id, name, hash, about, is_admin, picture FROM users WHERE id=$1;`, id)
+	return s.queryUser(`SELECT id, name, hash, about, is_admin, picture FROM users WHERE id=$1 LIMIT 1;`, id)
 }
 
 func hashPassword(password string) ([]byte, error) {
@@ -150,6 +151,7 @@ func (s *Storage) Users() ([]model.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	var users []model.User
 	for rows.Next() {
 		var user model.User
@@ -163,11 +165,13 @@ func (s *Storage) Users() ([]model.User, error) {
 }
 
 func (s *Storage) UpdateUser(user model.User) error {
-	stmt, err := s.db.Prepare(`UPDATE users SET name=$1, about=$2, picture=$3 WHERE id = $4;`)
-	if err != nil {
-		return err
-	}
-	_, err = stmt.Exec(user.Name, user.About, user.Picture, user.ID)
+	_, err := s.db.Exec(
+		`UPDATE users SET name=$1, about=$2, picture=$3 WHERE id = $4;`,
+		user.Name,
+		user.About,
+		user.Picture,
+		user.ID,
+	)
 	return err
 }
 
@@ -176,11 +180,11 @@ func (s *Storage) UpdatePassword(hash string, user model.User) error {
 	if err != nil {
 		return fmt.Errorf("failed to hash new password: %w", err)
 	}
-	stmt, err := s.db.Prepare(`UPDATE users SET hash=$1 where hash=$2;`)
-	if err != nil {
-		return err
-	}
-	_, err = stmt.Exec(newHash, hash)
+	_, err = s.db.Exec(
+		`UPDATE users SET hash=$1 where hash=$2;`,
+		newHash,
+		hash,
+	)
 	return err
 }
 

@@ -73,10 +73,45 @@ func serverError(w http.ResponseWriter, err error) {
 	}
 }
 
+func (h *Handler) getCachedSettings() (model.Settings, error) {
+	h.settingsCacheMutex.RLock()
+	if time.Since(h.settingsCacheTime) < h.settingsCacheTTL && h.settingsCache != nil {
+		cached := *h.settingsCache
+		h.settingsCacheMutex.RUnlock()
+		return cached, nil
+	}
+	h.settingsCacheMutex.RUnlock()
+
+	// Cache miss, fetch from DB
+	h.settingsCacheMutex.Lock()
+	defer h.settingsCacheMutex.Unlock()
+
+	settings, err := h.storage.Settings()
+	if err != nil {
+		return model.Settings{}, err
+	}
+
+	if settings.SettingsCacheTTL > 0 {
+		h.settingsCacheTTL = time.Duration(settings.SettingsCacheTTL) * time.Second
+	} else {
+		h.settingsCacheTTL = 0
+	}
+
+	h.settingsCache = &settings
+	h.settingsCacheTime = time.Now()
+	return settings, nil
+}
+
+func (h *Handler) invalidateSettingsCache() {
+	h.settingsCacheMutex.Lock()
+	defer h.settingsCacheMutex.Unlock()
+	h.settingsCache = nil
+}
+
 func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		settings, err := h.storage.Settings()
+		settings, err := h.getCachedSettings()
 		if err != nil {
 			serverError(w, err)
 			return
@@ -100,6 +135,10 @@ type Handler struct {
 	currentRenderEngine *syntax.Renderer
 	renderRegistry      *syntax.RenderEngineRegistry
 	imageProxy          *ImageProxyHandler
+	settingsCache       *model.Settings
+	settingsCacheMutex  sync.RWMutex
+	settingsCacheTime   time.Time
+	settingsCacheTTL    time.Duration
 }
 
 type ImageProxyHandler struct {
@@ -191,6 +230,7 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 		storage:             data,
 		currentRenderEngine: &defaultRenderEngine,
 		renderRegistry:      renderRegistry,
+		settingsCacheTTL:    30 * time.Second,
 	}
 
 	router.Use(h.handleSessionMiddleware)

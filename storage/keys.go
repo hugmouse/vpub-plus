@@ -44,6 +44,7 @@ func (s *Storage) Keys() ([]model.Key, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	var keys []model.Key
 	for rows.Next() {
 		var key model.Key
@@ -72,7 +73,7 @@ func (s *Storage) DeleteKey(id int64) error {
 }
 
 func (s *Storage) KeyExists(key string) (rv bool, err error) {
-	err = s.db.QueryRow(`SELECT true FROM keys WHERE key=$1 and user_id is null`, key).Scan(&rv)
+	err = s.db.QueryRow(`SELECT true FROM keys WHERE key=$1 and user_id is null LIMIT 1`, key).Scan(&rv)
 	if errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	} else if err != nil {

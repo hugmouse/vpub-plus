@@ -19,10 +19,14 @@ func (h *Handler) updateAdminSettings(w http.ResponseWriter, r *http.Request) {
 		Lang:                settingsForm.Lang,
 		ImageProxyCacheTime: settingsForm.ImageProxyCacheTime,
 		ImageProxySizeLimit: settingsForm.ImageProxySizeLimit,
+		SettingsCacheTTL:    settingsForm.SettingsCacheTTL,
 	}); err != nil {
 		serverError(w, err)
 		return
 	}
+
+	// Invalidate the settings cache after update
+	h.invalidateSettingsCache()
 
 	engine, err := h.renderRegistry.Get(settingsForm.SelectedRenderEngine)
 	if err != nil {
