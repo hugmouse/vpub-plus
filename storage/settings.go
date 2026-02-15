@@ -9,7 +9,8 @@ func (s *Storage) Settings() (model.Settings, error) {
         SELECT
             name, css, footer, per_page, url, lang, image_proxy_cache_time, image_proxy_size_limit, settings_cache_ttl
         FROM
-            settings;
+            settings
+        LIMIT 1;
     `).Scan(
 		&settings.Name,
 		&settings.CSS,

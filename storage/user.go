@@ -10,7 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const queryFindName = `SELECT id, name, hash, about, is_admin, picture FROM users WHERE name=lower($1);`
+const queryFindName = `SELECT id, name, hash, about, is_admin, picture FROM users WHERE name=lower($1) LIMIT 1;`
 
 type ErrUserNotFound struct{}
 
@@ -49,7 +49,7 @@ func (s *Storage) HasAdmin() (bool, error) {
 
 func (s *Storage) UserHashExists(hash string) (bool, error) {
 	var exists bool
-	err := s.db.QueryRow(`SELECT true FROM users WHERE hash=$1`, hash).Scan(&exists)
+	err := s.db.QueryRow(`SELECT true FROM users WHERE hash=$1 LIMIT 1`, hash).Scan(&exists)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, nil
@@ -61,7 +61,7 @@ func (s *Storage) UserHashExists(hash string) (bool, error) {
 
 func (s *Storage) UserExists(name string) (bool, error) {
 	var exists bool
-	err := s.db.QueryRow(`SELECT true FROM users WHERE name=LOWER($1)`, name).Scan(&exists)
+	err := s.db.QueryRow(`SELECT true FROM users WHERE name=LOWER($1) LIMIT 1`, name).Scan(&exists)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, nil
@@ -87,7 +87,7 @@ func (s *Storage) UserByName(name string) (model.User, error) {
 }
 
 func (s *Storage) UserByID(id int64) (model.User, error) {
-	return s.queryUser(`SELECT id, name, hash, about, is_admin, picture FROM users WHERE id=$1;`, id)
+	return s.queryUser(`SELECT id, name, hash, about, is_admin, picture FROM users WHERE id=$1 LIMIT 1;`, id)
 }
 
 func hashPassword(password string) ([]byte, error) {
