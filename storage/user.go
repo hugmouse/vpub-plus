@@ -165,12 +165,13 @@ func (s *Storage) Users() ([]model.User, error) {
 }
 
 func (s *Storage) UpdateUser(user model.User) error {
-	stmt, err := s.db.Prepare(`UPDATE users SET name=$1, about=$2, picture=$3 WHERE id = $4;`)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec(user.Name, user.About, user.Picture, user.ID)
+	_, err := s.db.Exec(
+		`UPDATE users SET name=$1, about=$2, picture=$3 WHERE id = $4;`,
+		user.Name,
+		user.About,
+		user.Picture,
+		user.ID,
+	)
 	return err
 }
 
@@ -179,12 +180,11 @@ func (s *Storage) UpdatePassword(hash string, user model.User) error {
 	if err != nil {
 		return fmt.Errorf("failed to hash new password: %w", err)
 	}
-	stmt, err := s.db.Prepare(`UPDATE users SET hash=$1 where hash=$2;`)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec(newHash, hash)
+	_, err = s.db.Exec(
+		`UPDATE users SET hash=$1 where hash=$2;`,
+		newHash,
+		hash,
+	)
 	return err
 }
 

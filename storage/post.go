@@ -153,12 +153,11 @@ func (s *Storage) PostByID(id int64) (model.Post, error) {
 }
 
 func (s *Storage) DeletePost(post model.Post) error {
-	stmt, err := s.db.Prepare(`delete from posts where id=$1 and (user_id = $2 or (select is_admin from users where id=$2))`)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec(post.ID, post.User.ID)
+	_, err := s.db.Exec(
+		`delete from posts where id=$1 and (user_id = $2 or (select is_admin from users where id=$2))`,
+		post.ID,
+		post.User.ID,
+	)
 	return err
 }
 
