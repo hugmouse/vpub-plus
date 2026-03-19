@@ -32,14 +32,12 @@ func (h *ImageProxyHandler) imageProxyHandler(w http.ResponseWriter, r *http.Req
 	}
 	urlStr := parsedURL.String()
 
-	h.cacheMutex.RLock()
-	val, ok := h.cachedImages[urlStr]
+	val, ok := h.cachedImages.Get(urlStr)
 	isStale := ok && time.Since(val.lastUpdate) > cacheTime
-	h.cacheMutex.RUnlock()
 
-	// Cache hit :)
+	// Cache hit
 	if ok && !isStale {
-		h.serveFromCache(w, urlStr, cacheTime)
+		h.serveFromCache(w, val, cacheTime)
 		return
 	}
 
@@ -58,7 +56,7 @@ func (h *ImageProxyHandler) imageProxyHandler(w http.ResponseWriter, r *http.Req
 	// Try to serve from cache upon error
 	if err != nil {
 		if isStale {
-			h.serveFromCache(w, urlStr, cacheTime)
+			h.serveFromCache(w, val, cacheTime)
 			return
 		}
 		log.Printf("Error getting an image from remote resource %s: %v", urlStr, err)
@@ -76,7 +74,7 @@ func (h *ImageProxyHandler) imageProxyHandler(w http.ResponseWriter, r *http.Req
 		// Try to serve from cache upon error again
 		if isStale {
 			log.Printf("Non-cacheable response for %s, serving stale data instead.", urlStr)
-			h.serveFromCache(w, urlStr, cacheTime)
+			h.serveFromCache(w, val, cacheTime)
 			return
 		}
 
@@ -102,7 +100,7 @@ func (h *ImageProxyHandler) imageProxyHandler(w http.ResponseWriter, r *http.Req
 		log.Printf("Error reading body for %s: %v", urlStr, err)
 		if isStale {
 			log.Printf("Read body failed for %s, serving stale data: %v", urlStr, err)
-			h.serveFromCache(w, urlStr, cacheTime)
+			h.serveFromCache(w, val, cacheTime)
 			return
 		}
 		http.Error(w, "Failed to read response body", http.StatusBadGateway)
@@ -114,30 +112,28 @@ func (h *ImageProxyHandler) imageProxyHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	newValue := CachedImage{
+	newValue := &lruItem{
 		lastUpdate:  time.Now(),
 		value:       imageBytes,
 		contentType: respContentType,
 	}
 
-	h.cacheMutex.Lock()
-	h.cachedImages[urlStr] = newValue
-	h.cacheMutex.Unlock()
+	h.cachedImages.Set(urlStr, newValue)
 
 	log.Printf("Fetched and cached: %s", urlStr)
 
-	h.serveFromCache(w, urlStr, cacheTime)
+	h.serveFromCache(w, *newValue, cacheTime)
 }
 
-func (h *ImageProxyHandler) serveFromCache(w http.ResponseWriter, key string, cacheTime time.Duration) {
-	expires := h.cachedImages[key].lastUpdate.Add(cacheTime)
+func (h *ImageProxyHandler) serveFromCache(w http.ResponseWriter, item lruItem, cacheTime time.Duration) {
+	expires := item.lastUpdate.Add(cacheTime)
 	if time.Now().Before(expires) {
 		maxAge := time.Until(expires).Seconds()
 		w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%.0f", maxAge))
 	}
 
-	w.Header().Set("Content-Type", h.cachedImages[key].contentType)
-	if _, err := w.Write(h.cachedImages[key].value.([]byte)); err != nil {
+	w.Header().Set("Content-Type", item.contentType)
+	if _, err := w.Write(item.value); err != nil {
 		log.Printf("Error writing response body from cache: %v", err)
 		http.Error(w, "Error writing response body from cache", http.StatusInternalServerError)
 		return
@@ -152,14 +148,12 @@ type CachedImageInfo struct {
 }
 
 func (h *ImageProxyHandler) List(cacheTime time.Duration) []CachedImageInfo {
-	h.cacheMutex.RLock()
-	defer h.cacheMutex.RUnlock()
-
 	var list []CachedImageInfo
-	for k, v := range h.cachedImages {
+	items := h.cachedImages.Items()
+	for k, v := range items {
 		list = append(list, CachedImageInfo{
 			URL:         k,
-			Size:        len(v.value.([]byte)),
+			Size:        len(v.value),
 			ContentType: v.contentType,
 			ExpiresAt:   v.lastUpdate.Add(cacheTime),
 		})
@@ -168,13 +162,9 @@ func (h *ImageProxyHandler) List(cacheTime time.Duration) []CachedImageInfo {
 }
 
 func (h *ImageProxyHandler) Remove(urlStr string) {
-	h.cacheMutex.Lock()
-	defer h.cacheMutex.Unlock()
-	delete(h.cachedImages, urlStr)
+	h.cachedImages.Delete(urlStr)
 }
 
 func (h *ImageProxyHandler) RemoveAll() {
-	h.cacheMutex.Lock()
-	defer h.cacheMutex.Unlock()
-	h.cachedImages = make(map[string]CachedImage)
+	h.cachedImages.Clear()
 }

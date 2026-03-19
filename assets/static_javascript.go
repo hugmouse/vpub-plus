@@ -2,4 +2,5 @@
 
 package assets
 
-var JSMap = map[string]string{}
+var JSMap = map[string]string{
+}

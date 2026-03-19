@@ -25,9 +25,6 @@ func (h *Handler) updateAdminSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Invalidate the settings cache after update
-	h.invalidateSettingsCache()
-
 	engine, err := h.renderRegistry.Get(settingsForm.SelectedRenderEngine)
 	if err != nil {
 		serverError(w, err)

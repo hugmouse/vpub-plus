@@ -1,8 +1,19 @@
 package storage
 
-import "vpub/model"
+import (
+	"time"
+	"vpub/model"
+)
 
 func (s *Storage) Settings() (model.Settings, error) {
+	s.settingsMu.RLock()
+	if s.settingsCache != nil && time.Now().Before(s.settingsCacheTTL) {
+		settings := *s.settingsCache
+		s.settingsMu.RUnlock()
+		return settings, nil
+	}
+	s.settingsMu.RUnlock()
+
 	var settings model.Settings
 
 	err := s.db.QueryRow(`
@@ -23,7 +34,21 @@ func (s *Storage) Settings() (model.Settings, error) {
 		&settings.SettingsCacheTTL,
 	)
 
-	return settings, err
+	if err != nil {
+		return settings, err
+	}
+
+	ttl := time.Duration(settings.SettingsCacheTTL) * time.Second
+	if ttl <= 0 {
+		ttl = 30 * time.Second
+	}
+
+	s.settingsMu.Lock()
+	s.settingsCache = &settings
+	s.settingsCacheTTL = time.Now().Add(ttl)
+	s.settingsMu.Unlock()
+
+	return settings, nil
 }
 
 func (s *Storage) UpdateSettings(settings model.Settings) error {
@@ -53,5 +78,14 @@ func (s *Storage) UpdateSettings(settings model.Settings) error {
 		&settings.SettingsCacheTTL,
 	)
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	s.settingsMu.Lock()
+	s.settingsCache = nil
+	s.settingsCacheTTL = time.Time{}
+	s.settingsMu.Unlock()
+
+	return nil
 }

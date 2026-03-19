@@ -3,10 +3,11 @@ package session
 import (
 	"errors"
 	"fmt"
-	"github.com/gorilla/sessions"
 	"net/http"
 	"vpub/model"
 	"vpub/storage"
+
+	"github.com/gorilla/sessions"
 )
 
 const cookieName = "status"

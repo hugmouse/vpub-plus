@@ -138,7 +138,7 @@ select
        board_id,
        post_id,
        subject
-from topics_summary where topic_id=$1 LIMIT 1
+from topics_summary where topic_id=$1
 `, id).Scan(
 		&topic.ID,
 		&topic.Posts,

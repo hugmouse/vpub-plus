@@ -25,7 +25,7 @@ var (
 
 func NewImageProxyHandler() *ImageProxyHandler {
 	return &ImageProxyHandler{
-		cachedImages: make(map[string]CachedImage),
+		cachedImages: newLRUCache(100),
 		httpClient: &http.Client{
 			Timeout: 5 * time.Second,
 			Transport: &http.Transport{
@@ -151,14 +151,11 @@ func TestImageProxyHandler_Management(t *testing.T) {
 	h := NewImageProxyHandler()
 	urlStr := "http://example.com/image.png"
 
-	// Add an item manually to cache
-	h.cacheMutex.Lock()
-	h.cachedImages[urlStr] = CachedImage{
+	h.cachedImages.Set(urlStr, &lruItem{
 		lastUpdate:  time.Now(),
 		value:       []byte("fake-image-data"),
 		contentType: "image/png",
-	}
-	h.cacheMutex.Unlock()
+	})
 
 	// Test List
 	list := h.List(time.Minute)
@@ -177,13 +174,11 @@ func TestImageProxyHandler_Management(t *testing.T) {
 	}
 
 	// Add again for RemoveAll
-	h.cacheMutex.Lock()
-	h.cachedImages[urlStr] = CachedImage{
+	h.cachedImages.Set(urlStr, &lruItem{
 		lastUpdate:  time.Now(),
 		value:       []byte("fake-image-data"),
 		contentType: "image/png",
-	}
-	h.cacheMutex.Unlock()
+	})
 
 	// Test RemoveAll
 	h.RemoveAll()

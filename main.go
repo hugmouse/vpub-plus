@@ -3,9 +3,7 @@ package main
 
 import (
 	"log"
-	"math/rand"
 	_ "net/http/pprof"
-	"time"
 	"vpub/config"
 	"vpub/model"
 	"vpub/storage"
@@ -13,7 +11,6 @@ import (
 )
 
 func main() {
-	rand.Seed(time.Now().UTC().UnixNano())
 	cfg := config.New()
 
 	if cfg.SessionKey == "your32byteslongsessionkeyhere" {
@@ -92,7 +89,7 @@ Navigate to [/admin/users](/admin/users). Find the **admin** user and change the
 		}
 	}
 
-	log.Fatal(
-		web.Serve(cfg, data),
-	)
+	if err := web.Serve(cfg, data); err != nil {
+		log.Fatal(err)
+	}
 }

@@ -10,6 +10,9 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/gorilla/mux"
+
 	"vpub/model"
 	"vpub/storage"
 	"vpub/syntax"
@@ -17,8 +20,6 @@ import (
 	"vpub/syntax/renderers/vanilla"
 	"vpub/web/handler/request"
 	"vpub/web/session"
-
-	"github.com/gorilla/mux"
 )
 
 func RouteInt64Param(r *http.Request, param string) int64 {
@@ -73,45 +74,10 @@ func serverError(w http.ResponseWriter, err error) {
 	}
 }
 
-func (h *Handler) getCachedSettings() (model.Settings, error) {
-	h.settingsCacheMutex.RLock()
-	if time.Since(h.settingsCacheTime) < h.settingsCacheTTL && h.settingsCache != nil {
-		cached := *h.settingsCache
-		h.settingsCacheMutex.RUnlock()
-		return cached, nil
-	}
-	h.settingsCacheMutex.RUnlock()
-
-	// Cache miss, fetch from DB
-	h.settingsCacheMutex.Lock()
-	defer h.settingsCacheMutex.Unlock()
-
-	settings, err := h.storage.Settings()
-	if err != nil {
-		return model.Settings{}, err
-	}
-
-	if settings.SettingsCacheTTL > 0 {
-		h.settingsCacheTTL = time.Duration(settings.SettingsCacheTTL) * time.Second
-	} else {
-		h.settingsCacheTTL = 0
-	}
-
-	h.settingsCache = &settings
-	h.settingsCacheTime = time.Now()
-	return settings, nil
-}
-
-func (h *Handler) invalidateSettingsCache() {
-	h.settingsCacheMutex.Lock()
-	defer h.settingsCacheMutex.Unlock()
-	h.settingsCache = nil
-}
-
 func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		settings, err := h.getCachedSettings()
+		settings, err := h.storage.Settings()
 		if err != nil {
 			serverError(w, err)
 			return
@@ -135,22 +101,99 @@ type Handler struct {
 	currentRenderEngine *syntax.Renderer
 	renderRegistry      *syntax.RenderEngineRegistry
 	imageProxy          *ImageProxyHandler
-	settingsCache       *model.Settings
-	settingsCacheMutex  sync.RWMutex
-	settingsCacheTime   time.Time
-	settingsCacheTTL    time.Duration
 }
 
 type ImageProxyHandler struct {
 	httpClient   *http.Client
-	cachedImages map[string]CachedImage
-	cacheMutex   sync.RWMutex
+	cachedImages *lruCache
 }
 
-type CachedImage struct {
-	lastUpdate  time.Time
-	value       interface{}
+type lruCache struct {
+	mu       sync.Mutex
+	items    map[string]*lruItem
+	capacity int
+}
+
+type lruItem struct {
+	value       []byte
 	contentType string
+	lastUpdate  time.Time
+	lastAccess  time.Time
+}
+
+func newLRUCache(capacity int) *lruCache {
+	if capacity <= 0 {
+		capacity = 100
+	}
+	return &lruCache{
+		items:    make(map[string]*lruItem),
+		capacity: capacity,
+	}
+}
+
+func (c *lruCache) Get(key string) (lruItem, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	item, ok := c.items[key]
+	if !ok {
+		return lruItem{}, false
+	}
+	item.lastAccess = time.Now()
+	return *item, true
+}
+
+func (c *lruCache) Set(key string, item *lruItem) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if _, exists := c.items[key]; !exists && len(c.items) >= c.capacity {
+		c.evictOldest()
+	}
+	item.lastAccess = time.Now()
+	c.items[key] = item
+}
+
+func (c *lruCache) Delete(key string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	delete(c.items, key)
+}
+
+func (c *lruCache) Clear() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.items = make(map[string]*lruItem)
+}
+
+func (c *lruCache) evictOldest() {
+	var oldestKey string
+	var oldestTime time.Time
+	first := true
+	for k, v := range c.items {
+		if first || v.lastAccess.Before(oldestTime) {
+			oldestKey = k
+			oldestTime = v.lastAccess
+			first = false
+		}
+	}
+	if oldestKey != "" {
+		delete(c.items, oldestKey)
+	}
+}
+
+func (c *lruCache) Len() int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return len(c.items)
+}
+
+func (c *lruCache) Items() map[string]lruItem {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	result := make(map[string]lruItem)
+	for k, v := range c.items {
+		result[k] = *v
+	}
+	return result
 }
 
 func (h *Handler) protect(fn http.HandlerFunc) http.HandlerFunc {
@@ -230,14 +273,13 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 		storage:             data,
 		currentRenderEngine: &defaultRenderEngine,
 		renderRegistry:      renderRegistry,
-		settingsCacheTTL:    30 * time.Second,
 	}
 
 	router.Use(h.handleSessionMiddleware)
 	h.initTpl()
 
 	handlerForImageProxy := &ImageProxyHandler{
-		cachedImages: make(map[string]CachedImage),
+		cachedImages: newLRUCache(200),
 		httpClient: &http.Client{
 			Timeout: 3 * time.Second,
 			Transport: &http.Transport{
@@ -265,6 +307,9 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)
 	router.HandleFunc("/js/{filename}", h.showJS).Methods(http.MethodGet)
 	//router.HandleFunc("/favicon.ico", h.showFavicon).Name("favicon").Methods(http.MethodGet)
+
+	// Health check
+	router.HandleFunc("/health", h.healthCheck).Methods(http.MethodGet)
 
 	// Forum views
 	publicSubRouter := router.PathPrefix("/").Subrouter()
@@ -360,4 +405,15 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 	adminSubRouter.HandleFunc("/image-proxy/remove", h.removeAdminImageCache).Methods(http.MethodPost)
 
 	return router, nil
+}
+
+func (h *Handler) healthCheck(w http.ResponseWriter, r *http.Request) {
+	if err := h.storage.Ping(); err != nil {
+		http.Error(w, "Database unavailable", http.StatusServiceUnavailable)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	if _, err := w.Write([]byte("OK")); err != nil {
+		log.Printf("health check: failed to write response: %v", err)
+	}
 }

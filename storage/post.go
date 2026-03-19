@@ -145,7 +145,7 @@ func (s *Storage) CreatePost(userId, topicId int64, request model.PostRequest) (
 
 func (s *Storage) PostByID(id int64) (model.Post, error) {
 	var post model.Post
-	err := s.db.QueryRow("select * from posts_full where post_id=$1 limit 1", id).Scan(&post.TopicID, &post.ID, &post.Subject, &post.Content, &post.CreatedAt, &post.UpdatedAt, &post.User.ID, &post.User.Name, &post.User.Picture, &post.User.About)
+	err := s.db.QueryRow("select topic_id, post_id, subject, content, created_at, updated_at, user_id, name, picture, about from posts_full where post_id=$1", id).Scan(&post.TopicID, &post.ID, &post.Subject, &post.Content, &post.CreatedAt, &post.UpdatedAt, &post.User.ID, &post.User.Name, &post.User.Picture, &post.User.About)
 	if err != nil {
 		return post, err
 	}

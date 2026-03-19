@@ -18,7 +18,7 @@ SELECT
        f.is_locked as forum_locked,
        b.is_locked as board_locked,
        f.name
-from boards b inner join forums f on f.id = b.forum_id WHERE b.id=$1 LIMIT 1
+from boards b inner join forums f on f.id = b.forum_id WHERE b.id=$1
 `, id).Scan(
 		&board.ID,
 		&board.Name,
@@ -33,7 +33,7 @@ from boards b inner join forums f on f.id = b.forum_id WHERE b.id=$1 LIMIT 1
 }
 
 func (s *Storage) Boards() ([]model.Board, error) {
-	rows, err := s.db.Query("select * from forums_summary")
+	rows, err := s.db.Query("select board_id, forum_id, forum_name, board_name, description, topics_count, posts_count, updated_at from forums_summary")
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (s *Storage) Boards() ([]model.Board, error) {
 }
 
 func (s *Storage) BoardsByForumID(id int64) ([]model.Board, error) {
-	rows, err := s.db.Query("select * from forums_summary where forum_id=$1", id)
+	rows, err := s.db.Query("select board_id, forum_id, forum_name, board_name, description, topics_count, posts_count, updated_at from forums_summary where forum_id=$1", id)
 	if err != nil {
 		return nil, err
 	}

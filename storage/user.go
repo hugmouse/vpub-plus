@@ -87,7 +87,7 @@ func (s *Storage) UserByName(name string) (model.User, error) {
 }
 
 func (s *Storage) UserByID(id int64) (model.User, error) {
-	return s.queryUser(`SELECT id, name, hash, about, is_admin, picture FROM users WHERE id=$1 LIMIT 1;`, id)
+	return s.queryUser(`SELECT id, name, hash, about, is_admin, picture FROM users WHERE id=$1`, id)
 }
 
 func hashPassword(password string) ([]byte, error) {
