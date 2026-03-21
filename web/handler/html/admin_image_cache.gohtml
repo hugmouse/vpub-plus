@@ -39,7 +39,7 @@
     {{ range .images }}
     <tr>
         <td title="{{ .URL }}" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-            <img src="{{ .URL }}" alt="{{ .URL }}" style="max-height: 100px;">
+            <img src="{{ proxyURL .URL }}" alt="{{ .URL }}" style="max-height: 100px;">
         </td>
         <td>{{ humanizeBytes .Size }}</td>
         <td>{{ .ContentType }}</td>

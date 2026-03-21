@@ -1,11 +1,10 @@
 //go:build !debug
 // +build !debug
 
-// Provides a stub for registerDebugHandlers when the "debug" build tag is not present
 package handler
 
-import "github.com/gorilla/mux"
+import "net/http"
 
-func registerDebugHandlers(router *mux.Router) {
+func registerDebugHandlers(mux *http.ServeMux) {
 	// No-op in non-debug builds
 }

@@ -9,9 +9,10 @@ import (
 type contextKey string
 
 const (
-	UserKey     contextKey = "user"
-	SessionKey  contextKey = "session"
-	SettingsKey contextKey = "settings"
+	UserKey      contextKey = "user"
+	SessionKey   contextKey = "session"
+	SettingsKey  contextKey = "settings"
+	CSRFTokenKey contextKey = "csrfToken"
 )
 
 func GetSettingsContextKey(r *http.Request) model.Settings {
@@ -36,4 +37,9 @@ func GetUserContextKey(r *http.Request) model.User {
 		return model.User{}
 	}
 	return user
+}
+
+func GetCSRFTokenContextKey(r *http.Request) string {
+	token, _ := r.Context().Value(CSRFTokenKey).(string)
+	return token
 }

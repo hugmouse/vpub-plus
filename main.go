@@ -13,14 +13,6 @@ import (
 func main() {
 	cfg := config.New()
 
-	if cfg.SessionKey == "your32byteslongsessionkeyhere" {
-		log.Println("[Warning] You forgot to change your Session Key. Make sure to not expose this instance publicly.")
-	}
-
-	if cfg.CSRFKey == "your32byteslongcsrfkeyhere" {
-		log.Println("[Warning] Remember to change the CSRF key, you're using the default one.")
-	}
-
 	db, err := storage.InitDB(cfg)
 	if err != nil {
 		log.Fatal(err)

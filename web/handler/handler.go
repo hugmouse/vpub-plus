@@ -11,8 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gorilla/mux"
-
 	"vpub/model"
 	"vpub/storage"
 	"vpub/syntax"
@@ -23,8 +21,7 @@ import (
 )
 
 func RouteInt64Param(r *http.Request, param string) int64 {
-	vars := mux.Vars(r)
-	value, err := strconv.ParseInt(vars[param], 10, 64)
+	value, err := strconv.ParseInt(r.PathValue(param), 10, 64)
 	if err != nil {
 		return 0
 	}
@@ -96,7 +93,6 @@ func (h *Handler) handleSessionMiddleware(next http.Handler) http.Handler {
 
 type Handler struct {
 	session             *session.Manager
-	mux                 *mux.Router
 	storage             *storage.Storage
 	currentRenderEngine *syntax.Renderer
 	renderRegistry      *syntax.RenderEngineRegistry
@@ -207,6 +203,17 @@ func (h *Handler) protect(fn http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+func (h *Handler) admin(fn http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user := request.GetUserContextKey(r)
+		if !user.IsAdmin {
+			forbidden(w)
+			return
+		}
+		fn(w, r)
+	}
+}
+
 type pagination struct {
 	HasMore bool
 	Page    int64
@@ -237,19 +244,8 @@ func forumFromBoards(boards []model.Board) []model.Forum {
 	return forums
 }
 
-func (h *Handler) handleAdminMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user := request.GetUserContextKey(r)
-		if !user.IsAdmin {
-			forbidden(w)
-			return
-		}
-		next.ServeHTTP(w, r)
-	})
-}
-
-func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
-	router := mux.NewRouter()
+func New(data *storage.Storage, s *session.Manager, csrfSecure bool) (http.Handler, error) {
+	mux := http.NewServeMux()
 
 	renderRegistry := syntax.NewRegistry()
 
@@ -269,13 +265,11 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 
 	h := &Handler{
 		session:             s,
-		mux:                 router,
 		storage:             data,
 		currentRenderEngine: &defaultRenderEngine,
 		renderRegistry:      renderRegistry,
 	}
 
-	router.Use(h.handleSessionMiddleware)
 	h.initTpl()
 
 	handlerForImageProxy := &ImageProxyHandler{
@@ -299,112 +293,106 @@ func New(data *storage.Storage, s *session.Manager) (http.Handler, error) {
 
 	h.imageProxy = handlerForImageProxy
 
-	// Adds pprof to /debug/pprof route,
-	// see "debug_handlers.go" for more info
-	registerDebugHandlers(router)
+	registerDebugHandlers(mux)
 
 	// Static assets
-	router.HandleFunc("/style.css", h.showStylesheet).Methods(http.MethodGet)
-	router.HandleFunc("/js/{filename}", h.showJS).Methods(http.MethodGet)
-	//router.HandleFunc("/favicon.ico", h.showFavicon).Name("favicon").Methods(http.MethodGet)
+	mux.HandleFunc("GET /style.css", h.showStylesheet)
+	mux.HandleFunc("GET /js/{filename}", h.showJS)
 
 	// Health check
-	router.HandleFunc("/health", h.healthCheck).Methods(http.MethodGet)
-
-	// Forum views
-	publicSubRouter := router.PathPrefix("/").Subrouter()
+	mux.HandleFunc("GET /health", h.healthCheck)
 
 	// Proxy
-	publicSubRouter.HandleFunc("/image-proxy", handlerForImageProxy.imageProxyHandler).Methods(http.MethodGet)
+	mux.HandleFunc("GET /image-proxy", handlerForImageProxy.imageProxyHandler)
 
 	// Search
-	publicSubRouter.HandleFunc("/search", h.searchShow).Methods(http.MethodGet)
+	mux.HandleFunc("GET /search", h.searchShow)
 
 	// Auth
-	publicSubRouter.HandleFunc("/login", h.showLoginView).Methods(http.MethodGet)
-	publicSubRouter.HandleFunc("/login", h.checkLogin).Methods(http.MethodPost)
-	publicSubRouter.HandleFunc("/register", h.showRegisterView).Methods(http.MethodGet)
-	publicSubRouter.HandleFunc("/register", h.register).Methods(http.MethodPost)
-	publicSubRouter.HandleFunc("/logout", h.logout).Methods(http.MethodGet)
+	mux.HandleFunc("GET /login", h.showLoginView)
+	mux.HandleFunc("POST /login", h.checkLogin)
+	mux.HandleFunc("GET /register", h.showRegisterView)
+	mux.HandleFunc("POST /register", h.register)
+	mux.HandleFunc("GET /logout", h.logout)
 
 	// Feed
-	publicSubRouter.HandleFunc("/feed.atom", h.showFeed).Methods(http.MethodGet)
+	mux.HandleFunc("GET /feed.atom", h.showFeed)
 
 	// Forums
-	publicSubRouter.HandleFunc("/forums/{forumId}", h.showForumView).Methods(http.MethodGet)
+	mux.HandleFunc("GET /forums/{forumId}", h.showForumView)
 
 	// Boards
-	publicSubRouter.HandleFunc("/boards/{boardId}", h.showBoardView).Methods(http.MethodGet)
-	publicSubRouter.HandleFunc("/boards/{boardId}/feed.atom", h.showBoardFeed).Methods(http.MethodGet)
-	publicSubRouter.HandleFunc("/boards/{boardId}/new-topic", h.protect(h.showCreateTopicView)).Methods(http.MethodGet)
-	publicSubRouter.HandleFunc("/boards/{boardId}/save-topic", h.protect(h.saveTopic)).Methods(http.MethodPost)
-	publicSubRouter.HandleFunc("/boards/{boardId}/newest", h.showNewestBoardView).Methods(http.MethodGet)
+	mux.HandleFunc("GET /boards/{boardId}", h.showBoardView)
+	mux.HandleFunc("GET /boards/{boardId}/feed.atom", h.showBoardFeed)
+	mux.HandleFunc("GET /boards/{boardId}/new-topic", h.protect(h.showCreateTopicView))
+	mux.HandleFunc("POST /boards/{boardId}/save-topic", h.protect(h.saveTopic))
+	mux.HandleFunc("GET /boards/{boardId}/newest", h.showNewestBoardView)
 
 	// Topic
-	publicSubRouter.HandleFunc("/topics/{topicId}", h.showTopicView).Methods(http.MethodGet)
-	publicSubRouter.HandleFunc("/topics/{topicId}/feed.atom", h.showTopicFeed).Methods(http.MethodGet)
-	publicSubRouter.HandleFunc("/topics/{topicId}/edit", h.protect(h.showEditTopicView)).Methods(http.MethodGet)
-	publicSubRouter.HandleFunc("/topics/{topicId}/update", h.updateTopic).Methods(http.MethodPost)
-	publicSubRouter.HandleFunc("/topics/{topicId}/newest", h.showNewestTopicView).Methods(http.MethodGet)
+	mux.HandleFunc("GET /topics/{topicId}", h.showTopicView)
+	mux.HandleFunc("GET /topics/{topicId}/feed.atom", h.showTopicFeed)
+	mux.HandleFunc("GET /topics/{topicId}/edit", h.protect(h.showEditTopicView))
+	mux.HandleFunc("POST /topics/{topicId}/update", h.updateTopic)
+	mux.HandleFunc("GET /topics/{topicId}/newest", h.showNewestTopicView)
 
 	// Post
-	publicSubRouter.HandleFunc("/posts/save", h.protect(h.savePost)).Methods(http.MethodPost)
-	publicSubRouter.HandleFunc("/posts/{postId}/edit", h.protect(h.showEditPostView)).Methods(http.MethodGet)
-	publicSubRouter.HandleFunc("/posts/{postId}/update", h.protect(h.updatePost)).Methods(http.MethodPost)
-	publicSubRouter.HandleFunc("/posts/{postId}/remove", h.protect(h.removePost))
-	publicSubRouter.HandleFunc("/posts", h.showPostListView).Methods(http.MethodGet)
+	mux.HandleFunc("POST /posts/save", h.protect(h.savePost))
+	mux.HandleFunc("GET /posts/{postId}/edit", h.protect(h.showEditPostView))
+	mux.HandleFunc("POST /posts/{postId}/update", h.protect(h.updatePost))
+	mux.HandleFunc("GET /posts/{postId}/remove", h.protect(h.removePost))
+	mux.HandleFunc("POST /posts/{postId}/remove", h.protect(h.removePost))
+	mux.HandleFunc("GET /posts", h.showPostListView)
 
 	// Account
-	publicSubRouter.HandleFunc("/account", h.protect(h.showAccountEditPage)).Methods(http.MethodGet)
-	publicSubRouter.HandleFunc("/update-account", h.protect(h.updateAccount)).Methods(http.MethodPost)
-	publicSubRouter.HandleFunc("/reset-password", h.showResetPasswordView).Methods(http.MethodGet)
-	publicSubRouter.HandleFunc("/reset-password", h.updatePassword).Methods(http.MethodPost)
+	mux.HandleFunc("GET /account", h.protect(h.showAccountEditPage))
+	mux.HandleFunc("POST /update-account", h.protect(h.updateAccount))
+	mux.HandleFunc("GET /reset-password", h.showResetPasswordView)
+	mux.HandleFunc("POST /reset-password", h.updatePassword)
 
 	// Users
-	publicSubRouter.HandleFunc("/users/{userId}", h.showUserView).Methods(http.MethodGet)
+	mux.HandleFunc("GET /users/{userId}", h.showUserView)
 
-	// Index
-	publicSubRouter.HandleFunc("/", h.showIndexView).Name("index").Methods(http.MethodGet)
+	// Index — {$} means exact match on "/" only
+	mux.HandleFunc("GET /{$}", h.showIndexView)
 
-	// Admin router
-	adminSubRouter := router.PathPrefix("/admin").Subrouter().StrictSlash(true)
-	adminSubRouter.Use(h.handleAdminMiddleware)
+	// Admin routes — each individually wrapped with h.admin()
+	mux.HandleFunc("GET /admin/", h.admin(h.showAdminView))
+	mux.HandleFunc("GET /admin/boards", h.admin(h.showAdminBoardsView))
+	mux.HandleFunc("GET /admin/boards/new", h.admin(h.showAdminCreateBoardView))
+	mux.HandleFunc("POST /admin/boards/save", h.admin(h.saveAdminBoard))
+	mux.HandleFunc("GET /admin/boards/{boardId}/edit", h.admin(h.showAdminEditBoardView))
+	mux.HandleFunc("POST /admin/boards/{boardId}/update", h.admin(h.updateAdminBoard))
+	mux.HandleFunc("GET /admin/boards/{boardId}/remove", h.admin(h.showAdminRemoveBoardView))
+	mux.HandleFunc("POST /admin/boards/{boardId}/remove", h.admin(h.removeAdminBoard))
 
-	// Admin
-	adminSubRouter.HandleFunc("/", h.showAdminView).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/boards", h.showAdminBoardsView).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/boards/new", h.showAdminCreateBoardView).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/boards/save", h.saveAdminBoard).Methods(http.MethodPost)
-	adminSubRouter.HandleFunc("/boards/{boardId}/edit", h.showAdminEditBoardView).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/boards/{boardId}/update", h.updateAdminBoard).Methods(http.MethodPost)
-	adminSubRouter.HandleFunc("/boards/{boardId}/remove", h.showAdminRemoveBoardView).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/boards/{boardId}/remove", h.removeAdminBoard).Methods(http.MethodPost)
+	mux.HandleFunc("GET /admin/users", h.admin(h.showAdminUserListView))
+	mux.HandleFunc("GET /admin/users/{userId}/edit", h.admin(h.showAdminEditUserView))
+	mux.HandleFunc("POST /admin/users/{userId}/update", h.admin(h.updateAdminUser))
+	mux.HandleFunc("GET /admin/users/{userId}/remove", h.admin(h.showAdminRemoveUserView))
+	mux.HandleFunc("POST /admin/users/{userId}/remove", h.admin(h.removeAdminUser))
 
-	adminSubRouter.HandleFunc("/users", h.showAdminUserListView).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/users/{userId}/edit", h.showAdminEditUserView).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/users/{userId}/update", h.updateAdminUser).Methods(http.MethodPost)
-	adminSubRouter.HandleFunc("/users/{userId}/remove", h.showAdminRemoveUserView).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/users/{userId}/remove", h.removeAdminUser).Methods(http.MethodPost)
+	mux.HandleFunc("GET /admin/settings/edit", h.admin(h.showAdminSettingsView))
+	mux.HandleFunc("POST /admin/settings/update", h.admin(h.updateAdminSettings))
 
-	adminSubRouter.HandleFunc("/settings/edit", h.showAdminSettingsView).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/settings/update", h.updateAdminSettings).Methods(http.MethodPost)
+	mux.HandleFunc("GET /admin/keys", h.admin(h.showAdminKeyListView))
+	mux.HandleFunc("POST /admin/keys/save", h.admin(h.saveAdminKey))
+	mux.HandleFunc("POST /admin/keys/{keyId}/remove", h.admin(h.removeAdminKey))
 
-	adminSubRouter.HandleFunc("/keys", h.showAdminKeyListView).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/keys/save", h.saveAdminKey).Methods(http.MethodPost)
-	adminSubRouter.HandleFunc("/keys/{keyId}/remove", h.removeAdminKey)
+	mux.HandleFunc("GET /admin/forums", h.admin(h.showAdminForumsView))
+	mux.HandleFunc("GET /admin/forums/new", h.admin(h.showAdminCreateForumView))
+	mux.HandleFunc("POST /admin/forums/save", h.admin(h.saveAdminForum))
+	mux.HandleFunc("GET /admin/forums/{forumId}/edit", h.admin(h.showAdminEditForumView))
+	mux.HandleFunc("POST /admin/forums/{forumId}/update", h.admin(h.updateAdminForum))
+	mux.HandleFunc("GET /admin/forums/{forumId}/remove", h.admin(h.showAdminRemoveForumView))
+	mux.HandleFunc("POST /admin/forums/{forumId}/remove", h.admin(h.removeAdminForum))
 
-	adminSubRouter.HandleFunc("/forums", h.showAdminForumsView).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/forums/new", h.showAdminCreateForumView).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/forums/save", h.saveAdminForum).Methods(http.MethodPost)
-	adminSubRouter.HandleFunc("/forums/{forumId}/edit", h.showAdminEditForumView).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/forums/{forumId}/update", h.updateAdminForum).Methods(http.MethodPost)
-	adminSubRouter.HandleFunc("/forums/{forumId}/remove", h.showAdminRemoveForumView).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/forums/{forumId}/remove", h.removeAdminForum).Methods(http.MethodPost)
+	mux.HandleFunc("GET /admin/image-proxy", h.admin(h.showAdminImageCache))
+	mux.HandleFunc("POST /admin/image-proxy/remove", h.admin(h.removeAdminImageCache))
 
-	adminSubRouter.HandleFunc("/image-proxy", h.showAdminImageCache).Methods(http.MethodGet)
-	adminSubRouter.HandleFunc("/image-proxy/remove", h.removeAdminImageCache).Methods(http.MethodPost)
-
-	return router, nil
+	var handler http.Handler = mux
+	handler = h.handleSessionMiddleware(handler)
+	handler = newCSRFMiddleware(csrfSecure)(handler)
+	return handler, nil
 }
 
 func (h *Handler) healthCheck(w http.ResponseWriter, r *http.Request) {

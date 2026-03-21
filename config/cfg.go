@@ -1,8 +1,6 @@
 // Environment Variables:
 //   - DATABASE_URL: PostgreSQL connection string
 //   - PORT: HTTP server port (default: "8080")
-//   - SESSION_KEY: 32-byte session encryption key
-//   - CSRF_KEY: 32-byte CSRF protection key
 //   - TITLE: Forum title (default: "My vpub-plus forum")
 //   - CSRF_SECURE: Enable secure cookies (default: true)
 //   - PROXYING_ENABLED: Enable image proxying (default: true)
@@ -23,8 +21,6 @@ type Config struct {
 	DatabaseMaxIdleConnections int           // Maximum number of idle DB connections
 	DatabaseMaxLifetime        time.Duration // Maximum lifetime of DB connections
 	Port                       string        // HTTP server port
-	SessionKey                 string        // Session encryption key (32 bytes)
-	CSRFKey                    string        // CSRF protection key (32 bytes)
 	CSRFSecure                 bool          // Use secure cookies
 	Title                      string        // Forum title
 	ProxyingEnabled            bool          // Enable image proxying
@@ -34,8 +30,6 @@ func New() *Config {
 	cfg := &Config{
 		DatabaseURL:     getEnv("DATABASE_URL", ""),
 		Port:            getEnv("PORT", "8080"),
-		SessionKey:      getEnv("SESSION_KEY", "your32byteslongsessionkeyhere"),
-		CSRFKey:         getEnv("CSRF_KEY", "your32byteslongcsrfkeyhere"),
 		Title:           getEnv("TITLE", "My vpub-plus forum"),
 		CSRFSecure:      getEnvAsBool("CSRF_SECURE", true),
 		ProxyingEnabled: getEnvAsBool("PROXYING_ENABLED", true),

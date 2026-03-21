@@ -8,8 +8,8 @@ import (
 	"time"
 	jsEmbed "vpub/assets/js"
 	"vpub/web/handler/request"
+	"vpub/web/session"
 
-	"github.com/gorilla/csrf"
 )
 
 var views = make(map[string]*template.Template)
@@ -23,7 +23,8 @@ type View struct {
 
 func NewView(w http.ResponseWriter, r *http.Request, tpl string) View {
 	params := make(map[string]interface{})
-	params[csrf.TemplateTag] = csrf.TemplateField(r)
+	csrfToken := request.GetCSRFTokenContextKey(r)
+	params["csrfField"] = template.HTML(fmt.Sprintf(`<input type="hidden" name="csrf_token" value="%s">`, template.HTMLEscapeString(csrfToken)))
 	return View{
 		w:      w,
 		r:      r,
@@ -42,11 +43,11 @@ func (v View) Render() {
 	data["logged"] = user
 	settings := request.GetSettingsContextKey(v.r)
 	data["settings"] = settings
-	session := request.GetSessionContextKey(v.r)
-	if session != nil {
-		data["errors"] = session.GetFlashErrors()
-		data["info"] = session.GetFlashInfo()
-		session.Save(v.r, v.w)
+	data["errors"] = session.GetFlashErrors(v.r)
+	data["info"] = session.GetFlashInfo(v.r)
+	sess := request.GetSessionContextKey(v.r)
+	if sess != nil {
+		sess.Save(v.r, v.w)
 	}
 	if err := views[v.tpl].Funcs(template.FuncMap{
 		"hasPermission": func(name string) bool {

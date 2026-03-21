@@ -10,8 +10,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gorilla/csrf"
-
 	"vpub/config"
 	"vpub/storage"
 	"vpub/web/handler"
@@ -20,26 +18,16 @@ import (
 
 func Serve(cfg *config.Config, data *storage.Storage) error {
 	var err error
-	sess := session.New(cfg.SessionKey, data)
-	s, err := handler.New(data, sess)
+	sess := session.New(data, cfg.CSRFSecure)
+	s, err := handler.New(data, sess, cfg.CSRFSecure)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("Starting HTTP server on localhost:%s\n", cfg.Port)
 
-	// MaxAge(86400) persists the CSRF cookie for 24h (vs session-only with 0).
-	// This improves usability: forms survive browser restarts.
-	var CSRF func(http.Handler) http.Handler
-	if cfg.CSRFSecure {
-		CSRF = csrf.Protect([]byte(cfg.CSRFKey), csrf.MaxAge(86400), csrf.Path("/"))
-	} else {
-		log.Println("[Warning] CSRF: Secure cookie is disabled. Set CSRF_SECURE=true environment variable to enable it.")
-		CSRF = csrf.Protect([]byte(cfg.CSRFKey), csrf.MaxAge(86400), csrf.Path("/"), csrf.Secure(false))
-	}
-
 	server := &http.Server{
 		Addr:         ":" + cfg.Port,
-		Handler:      CSRF(s),
+		Handler:      s,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  60 * time.Second,

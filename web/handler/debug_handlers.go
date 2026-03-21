@@ -8,11 +8,9 @@ import (
 	"log"
 	"net/http"
 	"net/http/pprof"
-
-	"github.com/gorilla/mux"
 )
 
-func registerDebugHandlers(router *mux.Router) {
+func registerDebugHandlers(mux *http.ServeMux) {
 	log.Println("[handler] Debug routes added:")
 	log.Println("[handler] - /debug/pprof/")
 	log.Println("[handler] - /debug/pprof/cmdline")
@@ -26,22 +24,21 @@ func registerDebugHandlers(router *mux.Router) {
 	log.Println("[handler] - /debug/vars")
 	log.Println("[handler] - To use them, execute: go tool pprof <URL>/debug/pprof/")
 
-	debugRouter := router.PathPrefix("/debug").Subrouter()
-	debugRouter.Use(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	debugLog := func(next http.HandlerFunc) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
 			log.Println("[WARNING] Debug endpoint accessed:", r.URL.Path)
-			next.ServeHTTP(w, r)
-		})
-	})
+			next(w, r)
+		}
+	}
 
-	debugRouter.HandleFunc("/pprof/", pprof.Index)
-	debugRouter.HandleFunc("/pprof/cmdline", pprof.Cmdline)
-	debugRouter.HandleFunc("/pprof/profile", pprof.Profile)
-	debugRouter.HandleFunc("/pprof/symbol", pprof.Symbol)
-	debugRouter.HandleFunc("/pprof/trace", pprof.Trace)
-	debugRouter.Handle("/pprof/goroutine", pprof.Handler("goroutine"))
-	debugRouter.Handle("/pprof/heap", pprof.Handler("heap"))
-	debugRouter.Handle("/pprof/threadcreate", pprof.Handler("threadcreate"))
-	debugRouter.Handle("/pprof/block", pprof.Handler("block"))
-	debugRouter.Handle("/vars", http.DefaultServeMux)
+	mux.HandleFunc("GET /debug/pprof/", debugLog(pprof.Index))
+	mux.HandleFunc("GET /debug/pprof/cmdline", debugLog(pprof.Cmdline))
+	mux.HandleFunc("GET /debug/pprof/profile", debugLog(pprof.Profile))
+	mux.HandleFunc("GET /debug/pprof/symbol", debugLog(pprof.Symbol))
+	mux.HandleFunc("GET /debug/pprof/trace", debugLog(pprof.Trace))
+	mux.HandleFunc("GET /debug/pprof/goroutine", debugLog(pprof.Handler("goroutine").ServeHTTP))
+	mux.HandleFunc("GET /debug/pprof/heap", debugLog(pprof.Handler("heap").ServeHTTP))
+	mux.HandleFunc("GET /debug/pprof/threadcreate", debugLog(pprof.Handler("threadcreate").ServeHTTP))
+	mux.HandleFunc("GET /debug/pprof/block", debugLog(pprof.Handler("block").ServeHTTP))
+	mux.HandleFunc("GET /debug/vars", debugLog(http.DefaultServeMux.ServeHTTP))
 }
