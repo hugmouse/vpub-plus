@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"database/sql"
 	"encoding/xml"
+	"errors"
 	"net/http"
 	"strconv"
 	"time"
@@ -13,7 +15,11 @@ func (h *Handler) showTopicFeed(w http.ResponseWriter, r *http.Request) {
 
 	topic, err := h.storage.TopicByID(topicId)
 	if err != nil {
-		notFound(w)
+		if errors.Is(err, sql.ErrNoRows) {
+			notFound(w)
+			return
+		}
+		serverError(w, err)
 		return
 	}
 	board, err := h.storage.BoardByID(topic.BoardID)

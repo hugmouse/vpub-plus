@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 	"vpub/model"
 	"vpub/web/handler/form"
@@ -10,7 +12,11 @@ func (h *Handler) showAdminEditGroupView(w http.ResponseWriter, r *http.Request)
 	id := RouteInt64Param(r, "groupId")
 	group, err := h.storage.GroupByID(id)
 	if err != nil {
-		notFound(w)
+		if errors.Is(err, sql.ErrNoRows) {
+			notFound(w)
+			return
+		}
+		serverError(w, err)
 		return
 	}
 

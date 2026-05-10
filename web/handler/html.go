@@ -455,7 +455,8 @@ var TplMap = map[string]string{
     {{ if .nonMembers }}
         <form action="/admin/groups/{{ .group.ID }}/members/add" method="post">
             {{ .csrfField }}
-            <select name="user_id">
+            <label for="user_id">Add member</label>
+            <select name="user_id" id="user_id">
                 {{ range .nonMembers }}
                     <option value="{{ .ID }}">{{ .Name }}</option>
                 {{ end }}

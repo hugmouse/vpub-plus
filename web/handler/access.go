@@ -2,6 +2,9 @@ package handler
 
 import "vpub/model"
 
+// canSeeForum controls discovery (listings, search): a non-member may still see
+// that a restricted forum exists when RestrictedVisibility is not "hidden".
+// canAccessForum enforces actual content access and always requires membership.
 func canSeeForum(forum model.Forum, user model.User) bool {
 	if user.IsAdmin || forum.GroupID == 0 {
 		return true

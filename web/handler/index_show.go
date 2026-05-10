@@ -14,7 +14,7 @@ func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 	}
 	user := request.GetUserContextKey(r)
 	forums := forumFromBoards(boards)
-	var visible []model.Forum
+	visible := make([]model.Forum, 0, len(forums))
 	for _, f := range forums {
 		if canSeeForum(f, user) {
 			visible = append(visible, f)

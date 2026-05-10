@@ -35,6 +35,9 @@ func (s *Storage) Groups() ([]model.Group, error) {
 		}
 		groups = append(groups, g)
 	}
+	if err := rows.Err(); err != nil {
+		return groups, err
+	}
 	return groups, nil
 }
 
@@ -95,6 +98,9 @@ func (s *Storage) GroupMembers(groupID int64) ([]model.User, error) {
 			return users, err
 		}
 		users = append(users, u)
+	}
+	if err := rows.Err(); err != nil {
+		return users, err
 	}
 	return users, nil
 }

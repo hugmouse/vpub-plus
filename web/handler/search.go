@@ -22,6 +22,8 @@ func (h *Handler) searchShow(w http.ResponseWriter, r *http.Request) {
 			filtered = append(filtered, result) // user profile — always visible
 		case *result.ForumGroupID == 0:
 			filtered = append(filtered, result) // public forum content
+		case user.IsAdmin:
+			filtered = append(filtered, result) // admins see all restricted content
 		case isMember(*result.ForumGroupID, user):
 			filtered = append(filtered, result) // restricted forum, user is a member
 		}

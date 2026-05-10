@@ -1,7 +1,8 @@
 package handler
 
 import (
-	"fmt"
+	"database/sql"
+	"errors"
 	"net/http"
 	"vpub/web/handler/request"
 )
@@ -10,7 +11,11 @@ func (h *Handler) showAdminRemoveGroupView(w http.ResponseWriter, r *http.Reques
 	id := RouteInt64Param(r, "groupId")
 	group, err := h.storage.GroupByID(id)
 	if err != nil {
-		notFound(w)
+		if errors.Is(err, sql.ErrNoRows) {
+			notFound(w)
+			return
+		}
+		serverError(w, err)
 		return
 	}
 	count, err := h.storage.ForumsWithGroupCount(id)
@@ -33,5 +38,5 @@ func (h *Handler) removeAdminGroup(w http.ResponseWriter, r *http.Request) {
 	session := request.GetSessionContextKey(r)
 	session.FlashInfo("Group deleted")
 	session.Save(r, w)
-	http.Redirect(w, r, fmt.Sprintf("/admin/groups"), http.StatusFound)
+	http.Redirect(w, r, "/admin/groups", http.StatusFound)
 }

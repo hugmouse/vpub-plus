@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"vpub/model"
@@ -23,7 +25,11 @@ func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
 
 	board, err := h.storage.BoardByID(topicForm.BoardID)
 	if err != nil {
-		notFound(w)
+		if errors.Is(err, sql.ErrNoRows) {
+			notFound(w)
+			return
+		}
+		serverError(w, err)
 		return
 	}
 

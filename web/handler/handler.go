@@ -230,10 +230,12 @@ func forumFromBoards(boards []model.Board) []model.Forum {
 	var forum model.Forum
 	for i, board := range boards {
 		if i == 0 {
-			forum.Name = board.Forum.Name
-			forum.ID = board.Forum.ID
-			forum.GroupID = board.Forum.GroupID
-			forum.RestrictedVisibility = board.Forum.RestrictedVisibility
+			forum = model.Forum{
+				Name:                 board.Forum.Name,
+				ID:                   board.Forum.ID,
+				GroupID:              board.Forum.GroupID,
+				RestrictedVisibility: board.Forum.RestrictedVisibility,
+			}
 		} else if board.Forum.ID != forum.ID {
 			forums = append(forums, forum)
 			forum = model.Forum{

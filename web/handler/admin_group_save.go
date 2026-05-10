@@ -21,7 +21,6 @@ func (h *Handler) saveAdminGroup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, err := h.storage.CreateGroup(req); err != nil {
-		v.Set("errorMessage", "Unable to create group: "+err.Error())
 		serverError(w, err)
 		return
 	}

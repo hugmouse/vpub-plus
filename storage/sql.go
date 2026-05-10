@@ -422,6 +422,8 @@ CREATE TABLE group_members (
     PRIMARY KEY (group_id, user_id)
 );
 
+CREATE INDEX idx_group_members_user_id ON group_members(user_id);
+
 ALTER TABLE forums
     ADD COLUMN group_id              INTEGER REFERENCES groups(id) ON DELETE SET NULL,
     ADD COLUMN restricted_visibility TEXT NOT NULL DEFAULT 'hidden'
@@ -488,7 +490,7 @@ CREATE OR REPLACE FUNCTION search_with_highlights(search_term text)
         forum_group_id     integer
     ) AS $$
 DECLARE
-    query tsquery := to_tsquery('english', search_term);
+    query tsquery := websearch_to_tsquery('english', search_term);
 BEGIN
     RETURN QUERY
         SELECT

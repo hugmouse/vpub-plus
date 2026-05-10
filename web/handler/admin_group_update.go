@@ -21,8 +21,16 @@ func (h *Handler) updateAdminGroup(w http.ResponseWriter, r *http.Request) {
 	req := model.GroupRequest{Name: groupForm.Name}
 
 	if err := validator.ValidateGroupModification(h.storage, id, req); err != nil {
-		members, _ := h.storage.GroupMembers(id)
-		allUsers, _ := h.storage.Users()
+		members, mErr := h.storage.GroupMembers(id)
+		if mErr != nil {
+			serverError(w, mErr)
+			return
+		}
+		allUsers, uErr := h.storage.Users()
+		if uErr != nil {
+			serverError(w, uErr)
+			return
+		}
 		memberSet := make(map[int64]bool, len(members))
 		for _, m := range members {
 			memberSet[m.ID] = true
