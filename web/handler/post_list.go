@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"strconv"
+	"vpub/web/handler/request"
 )
 
 func (h *Handler) showPostListView(w http.ResponseWriter, r *http.Request) {
@@ -11,7 +12,8 @@ func (h *Handler) showPostListView(w http.ResponseWriter, r *http.Request) {
 		page, _ = strconv.ParseInt(val[0], 10, 64)
 	}
 
-	posts, hasMore, err := h.storage.Posts(page)
+	user := request.GetUserContextKey(r)
+	posts, hasMore, err := h.storage.Posts(page, user.IsAdmin, user.GroupIDs)
 	if err != nil {
 		notFound(w)
 		return

@@ -3,6 +3,8 @@ package storage
 import (
 	"errors"
 	"vpub/model"
+
+	"github.com/lib/pq"
 )
 
 func (s *Storage) PostsByTopicID(id int64) ([]model.Post, bool, error) {
@@ -23,7 +25,7 @@ func (s *Storage) PostsByTopicID(id int64) ([]model.Post, bool, error) {
 	return posts, false, nil
 }
 
-func (s *Storage) Posts(page int64) ([]model.Post, bool, error) {
+func (s *Storage) Posts(page int64, isAdmin bool, groupIDs []int64) ([]model.Post, bool, error) {
 	var posts []model.Post
 	settings, err := s.Settings()
 	if err != nil {
@@ -31,18 +33,22 @@ func (s *Storage) Posts(page int64) ([]model.Post, bool, error) {
 	}
 	rows, err := s.db.Query(`
 select
-       topic_id,
-       post_id,
-       subject,
-       content,
-       created_at,
-       updated_at,
-       user_id,
-       name
-from posts_full 
-order by created_at desc
+       pf.topic_id,
+       pf.post_id,
+       pf.subject,
+       pf.content,
+       pf.created_at,
+       pf.updated_at,
+       pf.user_id,
+       pf.name
+from posts_full pf
+join topics t on t.id = pf.topic_id
+join boards b on b.id = t.board_id
+join forums f on f.id = b.forum_id
+where ($3 or f.group_id is null or f.group_id = any($4::int[]))
+order by pf.created_at desc
 offset $1
-limit $2`, settings.PerPage*(page-1), settings.PerPage+1)
+limit $2`, settings.PerPage*(page-1), settings.PerPage+1, isAdmin, pq.Array(groupIDs))
 	if err != nil {
 		return nil, false, err
 	}
@@ -70,7 +76,7 @@ limit $2`, settings.PerPage*(page-1), settings.PerPage+1)
 	return posts, false, nil
 }
 
-func (s *Storage) PostsByUserID(id, page int64) ([]model.Post, bool, error) {
+func (s *Storage) PostsByUserID(id, page int64, isAdmin bool, groupIDs []int64) ([]model.Post, bool, error) {
 	var posts []model.Post
 	settings, err := s.Settings()
 	if err != nil {
@@ -78,19 +84,23 @@ func (s *Storage) PostsByUserID(id, page int64) ([]model.Post, bool, error) {
 	}
 	rows, err := s.db.Query(`
 select
-       topic_id,
-       post_id,
-       subject,
-       content,
-       created_at,
-       updated_at,
-       user_id,
-       name
-from posts_full 
-where user_id=$1
-order by created_at desc
+       pf.topic_id,
+       pf.post_id,
+       pf.subject,
+       pf.content,
+       pf.created_at,
+       pf.updated_at,
+       pf.user_id,
+       pf.name
+from posts_full pf
+join topics t on t.id = pf.topic_id
+join boards b on b.id = t.board_id
+join forums f on f.id = b.forum_id
+where pf.user_id=$1
+  and ($4 or f.group_id is null or f.group_id = any($5::int[]))
+order by pf.created_at desc
 offset $2
-limit $3`, id, settings.PerPage*(page-1), settings.PerPage+1)
+limit $3`, id, settings.PerPage*(page-1), settings.PerPage+1, isAdmin, pq.Array(groupIDs))
 	if err != nil {
 		return nil, false, err
 	}

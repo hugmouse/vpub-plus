@@ -42,7 +42,7 @@ func (s *Storage) CreateTopic(userId int64, request model.TopicRequest) (int64, 
 	return topicId, err
 }
 
-func (s *Storage) UpdateTopic(id int64, request model.TopicRequest) error {
+func (s *Storage) UpdateTopic(id, userId int64, request model.TopicRequest) error {
 	ctx := context.Background()
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -54,12 +54,18 @@ func (s *Storage) UpdateTopic(id int64, request model.TopicRequest) error {
             is_locked=$1,
             is_sticky=$2,
             board_id=$3
-        where id=$4 returning post_id
+        where id=$4
+          and (
+              (select user_id from posts where id = topics.post_id) = $5
+              or (select is_admin from users where id = $5)
+          )
+        returning post_id
     `,
 		request.IsLocked,
 		request.IsSticky,
 		request.BoardID,
 		id,
+		userId,
 	).Scan(&postId); err != nil {
 		rbErr := tx.Rollback()
 		if rbErr != nil {

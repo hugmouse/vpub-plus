@@ -8,9 +8,11 @@ import (
 	"vpub/model"
 	"vpub/validator"
 	"vpub/web/handler/form"
+	"vpub/web/handler/request"
 )
 
 func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
+	user := request.GetUserContextKey(r)
 	id := RouteInt64Param(r, "topicId")
 
 	topicForm := form.NewTopicForm(r)
@@ -23,6 +25,31 @@ func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
 
 	topicForm.Boards = boards
 
+	topic, err := h.storage.TopicByID(id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			notFound(w)
+			return
+		}
+		serverError(w, err)
+		return
+	}
+
+	currentBoard, err := h.storage.BoardByID(topic.BoardID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			notFound(w)
+			return
+		}
+		serverError(w, err)
+		return
+	}
+
+	if !canAccessForum(currentBoard.Forum, user) {
+		forbidden(w)
+		return
+	}
+
 	board, err := h.storage.BoardByID(topicForm.BoardID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -33,6 +60,11 @@ func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !canAccessForum(board.Forum, user) {
+		forbidden(w)
+		return
+	}
+
 	v := NewView(w, r, "create_topic")
 	v.Set("form", topicForm)
 	v.Set("board", board)
@@ -40,6 +72,22 @@ func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
 	boardId := topicForm.NewBoardID
 	if boardId == 0 {
 		boardId = topicForm.BoardID
+	}
+
+	if boardId != topic.BoardID {
+		destBoard, err := h.storage.BoardByID(boardId)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				notFound(w)
+				return
+			}
+			serverError(w, err)
+			return
+		}
+		if !canAccessForum(destBoard.Forum, user) {
+			forbidden(w)
+			return
+		}
 	}
 
 	topicModificationRequest := model.TopicRequest{
@@ -56,7 +104,7 @@ func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.storage.UpdateTopic(id, topicModificationRequest)
+	err = h.storage.UpdateTopic(id, user.ID, topicModificationRequest)
 	if err != nil {
 		v.Set("errorMessage", "Unable to updated topic: "+err.Error())
 		v.Render()

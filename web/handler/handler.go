@@ -341,7 +341,7 @@ func New(data *storage.Storage, s *session.Manager, csrfSecure bool) (http.Handl
 	mux.HandleFunc("GET /topics/{topicId}", h.showTopicView)
 	mux.HandleFunc("GET /topics/{topicId}/feed.atom", h.showTopicFeed)
 	mux.HandleFunc("GET /topics/{topicId}/edit", h.protect(h.showEditTopicView))
-	mux.HandleFunc("POST /topics/{topicId}/update", h.updateTopic)
+	mux.HandleFunc("POST /topics/{topicId}/update", h.protect(h.updateTopic))
 	mux.HandleFunc("GET /topics/{topicId}/newest", h.showNewestTopicView)
 
 	// Post

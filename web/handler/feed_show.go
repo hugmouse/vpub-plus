@@ -116,7 +116,8 @@ func (h *Handler) showFeed(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	posts, _, err := h.storage.Posts(1)
+	user := request.GetUserContextKey(r)
+	posts, _, err := h.storage.Posts(1, user.IsAdmin, user.GroupIDs)
 	if err != nil {
 		serverError(w, err)
 		return

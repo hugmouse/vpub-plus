@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"vpub/web/handler/request"
 )
 
 func (h *Handler) showForumView(w http.ResponseWriter, r *http.Request) {
@@ -9,6 +10,16 @@ func (h *Handler) showForumView(w http.ResponseWriter, r *http.Request) {
 	forum, err := h.storage.ForumByID(id)
 	if err != nil {
 		notFound(w)
+		return
+	}
+
+	user := request.GetUserContextKey(r)
+	if !canSeeForum(forum, user) {
+		notFound(w)
+		return
+	}
+	if !canAccessForum(forum, user) {
+		forbidden(w)
 		return
 	}
 
