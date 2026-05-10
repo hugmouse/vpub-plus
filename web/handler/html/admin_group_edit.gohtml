@@ -1,0 +1,59 @@
+{{ define "title" }}Edit group{{ end }}
+{{ define "content" }}
+    <nav class="breadcrumb">
+        <ul>
+            <li>
+                <a href="/admin">Admin</a>
+                <ul>
+                    <li>
+                        <a href="/admin/groups">Groups</a>
+                        <ul>
+                            <li>Edit group</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <h1>Edit group: {{ .group.Name }}</h1>
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
+    <form action="/admin/groups/{{ .group.ID }}/update" method="post">
+        {{ .csrfField }}
+        {{ template "group_form" .form }}
+        <input type="submit" value="Save name">
+    </form>
+
+    <h2>Members</h2>
+    {{ if .members }}
+        <ul>
+            {{ range .members }}
+                <li>
+                    {{ .Name }}
+                    <form action="/admin/groups/{{ $.group.ID }}/members/{{ .ID }}/remove" method="post" style="display:inline">
+                        {{ $.csrfField }}
+                        <button type="submit">Remove</button>
+                    </form>
+                </li>
+            {{ end }}
+        </ul>
+    {{ else }}
+        <p>No members yet.</p>
+    {{ end }}
+
+    <h2>Add member</h2>
+    {{ if .nonMembers }}
+        <form action="/admin/groups/{{ .group.ID }}/members/add" method="post">
+            {{ .csrfField }}
+            <select name="user_id">
+                {{ range .nonMembers }}
+                    <option value="{{ .ID }}">{{ .Name }}</option>
+                {{ end }}
+            </select>
+            <input type="submit" value="Add">
+        </form>
+    {{ else }}
+        <p>All users are already members.</p>
+    {{ end }}
+{{ end }}

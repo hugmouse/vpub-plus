@@ -10,13 +10,22 @@ import (
 func (h *Handler) saveAdminForum(w http.ResponseWriter, r *http.Request) {
 	forumForm := form.NewForumForm(r)
 
+	groups, err := h.storage.Groups()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	forumForm.Groups = groups
+
 	v := NewView(w, r, "admin_forum_create")
 	v.Set("form", forumForm)
 
 	forumRequest := model.ForumRequest{
-		Name:     forumForm.Name,
-		Position: forumForm.Position,
-		IsLocked: forumForm.IsLocked,
+		Name:                 forumForm.Name,
+		Position:             forumForm.Position,
+		IsLocked:             forumForm.IsLocked,
+		GroupID:              forumForm.GroupID,
+		RestrictedVisibility: forumForm.RestrictedVisibility,
 	}
 
 	if err := validator.ValidateForumCreation(h.storage, forumRequest); err != nil {

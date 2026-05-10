@@ -26,6 +26,11 @@ func (h *Handler) savePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !canAccessForum(board.Forum, user) {
+		forbidden(w)
+		return
+	}
+
 	v := NewView(w, r, "create_post")
 	v.Set("form", postForm)
 	v.Set("board", board)

@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"strconv"
+	"vpub/web/handler/request"
 )
 
 func (h *Handler) showBoardView(w http.ResponseWriter, r *http.Request) {
@@ -15,6 +16,12 @@ func (h *Handler) showBoardView(w http.ResponseWriter, r *http.Request) {
 	board, err := h.storage.BoardByID(id)
 	if err != nil {
 		notFound(w)
+		return
+	}
+
+	user := request.GetUserContextKey(r)
+	if !canAccessForum(board.Forum, user) {
+		forbidden(w)
 		return
 	}
 

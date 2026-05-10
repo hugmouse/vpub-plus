@@ -232,9 +232,16 @@ func forumFromBoards(boards []model.Board) []model.Forum {
 		if i == 0 {
 			forum.Name = board.Forum.Name
 			forum.ID = board.Forum.ID
+			forum.GroupID = board.Forum.GroupID
+			forum.RestrictedVisibility = board.Forum.RestrictedVisibility
 		} else if board.Forum.ID != forum.ID {
 			forums = append(forums, forum)
-			forum = model.Forum{Name: board.Forum.Name, ID: board.Forum.ID}
+			forum = model.Forum{
+				Name:                 board.Forum.Name,
+				ID:                   board.Forum.ID,
+				GroupID:              board.Forum.GroupID,
+				RestrictedVisibility: board.Forum.RestrictedVisibility,
+			}
 		}
 		forum.Boards = append(forum.Boards, board)
 	}
@@ -385,6 +392,16 @@ func New(data *storage.Storage, s *session.Manager, csrfSecure bool) (http.Handl
 	mux.HandleFunc("POST /admin/forums/{forumId}/update", h.admin(h.updateAdminForum))
 	mux.HandleFunc("GET /admin/forums/{forumId}/remove", h.admin(h.showAdminRemoveForumView))
 	mux.HandleFunc("POST /admin/forums/{forumId}/remove", h.admin(h.removeAdminForum))
+
+	mux.HandleFunc("GET /admin/groups", h.admin(h.showAdminGroupListView))
+	mux.HandleFunc("GET /admin/groups/new", h.admin(h.showAdminCreateGroupView))
+	mux.HandleFunc("POST /admin/groups/save", h.admin(h.saveAdminGroup))
+	mux.HandleFunc("GET /admin/groups/{groupId}/edit", h.admin(h.showAdminEditGroupView))
+	mux.HandleFunc("POST /admin/groups/{groupId}/update", h.admin(h.updateAdminGroup))
+	mux.HandleFunc("POST /admin/groups/{groupId}/members/add", h.admin(h.addAdminGroupMember))
+	mux.HandleFunc("POST /admin/groups/{groupId}/members/{userId}/remove", h.admin(h.removeAdminGroupMember))
+	mux.HandleFunc("GET /admin/groups/{groupId}/remove", h.admin(h.showAdminRemoveGroupView))
+	mux.HandleFunc("POST /admin/groups/{groupId}/remove", h.admin(h.removeAdminGroup))
 
 	mux.HandleFunc("GET /admin/image-proxy", h.admin(h.showAdminImageCache))
 	mux.HandleFunc("POST /admin/image-proxy/remove", h.admin(h.removeAdminImageCache))

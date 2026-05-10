@@ -1,0 +1,41 @@
+{{ define "title" }}Groups{{ end }}
+{{ define "content" }}
+    <nav class="breadcrumb">
+        <ul>
+            <li>
+                <a href="/admin">Admin</a>
+                <ul>
+                    <li>Groups</li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <h1>Groups</h1>
+    <p><a href="/admin/groups/new">New group</a></p>
+    <table>
+        <thead>
+        <tr>
+            <th class="grow">Group</th>
+            <th>Members</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{ if .groups }}
+            {{ range .groups }}
+                <tr>
+                    <td>{{ .Name }}</td>
+                    <td class="center">{{ .MemberCount }}</td>
+                    <td class="center"><a href="/admin/groups/{{ .ID }}/edit">Edit</a></td>
+                    <td class="center"><a href="/admin/groups/{{ .ID }}/remove">Delete</a></td>
+                </tr>
+            {{ end }}
+        {{ else }}
+            <tr>
+                <td colspan="4">No groups yet.</td>
+            </tr>
+        {{ end }}
+        </tbody>
+    </table>
+{{ end }}

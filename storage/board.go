@@ -8,17 +8,14 @@ import (
 
 func (s *Storage) BoardByID(id int64) (model.Board, error) {
 	var board model.Board
+	var groupID sql.NullInt64
 	err := s.db.QueryRow(`
-SELECT
-       b.id,
-       b.name,
-       description,
-       b.position,
-       forum_id,
-       f.is_locked as forum_locked,
-       b.is_locked as board_locked,
-       f.name
-from boards b inner join forums f on f.id = b.forum_id WHERE b.id=$1
+SELECT b.id, b.name, b.description, b.position, b.forum_id,
+       f.is_locked AS forum_locked, b.is_locked AS board_locked,
+       f.name, f.group_id, f.restricted_visibility
+FROM boards b
+INNER JOIN forums f ON f.id = b.forum_id
+WHERE b.id = $1
 `, id).Scan(
 		&board.ID,
 		&board.Name,
@@ -28,12 +25,19 @@ from boards b inner join forums f on f.id = b.forum_id WHERE b.id=$1
 		&board.Forum.IsLocked,
 		&board.IsLocked,
 		&board.Forum.Name,
+		&groupID,
+		&board.Forum.RestrictedVisibility,
 	)
+	board.Forum.GroupID = groupID.Int64
 	return board, err
 }
 
 func (s *Storage) Boards() ([]model.Board, error) {
-	rows, err := s.db.Query("select board_id, forum_id, forum_name, board_name, description, topics_count, posts_count, updated_at from forums_summary")
+	rows, err := s.db.Query(`
+SELECT board_id, forum_id, forum_name, board_name, description,
+       topics_count, posts_count, updated_at, group_id, restricted_visibility
+FROM forums_summary
+`)
 	if err != nil {
 		return nil, err
 	}
@@ -41,17 +45,28 @@ func (s *Storage) Boards() ([]model.Board, error) {
 	var boards []model.Board
 	for rows.Next() {
 		var board model.Board
-		err := rows.Scan(&board.ID, &board.Forum.ID, &board.Forum.Name, &board.Name, &board.Description, &board.Topics, &board.Posts, &board.UpdatedAt)
-		if err != nil {
+		var groupID sql.NullInt64
+		if err := rows.Scan(
+			&board.ID, &board.Forum.ID, &board.Forum.Name,
+			&board.Name, &board.Description,
+			&board.Topics, &board.Posts, &board.UpdatedAt,
+			&groupID, &board.Forum.RestrictedVisibility,
+		); err != nil {
 			return boards, err
 		}
+		board.Forum.GroupID = groupID.Int64
 		boards = append(boards, board)
 	}
 	return boards, nil
 }
 
 func (s *Storage) BoardsByForumID(id int64) ([]model.Board, error) {
-	rows, err := s.db.Query("select board_id, forum_id, forum_name, board_name, description, topics_count, posts_count, updated_at from forums_summary where forum_id=$1", id)
+	rows, err := s.db.Query(`
+SELECT board_id, forum_id, forum_name, board_name, description,
+       topics_count, posts_count, updated_at, group_id, restricted_visibility
+FROM forums_summary
+WHERE forum_id = $1
+`, id)
 	if err != nil {
 		return nil, err
 	}
@@ -59,10 +74,16 @@ func (s *Storage) BoardsByForumID(id int64) ([]model.Board, error) {
 	var boards []model.Board
 	for rows.Next() {
 		var board model.Board
-		err := rows.Scan(&board.ID, &board.Forum.ID, &board.Forum.Name, &board.Name, &board.Description, &board.Topics, &board.Posts, &board.UpdatedAt)
-		if err != nil {
+		var groupID sql.NullInt64
+		if err := rows.Scan(
+			&board.ID, &board.Forum.ID, &board.Forum.Name,
+			&board.Name, &board.Description,
+			&board.Topics, &board.Posts, &board.UpdatedAt,
+			&groupID, &board.Forum.RestrictedVisibility,
+		); err != nil {
 			return boards, err
 		}
+		board.Forum.GroupID = groupID.Int64
 		boards = append(boards, board)
 	}
 	return boards, nil
@@ -76,7 +97,6 @@ INSERT INTO boards (name, description, position, forum_id, is_locked)
 VALUES ($1, $2, $3, $4, $5)
 RETURNING id
 `
-
 	if err := s.db.QueryRow(
 		query,
 		request.Name,
@@ -84,29 +104,21 @@ RETURNING id
 		request.Position,
 		request.ForumID,
 		request.IsLocked,
-	).Scan(
-		&id,
-	); err != nil {
+	).Scan(&id); err != nil {
 		return id, errors.New("unable to create board: " + err.Error())
 	}
-
 	return id, nil
 }
 
 func (s *Storage) UpdateBoard(id int64, request model.BoardRequest) error {
 	query := `UPDATE boards SET name=$1, description=$2, position=$3, forum_id=$4, is_locked=$5 WHERE id=$6`
-
 	if _, err := s.db.Exec(
 		query,
-		request.Name,
-		request.Description,
-		request.Position,
-		request.ForumID,
-		request.IsLocked,
-		id); err != nil {
+		request.Name, request.Description, request.Position,
+		request.ForumID, request.IsLocked, id,
+	); err != nil {
 		return errors.New("unable to update board: " + err.Error())
 	}
-
 	return nil
 }
 

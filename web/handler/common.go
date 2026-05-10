@@ -47,7 +47,30 @@ var TplCommonMap = map[string]string{
         <input type="checkbox" id="locked" name="locked" {{ if .IsLocked }}checked{{ end }}>
         <label for="locked">Locked</label>
     </div>
-{{ end }}`,
+    <div class="field">
+        <label for="group_id">Restricted to group</label>
+        <select name="group_id" id="group_id">
+            <option value="0" {{ if eq .GroupID 0 }}selected{{ end }}>— None (public) —</option>
+            {{ range .Groups }}
+                <option value="{{ .ID }}" {{ if eq $.GroupID .ID }}selected{{ end }}>{{ .Name }}</option>
+            {{ end }}
+        </select>
+    </div>
+    <div class="field">
+        <label>Visibility when restricted</label>
+        <label>
+            <input type="radio" name="restricted_visibility" value="hidden"
+                   {{ if ne .RestrictedVisibility "visible" }}checked{{ end }}>
+            Hidden (not listed for non-members)
+        </label>
+        <label>
+            <input type="radio" name="restricted_visibility" value="visible"
+                   {{ if eq .RestrictedVisibility "visible" }}checked{{ end }}>
+            Visible but blocked
+        </label>
+    </div>
+{{ end }}
+`,
 	"forum_nav": `{{ define "forum_nav" }}
     <nav class="breadcrumb" aria-label="Breadcrumb">
         <a href="/" aria-label="Go to Forums homepage">Forums</a>
@@ -79,6 +102,13 @@ var TplCommonMap = map[string]string{
             <span aria-current="page">{{ .Topic }}</span>
         {{ end }}
     </nav>
+{{ end }}
+`,
+	"group_form": `{{ define "group_form" }}
+    <div class="field">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" value="{{ .Name }}" autocomplete="off" maxlength="50" required autofocus/>
+    </div>
 {{ end }}
 `,
 	"layout": `{{ define "layout" }}

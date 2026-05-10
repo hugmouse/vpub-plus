@@ -2,6 +2,8 @@ package handler
 
 import (
 	"net/http"
+	"vpub/model"
+	"vpub/web/handler/request"
 )
 
 func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
@@ -10,9 +12,16 @@ func (h *Handler) showIndexView(w http.ResponseWriter, r *http.Request) {
 		serverError(w, err)
 		return
 	}
+	user := request.GetUserContextKey(r)
 	forums := forumFromBoards(boards)
+	var visible []model.Forum
+	for _, f := range forums {
+		if canSeeForum(f, user) {
+			visible = append(visible, f)
+		}
+	}
 
 	v := NewView(w, r, "index")
-	v.Set("forums", forums)
+	v.Set("forums", visible)
 	v.Render()
 }

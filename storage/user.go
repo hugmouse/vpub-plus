@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"vpub/model"
 
+	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -87,7 +88,24 @@ func (s *Storage) UserByName(name string) (model.User, error) {
 }
 
 func (s *Storage) UserByID(id int64) (model.User, error) {
-	return s.queryUser(`SELECT id, name, hash, about, is_admin, picture FROM users WHERE id=$1`, id)
+	var user model.User
+	err := s.db.QueryRow(`
+		SELECT u.id, u.name, u.hash, u.about, u.is_admin, u.picture,
+		       array_remove(array_agg(gm.group_id), NULL) AS group_ids
+		FROM users u
+		LEFT JOIN group_members gm ON gm.user_id = u.id
+		WHERE u.id = $1
+		GROUP BY u.id
+	`, id).Scan(
+		&user.ID,
+		&user.Name,
+		&user.Hash,
+		&user.About,
+		&user.IsAdmin,
+		&user.Picture,
+		pq.Array(&user.GroupIDs),
+	)
+	return user, err
 }
 
 func hashPassword(password string) ([]byte, error) {

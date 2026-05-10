@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"vpub/web/handler/form"
+	"vpub/web/handler/request"
 )
 
 func (h *Handler) showCreateTopicView(w http.ResponseWriter, r *http.Request) {
@@ -12,6 +13,13 @@ func (h *Handler) showCreateTopicView(w http.ResponseWriter, r *http.Request) {
 		notFound(w)
 		return
 	}
+
+	user := request.GetUserContextKey(r)
+	if !canAccessForum(board.Forum, user) {
+		forbidden(w)
+		return
+	}
+
 	boards, err := h.storage.Boards()
 	if err != nil {
 		serverError(w, err)

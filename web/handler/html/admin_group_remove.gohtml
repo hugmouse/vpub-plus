@@ -1,0 +1,13 @@
+{{ define "content" }}
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
+    <p>Are you sure you want to delete the group <strong>{{ .group.Name }}</strong>?</p>
+    {{ if gt .affectedForums 0 }}
+        <p class="errors">Warning: Deleting this group will make {{ .affectedForums }} forum(s) public.</p>
+    {{ end }}
+    <form action="/admin/groups/{{ .group.ID }}/remove" method="post">
+        {{ .csrfField }}
+        <input type="submit" value="Delete">
+    </form>
+{{ end }}

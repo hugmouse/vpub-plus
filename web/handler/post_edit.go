@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"vpub/web/handler/form"
+	"vpub/web/handler/request"
 )
 
 func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request) {
@@ -21,6 +22,12 @@ func (h *Handler) showEditPostView(w http.ResponseWriter, r *http.Request) {
 	board, err := h.storage.BoardByID(topic.BoardID)
 	if err != nil {
 		serverError(w, err)
+		return
+	}
+
+	user := request.GetUserContextKey(r)
+	if !canAccessForum(board.Forum, user) {
+		forbidden(w)
 		return
 	}
 

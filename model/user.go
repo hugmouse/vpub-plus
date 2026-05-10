@@ -13,6 +13,7 @@ type User struct {
 	About      string
 	Picture    string
 	PictureAlt string
+	GroupIDs   []int64
 }
 
 // UserCreationRequest represents the request to create a user.

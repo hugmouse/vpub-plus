@@ -46,6 +46,18 @@ func createAtomEntryFromTopic(url string, topic model.Topic, renderEngine syntax
 
 func (h *Handler) showBoardFeed(w http.ResponseWriter, r *http.Request) {
 	boardId := RouteInt64Param(r, "boardId")
+
+	board, err := h.storage.BoardByID(boardId)
+	if err != nil {
+		notFound(w)
+		return
+	}
+	user := request.GetUserContextKey(r)
+	if !canAccessForum(board.Forum, user) {
+		forbidden(w)
+		return
+	}
+
 	settings := request.GetSettingsContextKey(r)
 	feed := Feed{
 		Title:   settings.Name,

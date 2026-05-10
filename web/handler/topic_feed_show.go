@@ -10,6 +10,23 @@ import (
 
 func (h *Handler) showTopicFeed(w http.ResponseWriter, r *http.Request) {
 	topicId := RouteInt64Param(r, "topicId")
+
+	topic, err := h.storage.TopicByID(topicId)
+	if err != nil {
+		notFound(w)
+		return
+	}
+	board, err := h.storage.BoardByID(topic.BoardID)
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	user := request.GetUserContextKey(r)
+	if !canAccessForum(board.Forum, user) {
+		forbidden(w)
+		return
+	}
+
 	settings := request.GetSettingsContextKey(r)
 	feed := Feed{
 		Title:   settings.Name,

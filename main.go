@@ -34,10 +34,21 @@ func main() {
 			log.Fatal(err)
 		}
 
+		groupID, err := data.CreateGroup(model.GroupRequest{Name: "admins"})
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if err := data.AddGroupMember(groupID, userID); err != nil {
+			log.Fatal(err)
+		}
+
 		forumID, err := data.CreateForum(model.ForumRequest{
-			Name:     "Getting started",
-			Position: 0,
-			IsLocked: false,
+			Name:                 "Getting started",
+			Position:             0,
+			IsLocked:             false,
+			GroupID:              groupID,
+			RestrictedVisibility: model.RestrictedVisibilityHidden,
 		})
 		if err != nil {
 			log.Fatal(err)

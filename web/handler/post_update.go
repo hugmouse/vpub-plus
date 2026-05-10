@@ -24,7 +24,12 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request) {
 
 	board, err := h.storage.BoardByID(topic.BoardID)
 	if err != nil {
-		notFound(w)
+		serverError(w, err)
+		return
+	}
+
+	if !canAccessForum(board.Forum, user) {
+		forbidden(w)
 		return
 	}
 

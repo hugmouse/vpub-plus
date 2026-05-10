@@ -11,8 +11,8 @@ func (s *Storage) CreateForum(request model.ForumRequest) (int64, error) {
 	var id int64
 
 	query := `
-INSERT INTO forums (name, position, is_locked)
-VALUES ($1, $2, $3)
+INSERT INTO forums (name, position, is_locked, group_id, restricted_visibility)
+VALUES ($1, $2, $3, NULLIF($4, 0), $5)
 RETURNING id
 `
 	err := s.db.QueryRow(
@@ -20,9 +20,9 @@ RETURNING id
 		request.Name,
 		request.Position,
 		request.IsLocked,
-	).Scan(
-		&id,
-	)
+		request.GroupID,
+		request.RestrictedVisibility,
+	).Scan(&id)
 
 	if err != nil {
 		return id, fmt.Errorf(`store: unable to create forum %q: %v`, request.Name, err)
@@ -32,7 +32,9 @@ RETURNING id
 }
 
 func (s *Storage) Forums() ([]model.Forum, error) {
-	rows, err := s.db.Query("select id, name, position, is_locked from forums order by position")
+	rows, err := s.db.Query(
+		"SELECT id, name, position, is_locked, group_id, restricted_visibility FROM forums ORDER BY position",
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -40,10 +42,14 @@ func (s *Storage) Forums() ([]model.Forum, error) {
 	var forums []model.Forum
 	for rows.Next() {
 		var forum model.Forum
-		err := rows.Scan(&forum.ID, &forum.Name, &forum.Position, &forum.IsLocked)
-		if err != nil {
+		var groupID sql.NullInt64
+		if err := rows.Scan(
+			&forum.ID, &forum.Name, &forum.Position, &forum.IsLocked,
+			&groupID, &forum.RestrictedVisibility,
+		); err != nil {
 			return forums, err
 		}
+		forum.GroupID = groupID.Int64
 		forums = append(forums, forum)
 	}
 	return forums, nil
@@ -51,26 +57,29 @@ func (s *Storage) Forums() ([]model.Forum, error) {
 
 func (s *Storage) ForumByID(id int64) (model.Forum, error) {
 	var forum model.Forum
+	var groupID sql.NullInt64
 	err := s.db.QueryRow(
-		`SELECT id, name, position, is_locked from forums WHERE id=$1`, id).Scan(
-		&forum.ID,
-		&forum.Name,
-		&forum.Position,
-		&forum.IsLocked,
+		`SELECT id, name, position, is_locked, group_id, restricted_visibility FROM forums WHERE id=$1`, id,
+	).Scan(
+		&forum.ID, &forum.Name, &forum.Position, &forum.IsLocked,
+		&groupID, &forum.RestrictedVisibility,
 	)
+	forum.GroupID = groupID.Int64
 	return forum, err
 }
 
 func (s *Storage) UpdateForum(forumId int64, request model.ForumRequest) error {
 	query := `
-UPDATE forums 
-SET name=$1, position=$2, is_locked=$3 
-WHERE id=$4
+UPDATE forums
+SET name=$1, position=$2, is_locked=$3, group_id=NULLIF($4, 0), restricted_visibility=$5
+WHERE id=$6
 `
-	if _, err := s.db.Exec(query, request.Name, request.Position, request.IsLocked, forumId); err != nil {
+	if _, err := s.db.Exec(
+		query, request.Name, request.Position, request.IsLocked,
+		request.GroupID, request.RestrictedVisibility, forumId,
+	); err != nil {
 		return errors.New("unable to update forum: " + err.Error())
 	}
-
 	return nil
 }
 

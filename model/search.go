@@ -8,4 +8,5 @@ type Search struct {
 	Content            string
 	HighlightedContent string
 	Rank               float64
+	ForumGroupID       *int64
 }

@@ -1,0 +1,27 @@
+{{ define "title" }}New group{{ end }}
+{{ define "content" }}
+    <nav class="breadcrumb">
+        <ul>
+            <li>
+                <a href="/admin">Admin</a>
+                <ul>
+                    <li>
+                        <a href="/admin/groups">Groups</a>
+                        <ul>
+                            <li>Create group</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <h1>Create group</h1>
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
+    <form action="/admin/groups/save" method="post">
+        {{ .csrfField }}
+        {{ template "group_form" .form }}
+        <input type="submit" value="Submit">
+    </form>
+{{ end }}

@@ -19,14 +19,23 @@ func (h *Handler) updateAdminForum(w http.ResponseWriter, r *http.Request) {
 
 	forumForm := form.NewForumForm(r)
 
+	groups, err := h.storage.Groups()
+	if err != nil {
+		serverError(w, err)
+		return
+	}
+	forumForm.Groups = groups
+
 	v := NewView(w, r, "admin_forum_edit")
 	v.Set("forum", forum)
 	v.Set("form", forumForm)
 
 	forumRequest := model.ForumRequest{
-		Name:     forumForm.Name,
-		Position: forumForm.Position,
-		IsLocked: forumForm.IsLocked,
+		Name:                 forumForm.Name,
+		Position:             forumForm.Position,
+		IsLocked:             forumForm.IsLocked,
+		GroupID:              forumForm.GroupID,
+		RestrictedVisibility: forumForm.RestrictedVisibility,
 	}
 
 	if err := validator.ValidateForumModification(h.storage, id, forumRequest); err != nil {

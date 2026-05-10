@@ -98,6 +98,7 @@ var TplMap = map[string]string{
             <li><a href="/admin/keys">Manage keys</a></li>
             <li><a href="/admin/boards">Manage boards</a></li>
             <li><a href="/admin/forums">Manage forums</a></li>
+            <li><a href="/admin/groups">Manage groups</a></li>
             <li><a href="/admin/users">Manage users</a></li>
             <li><a href="/admin/image-proxy">Manage image cache</a></li>
         </ul>
@@ -336,6 +337,150 @@ var TplMap = map[string]string{
         <input type="submit" value="Submit">
     </form>
 {{ end }}`,
+	"admin_group": `{{ define "title" }}Groups{{ end }}
+{{ define "content" }}
+    <nav class="breadcrumb">
+        <ul>
+            <li>
+                <a href="/admin">Admin</a>
+                <ul>
+                    <li>Groups</li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <h1>Groups</h1>
+    <p><a href="/admin/groups/new">New group</a></p>
+    <table>
+        <thead>
+        <tr>
+            <th class="grow">Group</th>
+            <th>Members</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{ if .groups }}
+            {{ range .groups }}
+                <tr>
+                    <td>{{ .Name }}</td>
+                    <td class="center">{{ .MemberCount }}</td>
+                    <td class="center"><a href="/admin/groups/{{ .ID }}/edit">Edit</a></td>
+                    <td class="center"><a href="/admin/groups/{{ .ID }}/remove">Delete</a></td>
+                </tr>
+            {{ end }}
+        {{ else }}
+            <tr>
+                <td colspan="4">No groups yet.</td>
+            </tr>
+        {{ end }}
+        </tbody>
+    </table>
+{{ end }}
+`,
+	"admin_group_create": `{{ define "title" }}New group{{ end }}
+{{ define "content" }}
+    <nav class="breadcrumb">
+        <ul>
+            <li>
+                <a href="/admin">Admin</a>
+                <ul>
+                    <li>
+                        <a href="/admin/groups">Groups</a>
+                        <ul>
+                            <li>Create group</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <h1>Create group</h1>
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
+    <form action="/admin/groups/save" method="post">
+        {{ .csrfField }}
+        {{ template "group_form" .form }}
+        <input type="submit" value="Submit">
+    </form>
+{{ end }}
+`,
+	"admin_group_edit": `{{ define "title" }}Edit group{{ end }}
+{{ define "content" }}
+    <nav class="breadcrumb">
+        <ul>
+            <li>
+                <a href="/admin">Admin</a>
+                <ul>
+                    <li>
+                        <a href="/admin/groups">Groups</a>
+                        <ul>
+                            <li>Edit group</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <h1>Edit group: {{ .group.Name }}</h1>
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
+    <form action="/admin/groups/{{ .group.ID }}/update" method="post">
+        {{ .csrfField }}
+        {{ template "group_form" .form }}
+        <input type="submit" value="Save name">
+    </form>
+
+    <h2>Members</h2>
+    {{ if .members }}
+        <ul>
+            {{ range .members }}
+                <li>
+                    {{ .Name }}
+                    <form action="/admin/groups/{{ $.group.ID }}/members/{{ .ID }}/remove" method="post" style="display:inline">
+                        {{ $.csrfField }}
+                        <button type="submit">Remove</button>
+                    </form>
+                </li>
+            {{ end }}
+        </ul>
+    {{ else }}
+        <p>No members yet.</p>
+    {{ end }}
+
+    <h2>Add member</h2>
+    {{ if .nonMembers }}
+        <form action="/admin/groups/{{ .group.ID }}/members/add" method="post">
+            {{ .csrfField }}
+            <select name="user_id">
+                {{ range .nonMembers }}
+                    <option value="{{ .ID }}">{{ .Name }}</option>
+                {{ end }}
+            </select>
+            <input type="submit" value="Add">
+        </form>
+    {{ else }}
+        <p>All users are already members.</p>
+    {{ end }}
+{{ end }}
+`,
+	"admin_group_remove": `{{ define "content" }}
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
+    <p>Are you sure you want to delete the group <strong>{{ .group.Name }}</strong>?</p>
+    {{ if gt .affectedForums 0 }}
+        <p class="errors">Warning: Deleting this group will make {{ .affectedForums }} forum(s) public.</p>
+    {{ end }}
+    <form action="/admin/groups/{{ .group.ID }}/remove" method="post">
+        {{ .csrfField }}
+        <input type="submit" value="Delete">
+    </form>
+{{ end }}
+`,
 	"admin_image_cache": `{{ define "admin_image_cache" }}
 {{ template "layout" . }}
 {{ end }}
@@ -377,7 +522,7 @@ var TplMap = map[string]string{
     {{ range .images }}
     <tr>
         <td title="{{ .URL }}" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-            <img src="{{ .URL }}" alt="{{ .URL }}" style="max-height: 100px;">
+            <img src="{{ proxyURL .URL }}" alt="{{ .URL }}" style="max-height: 100px;">
         </td>
         <td>{{ humanizeBytes .Size }}</td>
         <td>{{ .ContentType }}</td>
@@ -432,7 +577,12 @@ var TplMap = map[string]string{
             <tr>
                 <td>{{ .Key }}</td>
                 <td class="center">{{ iso8601 .CreatedAt }}</td>
-                <td class="center"><a href="/admin/keys/{{ .ID }}/remove">Delete</a></td>
+                <td class="center">
+                    <form action="/admin/keys/{{ .ID }}/remove" method="post" style="display:inline">
+                        {{ $.csrfField }}
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
             </tr>
         {{ end }}
         </tbody>

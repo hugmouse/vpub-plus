@@ -28,6 +28,11 @@ func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !canAccessForum(board.Forum, user) {
+		forbidden(w)
+		return
+	}
+
 	v := NewView(w, r, "create_topic")
 	v.Set("form", topicForm)
 	v.Set("board", board)
