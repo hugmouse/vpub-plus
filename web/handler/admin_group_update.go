@@ -1,8 +1,11 @@
 package handler
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"vpub/model"
 	"vpub/validator"
 	"vpub/web/handler/form"
@@ -13,7 +16,11 @@ func (h *Handler) updateAdminGroup(w http.ResponseWriter, r *http.Request) {
 	id := RouteInt64Param(r, "groupId")
 	group, err := h.storage.GroupByID(id)
 	if err != nil {
-		notFound(w)
+		if errors.Is(err, sql.ErrNoRows) {
+			notFound(w)
+			return
+		}
+		serverError(w, err)
 		return
 	}
 
@@ -65,7 +72,7 @@ func (h *Handler) updateAdminGroup(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) addAdminGroupMember(w http.ResponseWriter, r *http.Request) {
 	groupID := RouteInt64Param(r, "groupId")
 	userID, _ := parseInt64(r.FormValue("user_id"))
-	if userID == 0 {
+	if userID <= 0 {
 		http.Redirect(w, r, fmt.Sprintf("/admin/groups/%d/edit", groupID), http.StatusFound)
 		return
 	}
@@ -93,7 +100,5 @@ func (h *Handler) removeAdminGroupMember(w http.ResponseWriter, r *http.Request)
 }
 
 func parseInt64(s string) (int64, error) {
-	var n int64
-	_, err := fmt.Sscanf(s, "%d", &n)
-	return n, err
+	return strconv.ParseInt(s, 10, 64)
 }

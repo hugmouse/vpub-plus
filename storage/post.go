@@ -70,8 +70,11 @@ limit $2`, settings.PerPage*(page-1), settings.PerPage+1, isAdmin, pq.Array(grou
 		}
 		posts = append(posts, post)
 	}
+	if err := rows.Err(); err != nil {
+		return posts, false, err
+	}
 	if len(posts) > int(settings.PerPage) {
-		return posts[0:settings.PerPage], true, err
+		return posts[0:settings.PerPage], true, nil
 	}
 	return posts, false, nil
 }
@@ -122,8 +125,11 @@ limit $3`, id, settings.PerPage*(page-1), settings.PerPage+1, isAdmin, pq.Array(
 		}
 		posts = append(posts, post)
 	}
+	if err := rows.Err(); err != nil {
+		return posts, false, err
+	}
 	if len(posts) > int(settings.PerPage) {
-		return posts[0:settings.PerPage], true, err
+		return posts[0:settings.PerPage], true, nil
 	}
 	return posts, false, nil
 }

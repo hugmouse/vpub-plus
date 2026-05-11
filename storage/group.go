@@ -50,13 +50,33 @@ func (s *Storage) GroupByID(id int64) (model.Group, error) {
 }
 
 func (s *Storage) UpdateGroup(id int64, req model.GroupRequest) error {
-	_, err := s.db.Exec(`UPDATE groups SET name=$1 WHERE id=$2`, req.Name, id)
-	return err
+	res, err := s.db.Exec(`UPDATE groups SET name=$1 WHERE id=$2`, req.Name, id)
+	if err != nil {
+		return err
+	}
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
 }
 
 func (s *Storage) RemoveGroup(id int64) error {
-	_, err := s.db.Exec(`DELETE FROM groups WHERE id=$1`, id)
-	return err
+	res, err := s.db.Exec(`DELETE FROM groups WHERE id=$1`, id)
+	if err != nil {
+		return err
+	}
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
 }
 
 func (s *Storage) GroupNameExists(name string) (result bool, err error) {

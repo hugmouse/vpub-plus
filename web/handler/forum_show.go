@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 	"vpub/web/handler/request"
 )
@@ -9,7 +11,11 @@ func (h *Handler) showForumView(w http.ResponseWriter, r *http.Request) {
 	id := RouteInt64Param(r, "forumId")
 	forum, err := h.storage.ForumByID(id)
 	if err != nil {
-		notFound(w)
+		if errors.Is(err, sql.ErrNoRows) {
+			notFound(w)
+			return
+		}
+		serverError(w, err)
 		return
 	}
 
