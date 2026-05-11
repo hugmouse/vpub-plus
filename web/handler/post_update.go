@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"vpub/model"
@@ -16,14 +18,37 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request) {
 
 	postForm := form.NewPostForm(r)
 
-	topic, err := h.storage.TopicByID(postForm.TopicID)
+	post, err := h.storage.PostByID(id)
 	if err != nil {
-		notFound(w)
+		if errors.Is(err, sql.ErrNoRows) {
+			notFound(w)
+			return
+		}
+		serverError(w, err)
+		return
+	}
+
+	if postForm.TopicID != 0 && postForm.TopicID != post.TopicID {
+		forbidden(w)
+		return
+	}
+
+	topic, err := h.storage.TopicByID(post.TopicID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			notFound(w)
+			return
+		}
+		serverError(w, err)
 		return
 	}
 
 	board, err := h.storage.BoardByID(topic.BoardID)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			notFound(w)
+			return
+		}
 		serverError(w, err)
 		return
 	}
@@ -55,5 +80,5 @@ func (h *Handler) updatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/topics/%d#%d", postForm.TopicID, id), http.StatusFound)
+	http.Redirect(w, r, fmt.Sprintf("/topics/%d#%d", post.TopicID, id), http.StatusFound)
 }

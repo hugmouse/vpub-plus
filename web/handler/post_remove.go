@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"vpub/web/handler/request"
@@ -11,18 +13,30 @@ func (h *Handler) removePost(w http.ResponseWriter, r *http.Request) {
 
 	post, err := h.storage.PostByID(RouteInt64Param(r, "postId"))
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			notFound(w)
+			return
+		}
 		serverError(w, err)
 		return
 	}
 
 	topic, err := h.storage.TopicByID(post.TopicID)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			notFound(w)
+			return
+		}
 		serverError(w, err)
 		return
 	}
 
 	board, err := h.storage.BoardByID(topic.BoardID)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			notFound(w)
+			return
+		}
 		serverError(w, err)
 		return
 	}

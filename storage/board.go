@@ -57,6 +57,9 @@ FROM forums_summary
 		board.Forum.GroupID = groupID.Int64
 		boards = append(boards, board)
 	}
+	if err := rows.Err(); err != nil {
+		return boards, err
+	}
 	return boards, nil
 }
 
@@ -85,6 +88,9 @@ WHERE forum_id = $1
 		}
 		board.Forum.GroupID = groupID.Int64
 		boards = append(boards, board)
+	}
+	if err := rows.Err(); err != nil {
+		return boards, err
 	}
 	return boards, nil
 }

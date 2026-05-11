@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"vpub/model"
 	"vpub/web/handler/form"
 	"vpub/web/handler/request"
 )
@@ -25,9 +26,15 @@ func (h *Handler) showCreateTopicView(w http.ResponseWriter, r *http.Request) {
 		serverError(w, err)
 		return
 	}
+	var visibleBoards []model.Board
+	for _, b := range boards {
+		if canAccessForum(b.Forum, user) {
+			visibleBoards = append(visibleBoards, b)
+		}
+	}
 	topicForm := form.TopicForm{
 		BoardID: board.ID,
-		Boards:  boards,
+		Boards:  visibleBoards,
 	}
 
 	v := NewView(w, r, "create_topic")

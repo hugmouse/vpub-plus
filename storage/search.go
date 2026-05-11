@@ -43,6 +43,9 @@ func (s *Storage) Search(query string) ([]model.Search, error) {
 		}
 		searchResults = append(searchResults, search)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
-	return searchResults, err
+	return searchResults, nil
 }

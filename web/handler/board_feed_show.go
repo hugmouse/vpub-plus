@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"database/sql"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -49,7 +51,11 @@ func (h *Handler) showBoardFeed(w http.ResponseWriter, r *http.Request) {
 
 	board, err := h.storage.BoardByID(boardId)
 	if err != nil {
-		notFound(w)
+		if errors.Is(err, sql.ErrNoRows) {
+			notFound(w)
+			return
+		}
+		serverError(w, err)
 		return
 	}
 	user := request.GetUserContextKey(r)

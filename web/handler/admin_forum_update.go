@@ -17,7 +17,11 @@ func (h *Handler) updateAdminForum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	forumForm := form.NewForumForm(r)
+	forumForm, err := form.NewForumForm(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	groups, err := h.storage.Groups()
 	if err != nil {

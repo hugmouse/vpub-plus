@@ -1,7 +1,9 @@
 CREATE TABLE groups (
     id   SERIAL PRIMARY KEY,
-    name TEXT UNIQUE NOT NULL CHECK (name <> '' AND length(name) <= 50)
+    name TEXT NOT NULL CHECK (name <> '' AND length(name) <= 50)
 );
+
+CREATE UNIQUE INDEX groups_name_lower_idx ON groups (lower(name));
 
 CREATE TABLE group_members (
     group_id INTEGER NOT NULL REFERENCES groups(id) ON DELETE CASCADE,

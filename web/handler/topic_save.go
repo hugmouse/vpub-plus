@@ -48,6 +48,22 @@ func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request) {
 		boardId = topicForm.BoardID
 	}
 
+	if boardId != board.ID {
+		destBoard, err := h.storage.BoardByID(boardId)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				notFound(w)
+				return
+			}
+			serverError(w, err)
+			return
+		}
+		if !canAccessForum(destBoard.Forum, user) {
+			forbidden(w)
+			return
+		}
+	}
+
 	topicCreationRequest := model.TopicRequest{
 		BoardID:  boardId,
 		IsSticky: topicForm.IsSticky,

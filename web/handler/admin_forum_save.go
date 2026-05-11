@@ -8,7 +8,11 @@ import (
 )
 
 func (h *Handler) saveAdminForum(w http.ResponseWriter, r *http.Request) {
-	forumForm := form.NewForumForm(r)
+	forumForm, err := form.NewForumForm(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	groups, err := h.storage.Groups()
 	if err != nil {
@@ -35,7 +39,6 @@ func (h *Handler) saveAdminForum(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, err := h.storage.CreateForum(forumRequest); err != nil {
-		v.Set("errorMessage", "Unable to create forum: "+err.Error())
 		serverError(w, err)
 		return
 	}
