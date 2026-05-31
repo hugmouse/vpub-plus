@@ -137,7 +137,8 @@ select
        updated_at,
        board_id,
        post_id,
-       subject
+       subject,
+       user_id
 from topics_summary where topic_id=$1
 `, id).Scan(
 		&topic.ID,
@@ -148,6 +149,7 @@ from topics_summary where topic_id=$1
 		&topic.BoardID,
 		&topic.Post.ID,
 		&topic.Post.Subject,
+		&topic.Post.User.ID,
 	)
 	if err != nil {
 		return topic, err

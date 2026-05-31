@@ -14,6 +14,11 @@ func (h *Handler) saveTopic(w http.ResponseWriter, r *http.Request) {
 
 	topicForm := form.NewTopicForm(r)
 
+	if !user.IsAdmin {
+		topicForm.IsSticky = false
+		topicForm.IsLocked = false
+	}
+
 	boards, err := h.storage.Boards()
 	if err != nil {
 		notFound(w)

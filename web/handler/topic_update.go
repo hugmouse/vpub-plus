@@ -6,10 +6,23 @@ import (
 	"vpub/model"
 	"vpub/validator"
 	"vpub/web/handler/form"
+	"vpub/web/handler/request"
 )
 
 func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
+	user := request.GetUserContextKey(r)
 	id := RouteInt64Param(r, "topicId")
+
+	topic, err := h.storage.TopicByID(id)
+	if err != nil {
+		notFound(w)
+		return
+	}
+	
+	if topic.Post.User.ID != user.ID || !user.isAdmin {
+		forbidden(w)
+		return
+	}
 
 	topicForm := form.NewTopicForm(r)
 
