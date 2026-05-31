@@ -20,13 +20,7 @@ func (h *Handler) checkLogin(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		v := NewView(w, r, "login")
 		v.Set("form", loginForm)
-		if errors.As(err, &storage.ErrUserExists{}) {
-			v.Set("errorMessage", fmt.Sprintf("User %s not found", loginForm.Username))
-		} else if errors.As(err, &storage.ErrWrongPassword{}) {
-			v.Set("errorMessage", "Wrong password")
-		} else {
-			v.Set("errorMessage", fmt.Errorf("unknown error occurred: %w", err))
-		}
+		v.Set("errorMessage", "Invalid username or password")
 		v.Render()
 		return
 	}
