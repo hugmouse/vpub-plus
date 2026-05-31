@@ -19,7 +19,7 @@ func (h *Handler) updateTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	if topic.Post.User.ID != user.ID || !user.isAdmin {
+	if topic.Post.User.ID != user.ID || !user.IsAdmin {
 		forbidden(w)
 		return
 	}
