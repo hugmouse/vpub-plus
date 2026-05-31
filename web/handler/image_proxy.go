@@ -30,6 +30,21 @@ func (h *ImageProxyHandler) imageProxyHandler(w http.ResponseWriter, r *http.Req
 		http.Error(w, "Invalid URL parameter", http.StatusBadRequest)
 		return
 	}
+
+	ips, err := net.LookupIP(parsedURL.Hostname())
+	if err != nil {
+		http.Error(w, "Invalid URL parameter", http.StatusBadRequest)
+		return
+	}
+	
+	// lets make sure to not actually serve stuff from private network, k?
+	for _, ip := range ips {
+		if !ip.IsGlobalUnicast() || ip.IsPrivate() {
+			http.Error(w, "Invalid URL parameter. Hostname resolves into private IP.", http.StatusBadRequest)
+			return
+		}
+	}
+
 	urlStr := parsedURL.String()
 
 	val, ok := h.cachedImages.Get(urlStr)
