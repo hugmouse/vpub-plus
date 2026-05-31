@@ -153,7 +153,7 @@ func (v *VanillaRenderer) Convert(gmi string, wrap bool) string {
 				}
 			}
 			if c >= 1 && c <= 5 {
-				rv = append(rv, fmt.Sprintf("<h%d>%v</h%d>", c+1, l[c:], c+1))
+				rv = append(rv, fmt.Sprintf("<h%d>%v</h%d>", c+1, v.sanitize(l[c:]), c+1))
 			}
 			continue
 		}
