@@ -180,20 +180,20 @@ func (v *VanillaRenderer) Convert(gmi string, wrap bool) string {
 					tmpAligned := false
 					for _, centered := range tableCenteredRows {
 						if i == centered {
-							tableBuilder.WriteString("<td align=\"center\">" + sep[i] + "</td>")
+							tableBuilder.WriteString("<td align=\"center\">" + v.sanitize(sep[i]) + "</td>")
 							tmpAligned = true
 							break
 						}
 					}
 					for _, rightAlign := range tableRightAlignedRows {
 						if i == rightAlign {
-							tableBuilder.WriteString("<td align=\"right\">" + sep[i] + "</td>")
+							tableBuilder.WriteString("<td align=\"right\">" + v.sanitize(sep[i]) + "</td>")
 							tmpAligned = true
 							break
 						}
 					}
 					if !tmpAligned {
-						tableBuilder.WriteString("<td>" + sep[i] + "</td>")
+						tableBuilder.WriteString("<td>" + v.sanitize(sep[i]) + "</td>")
 						tmpAligned = false
 					}
 				}
@@ -215,21 +215,21 @@ func (v *VanillaRenderer) Convert(gmi string, wrap bool) string {
 					tmpAligned := false
 					for _, centered := range tableCenteredRows {
 						if i == centered {
-							tableBuilder.WriteString("<td align=\"center\">" + sep[i] + "</td>")
+							tableBuilder.WriteString("<td align=\"center\">" + v.sanitize(sep[i]) + "</td>")
 							tmpAligned = true
 							break
 						}
 					}
 					for _, rightAlign := range tableRightAlignedRows {
 						if i == rightAlign {
-							tableBuilder.WriteString("<td align=\"right\">" + sep[i] + "</td>")
+							tableBuilder.WriteString("<td align=\"right\">" + v.sanitize(sep[i]) + "</td>")
 							tmpAligned = true
 							break
 						}
 					}
 
 					if !tmpAligned {
-						tableBuilder.WriteString("<td>" + sep[i] + "</td>")
+						tableBuilder.WriteString("<td>" + v.sanitize(sep[i]) + "</td>")
 						tmpAligned = false
 					}
 				}
