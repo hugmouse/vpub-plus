@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime"
 	"net"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 	"vpub/web/handler/request"
 )
@@ -31,9 +31,20 @@ func validateImageProxyURL(u *url.URL) error {
 	return nil
 }
 
-// imageProxyHandler GETs the image from remote host and serves it from a string map
-//
-// It does not validate the image is in fact a JPEG, PNG or GIF.
+func isSupportedBrowserImageContentType(contentType string) bool {
+	mediaType, _, err := mime.ParseMediaType(contentType)
+	if err != nil {
+		return false
+	}
+
+	switch mediaType {
+	case "image/apng", "image/avif", "image/gif", "image/jpeg", "image/png", "image/webp":
+		return true
+	}
+	return false
+}
+
+// imageProxyHandler GETs the image from remote host and serves it from a string map.
 func (h *ImageProxyHandler) imageProxyHandler(w http.ResponseWriter, r *http.Request) {
 	settings := request.GetSettingsContextKey(r)
 	imageSizeLimit := settings.ImageProxySizeLimit
@@ -103,16 +114,9 @@ func (h *ImageProxyHandler) imageProxyHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	// In general, we can use STD's image library to validate JPEG, PNG or GIF,
-	// but there's way more image formats that browser supports.
-	//
-	// So either I have to add more dependencies or rely on remote server not being
-	// manipulated such way that they serve __something else__ as an image.
 	respContentType := resp.Header.Get("Content-Type")
-	isImage := strings.HasPrefix(resp.Header.Get("Content-Type"), "image/")
-
-	if !isImage {
-		http.Error(w, "Remote server returned not an image", http.StatusBadGateway)
+	if !isSupportedBrowserImageContentType(respContentType) {
+		http.Error(w, "Remote server returned unsupported image type", http.StatusBadGateway)
 		return
 	}
 
