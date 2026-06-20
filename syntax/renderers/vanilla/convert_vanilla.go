@@ -38,6 +38,17 @@ func (v *VanillaRenderer) sanitize(input string) string {
 	return html.EscapeString(input)
 }
 
+func allowedHref(href string) bool {
+	lower := strings.ToLower(href)
+	if strings.HasPrefix(lower, "http://") || strings.HasPrefix(lower, "https://") {
+		return true
+	}
+	if i := strings.IndexAny(lower, ":/?#"); i >= 0 {
+		return lower[i] != ':'
+	}
+	return true
+}
+
 func (v *VanillaRenderer) processLinks(input string) string {
 	sane := html.EscapeString(input)
 	if imgRegexp.MatchString(input) || linkRegexp.MatchString(input) {
@@ -47,6 +58,9 @@ func (v *VanillaRenderer) processLinks(input string) string {
 		}
 		matches = linkRegexp.FindAllStringSubmatch(sane, -1)
 		for _, m := range matches {
+			if !allowedHref(m[2]) {
+				continue
+			}
 			sane = strings.Replace(sane, m[0], fmt.Sprintf("<a href=\"%s\" target=\"_blank\">%s</a>", m[2], m[1]), 1)
 		}
 	} else if urlRegexp.MatchString(input) {
