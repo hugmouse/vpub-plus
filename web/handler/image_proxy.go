@@ -111,7 +111,7 @@ func (h *ImageProxyHandler) imageProxyHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	imageBytes, err := io.ReadAll(resp.Body)
+	imageBytes, err := io.ReadAll(io.LimitReader(resp.Body, imageSizeLimit+1))
 	if err != nil {
 		log.Printf("Error reading body for %s: %v", urlStr, err)
 		if isStale {
