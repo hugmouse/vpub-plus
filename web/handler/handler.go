@@ -286,7 +286,7 @@ func New(data *storage.Storage, s *session.Manager, csrfSecure bool) (http.Handl
 				if len(via) >= 3 {
 					return http.ErrUseLastResponse
 				}
-				return nil
+				return validateImageProxyURL(req.URL)
 			},
 		},
 	}

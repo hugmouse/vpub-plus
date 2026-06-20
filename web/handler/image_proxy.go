@@ -4,13 +4,32 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net/http"
 	"net"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
 	"vpub/web/handler/request"
 )
+
+func validateImageProxyURL(u *url.URL) error {
+	if u == nil || (u.Scheme != "http" && u.Scheme != "https") || u.Hostname() == "" {
+		return fmt.Errorf("invalid image proxy URL")
+	}
+
+	ips, err := net.LookupIP(u.Hostname())
+	if err != nil {
+		return err
+	}
+
+	for _, ip := range ips {
+		if !ip.IsGlobalUnicast() || ip.IsPrivate() {
+			return fmt.Errorf("image proxy URL resolves to private IP")
+		}
+	}
+
+	return nil
+}
 
 // imageProxyHandler GETs the image from remote host and serves it from a string map
 //
@@ -27,23 +46,9 @@ func (h *ImageProxyHandler) imageProxyHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	parsedURL, err := url.Parse(rawURL)
-	if err != nil || (parsedURL.Scheme != "http" && parsedURL.Scheme != "https") {
+	if err != nil || validateImageProxyURL(parsedURL) != nil {
 		http.Error(w, "Invalid URL parameter", http.StatusBadRequest)
 		return
-	}
-
-	ips, err := net.LookupIP(parsedURL.Hostname())
-	if err != nil {
-		http.Error(w, "Invalid URL parameter", http.StatusBadRequest)
-		return
-	}
-	
-	// lets make sure to not actually serve stuff from private network, k?
-	for _, ip := range ips {
-		if !ip.IsGlobalUnicast() || ip.IsPrivate() {
-			http.Error(w, "Invalid URL parameter. Hostname resolves into private IP.", http.StatusBadRequest)
-			return
-		}
 	}
 
 	urlStr := parsedURL.String()
