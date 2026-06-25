@@ -5,7 +5,6 @@ import (
 	"log"
 	_ "net/http/pprof"
 	"vpub/config"
-	"vpub/model"
 	"vpub/storage"
 	"vpub/web"
 )
@@ -19,67 +18,6 @@ func main() {
 	}
 
 	data := storage.New(db)
-	adminExists, err := data.HasAdmin()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if !adminExists {
-		userID, err := data.CreateUser("admin", model.UserCreationRequest{
-			Name:     "admin",
-			Password: "admin",
-			IsAdmin:  true,
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		forumID, err := data.CreateForum(model.ForumRequest{
-			Name:     "Getting started",
-			Position: 0,
-			IsLocked: false,
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		boardID, err := data.CreateBoard(model.BoardRequest{
-			Name:        "Your first board",
-			Description: "This is a sample board.",
-			Position:    0,
-			IsLocked:    false,
-			ForumID:     forumID,
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		_, err = data.CreateTopic(userID, model.TopicRequest{
-			Subject: "Change your admin account password",
-			Content: `It might be a good idea to change your default Admin password!
-			
-## To change the password.
-			
-Navigate to [/admin/users](/admin/users). Find the **admin** user and change the password.`,
-			BoardID:  boardID,
-			IsLocked: true,
-			IsSticky: true,
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		_, err = data.CreateTopic(userID, model.TopicRequest{
-			Subject:  "What to do?",
-			Content:  `Navigate to the [/admin](/admin) route and see what you can change in there. Just make sure you do not delete yourself, okay? Otherwise you will be locked in a weird state.`,
-			BoardID:  boardID,
-			IsLocked: false,
-			IsSticky: false,
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
 
 	if err := web.Serve(cfg, data); err != nil {
 		log.Fatal(err)

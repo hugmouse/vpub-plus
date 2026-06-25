@@ -47,6 +47,28 @@ func (s *Storage) HasAdmin() (bool, error) {
 	return exists, nil
 }
 
+// CreateAdminUser creates the first administrator during onboarding.
+//
+// TODO: Probably could have just reused CreateUser function...
+func (s *Storage) CreateAdminUser(request model.UserCreationRequest) (int64, error) {
+	var userId int64
+	hash, err := hashPassword(request.Password)
+	if err != nil {
+		return userId, fmt.Errorf("failed to hash password: %w", err)
+	}
+	exists, err := s.UserExists(request.Name)
+	if err != nil {
+		return userId, err
+	}
+	if exists {
+		return userId, ErrUserExists{}
+	}
+	if err := s.db.QueryRow(`insert into users (name, hash, is_admin) values (lower($1), $2, $3) returning id`, request.Name, string(hash), request.IsAdmin).Scan(&userId); err != nil {
+		return userId, err
+	}
+	return userId, nil
+}
+
 func (s *Storage) UserHashExists(hash string) (bool, error) {
 	var exists bool
 	err := s.db.QueryRow(`SELECT true FROM users WHERE hash=$1 LIMIT 1`, hash).Scan(&exists)

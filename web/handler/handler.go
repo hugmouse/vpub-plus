@@ -8,7 +8,9 @@ import (
 	"net"
 	"net/http"
 	"strconv"
+	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"vpub/model"
@@ -97,6 +99,7 @@ type Handler struct {
 	currentRenderEngine *syntax.Renderer
 	renderRegistry      *syntax.RenderEngineRegistry
 	imageProxy          *ImageProxyHandler
+	setupComplete       atomic.Bool
 }
 
 type ImageProxyHandler struct {
@@ -203,6 +206,35 @@ func (h *Handler) protect(fn http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// setupGuard redirects every request to /setup until the initial onboarding has
+// been completed. Static assets, the health check and the setup endpoints
+// themselves are always allowed through.
+func (h *Handler) setupGuard(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if h.setupComplete.Load() {
+			next.ServeHTTP(w, r)
+			return
+		}
+		adminExists, err := h.storage.HasAdmin()
+		if err != nil {
+			serverError(w, err)
+			return
+		}
+		if adminExists {
+			h.setupComplete.Store(true)
+			next.ServeHTTP(w, r)
+			return
+		}
+		path := r.URL.Path
+		if path == "/setup" || strings.HasPrefix(path, "/style.css") ||
+			strings.HasPrefix(path, "/js/") || path == "/health" {
+			next.ServeHTTP(w, r)
+			return
+		}
+		http.Redirect(w, r, "/setup", http.StatusFound)
+	})
+}
+
 func (h *Handler) admin(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := request.GetUserContextKey(r)
@@ -294,6 +326,10 @@ func New(data *storage.Storage, s *session.Manager, csrfSecure bool) (http.Handl
 	h.imageProxy = handlerForImageProxy
 
 	registerDebugHandlers(mux)
+
+	// Setup (onboarding; when user just installed vpub-plus)
+	mux.HandleFunc("GET /setup", h.showSetupView)
+	mux.HandleFunc("POST /setup", h.setup)
 
 	// Static assets
 	mux.HandleFunc("GET /style.css", h.showStylesheet)
@@ -391,6 +427,7 @@ func New(data *storage.Storage, s *session.Manager, csrfSecure bool) (http.Handl
 
 	var handler http.Handler = mux
 	handler = h.handleSessionMiddleware(handler)
+	handler = h.setupGuard(handler)
 	handler = newCSRFMiddleware(csrfSecure)(handler)
 	return handler, nil
 }
