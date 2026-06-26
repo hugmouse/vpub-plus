@@ -100,6 +100,7 @@ type Handler struct {
 	renderRegistry      *syntax.RenderEngineRegistry
 	imageProxy          *ImageProxyHandler
 	setupComplete       atomic.Bool
+	setupMu sync.Mutex
 }
 
 type ImageProxyHandler struct {
