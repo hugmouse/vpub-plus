@@ -377,7 +377,7 @@ var TplMap = map[string]string{
     {{ range .images }}
     <tr>
         <td title="{{ .URL }}" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-            <img src="{{ .URL }}" alt="{{ .URL }}" style="max-height: 100px;">
+            <img src="{{ proxyURL .URL }}" alt="{{ .URL }}" style="max-height: 100px;">
         </td>
         <td>{{ humanizeBytes .Size }}</td>
         <td>{{ .ContentType }}</td>
@@ -432,7 +432,12 @@ var TplMap = map[string]string{
             <tr>
                 <td>{{ .Key }}</td>
                 <td class="center">{{ iso8601 .CreatedAt }}</td>
-                <td class="center"><a href="/admin/keys/{{ .ID }}/remove">Delete</a></td>
+                <td class="center">
+                    <form action="/admin/keys/{{ .ID }}/remove" method="post" style="display:inline">
+                        {{ $.csrfField }}
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
             </tr>
         {{ end }}
         </tbody>
@@ -992,6 +997,78 @@ var TplMap = map[string]string{
         {{ end }}
     {{ end }}
 {{ end }}`,
+	"setup": `{{ define "title" }}Setup{{ end }}
+
+{{ define "content" }}
+    <h1>Welcome! Let's set up your forum</h1>
+    <p>This is the first time this instance has been started. Configure the basic
+       settings below and create your administrator account to get going.</p>
+    {{ if .errorMessage }}
+        <p class="errors">{{ .errorMessage }}</p>
+    {{ end }}
+    <form action="/setup" method="post" class="auth-form setup-form">
+        {{ .csrfField }}
+        <h2>Forum settings</h2>
+        <div class="field-row">
+            <div class="field">
+                <label for="forum-name">Forum name</label>
+                <input type="text" id="forum-name" name="forum-name" autocomplete="off"
+                       placeholder="My Awesome Forum"
+                       value="{{ .form.ForumName }}" maxlength="120" required autofocus
+                       aria-describedby="forum-name-desc"/>
+                <p id="forum-name-desc">Displayed in the tab title and on the main page.</p>
+            </div>
+            <div class="field">
+                <label for="url">URL</label>
+                <input type="url" id="url" name="url" autocomplete="off"
+                       placeholder="http://localhost:8080"
+                       value="{{ .form.URL }}" aria-describedby="url-desc"/>
+                <p id="url-desc">Absolute URL for your instance.</p>
+            </div>
+            <div class="field">
+                <label for="lang">Site language</label>
+                <input type="text" id="lang" name="lang" autocomplete="off"
+                       placeholder="en"
+                       value="{{ if .form.Lang }}{{ .form.Lang }}{{ else }}en{{ end }}"
+                       aria-describedby="lang-desc"/>
+                <p id="lang-desc">
+                    <a href="https://en.wikipedia.org/wiki/IETF_language_tag" target="_blank">IETF BCP 47 language tag</a>.
+                </p>
+            </div>
+        </div>
+        <h2>Administrator account</h2>
+        <div class="field-row">
+            <div class="field">
+                <label for="admin-name">Admin username</label>
+                <input type="text" id="admin-name" name="admin-name" autocomplete="off"
+                       placeholder="admin"
+                       value="{{ .form.AdminName }}" maxlength="15" required
+                       aria-describedby="admin-name-desc"/>
+                <p id="admin-name-desc">You'll use this to log in and manage the forum.</p>
+            </div>
+            <div class="field">
+                <label for="admin-password">Admin password</label>
+                <input type="password" id="admin-password" name="admin-password"
+                       placeholder="••••••••" required/>
+            </div>
+            <div class="field">
+                <label for="confirm">Confirm password</label>
+                <input type="password" id="confirm" name="confirm"
+                       placeholder="••••••••" required/>
+            </div>
+        </div>
+        <input type="submit" value="Complete setup">
+    </form>
+    <script>
+        (function () {
+            var urlField = document.getElementById('url');
+            if (urlField && !urlField.value) {
+                urlField.value = window.location.origin;
+            }
+        })();
+    </script>
+{{ end }}
+`,
 	"topic": `{{ define "head" }}
     <link type="application/atom+xml" rel="alternate" href="{{ .settings.URL}}topics/{{ .topic.ID }}/feed.atom"/>
     <meta property="article:published_time" content="{{ iso8601Time (index .posts 0).CreatedAt }}">

@@ -254,6 +254,25 @@ table td pre {
     margin-bottom: 0.5em;
 }
 
+/* Onboarding form and such */
+.setup-form {
+    max-width: 760px;
+}
+
+.setup-form .field-row {
+    display: flex;
+    gap: 1em;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    margin-bottom: 1em;
+}
+
+.setup-form .field-row .field {
+    flex: 1 1 0;
+    min-width: 140px;
+    margin-bottom: 0;
+}
+
 input[type="text"],
 input[type="password"],
 input[type="url"],
@@ -411,5 +430,6 @@ a.anchor {
 
 a.anchor:hover {
     opacity: 1.0;
-}`,
+}
+`,
 }
